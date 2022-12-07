@@ -10,6 +10,8 @@ namespace Advent_of_Code_2022
 {
     internal class Day2
     {
+        //https://adventofcode.com/2022/day/2
+
         //How to properly set defines for the strings? I had a bug because I typed "Scissor" instead of "Scissors" in an if.
         static Dictionary<String, String> dictColumnA = new Dictionary<String, String>(){
             {"A", "Rock"},

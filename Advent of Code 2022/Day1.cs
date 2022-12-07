@@ -9,6 +9,8 @@ namespace Advent_of_Code_2022
 {
     internal class Day1
     {
+        //https://adventofcode.com/2022/day/1
+
         class Elf
         {
             public List<long> snacks = new List<long> { };
