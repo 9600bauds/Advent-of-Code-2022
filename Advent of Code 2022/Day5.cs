@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,6 +13,42 @@ namespace Advent_of_Code_2022
         //https://adventofcode.com/2022/day/5
 
         static int maxStackHeight = 10;
+
+        class Instruction
+        {
+            public int amount;
+            public int fromRack;
+            public int toRack;
+        }
+
+        public static List<List<char>> LoadRacks(List<string> rowStrings, int rackCount)
+        {
+            List<List<char>> racks = new List<List<char>>();
+            for (int i = 0; i < rackCount; i++)
+            {
+                racks.Add(new List<char>()); //Initializing all the racks at 0
+            }
+
+            for (int i = rowStrings.Count - 1; i >= 0; i--)
+            {
+                String rowString = rowStrings[i];
+                //Console.WriteLine("Analyzing {0}...", rowString);
+                char[] rowArray = rowString.ToCharArray();
+
+                int currentRack = 0;
+                for (int j = 1; j < rowArray.Length; j += 4) //Starting at 1, since that skips the first bracket, then adding 4 to get to the next letter
+                {
+                    char crate = rowArray[j];
+                    if (crate != ' ')
+                    {
+                        //Console.WriteLine("Popping {0} into rack {1}...", crate, currentRack);
+                        racks[currentRack].Add(crate);
+                    }
+                    currentRack++;
+                }
+            }
+            return racks;
+        }
 
         public static void PrintRacks(List<List<char>> racks)
         {
@@ -49,15 +86,6 @@ namespace Advent_of_Code_2022
             
             if (multipleAtATime)
             {
-                for (int i = 0; i < amount; i++)
-                {
-                    int index = fromRack.Count - 1;
-                    toRack.Add(fromRack[index]);
-                    fromRack.RemoveAt(index);
-                }
-            }
-            else
-            {
                 int index = fromRack.Count - amount;
                 for (int i = 0; i < amount; i++)
                 {
@@ -65,7 +93,15 @@ namespace Advent_of_Code_2022
                     fromRack.RemoveAt(index);
                 }
             }
-
+            else
+            {
+                for (int i = 0; i < amount; i++)
+                {
+                    int index = fromRack.Count - 1;
+                    toRack.Add(fromRack[index]);
+                    fromRack.RemoveAt(index);
+                }
+            }
         }
 
         public static String GetSolution(List<List<char>> racks)
@@ -89,46 +125,27 @@ namespace Advent_of_Code_2022
             List<string> instructionStrings = inputInstructions.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
 
             int rackCount = (int)Math.Ceiling((double)rowStrings[0].Length / 4); //Rough attempt at determining how many racks there are, works for both inputs though
-            List<List<char>> racks = new List<List<char>>();
-            for(int i = 0; i < rackCount; i++)
-            {
-                racks.Add(new List<char>()); //Initializing all the racks at 0
-            }
-            
-            for (int i = rowStrings.Count-1; i >= 0; i--)
-            {
-                String rowString = rowStrings[i];
-                //Console.WriteLine("Analyzing {0}...", rowString);
-                char[] rowArray = rowString.ToCharArray();
+            List<List<char>> racks = LoadRacks(rowStrings, rackCount);
 
-                int currentRack = 0;
-                for (int j = 1; j < rowArray.Length; j += 4) //Starting at 1, since that skips the first bracket, then adding 4 to get to the next letter
-                {
-                    char crate = rowArray[j];
-                    if(crate != ' ')
-                    {
-                        //Console.WriteLine("Popping {0} into rack {1}...", crate, currentRack);
-                        racks[currentRack].Add(crate);
-                    }
-                    currentRack++;
-                }
+            string pattern = @"(\d+)"; //Regex pattern for digits 0-9
+            Regex myRegex = new Regex(pattern, RegexOptions.IgnoreCase);
+            List<Instruction> finalInstructions = new List<Instruction>();
+            foreach (String instructionString in instructionStrings)
+            {
+                MatchCollection matches = myRegex.Matches(instructionString);
+                Instruction instruction = new Instruction();
+                instruction.amount = int.Parse(matches[0].ToString());
+                instruction.fromRack = int.Parse(matches[1].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
+                instruction.toRack = int.Parse(matches[2].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
+                finalInstructions.Add(instruction);
             }
-
-            List<List<char>> racksCopy = racks.Select(x => x.ToList()).ToList(); //Deepcopying a list of lists according to StackOverflow?
 
             Console.WriteLine("Starting state:");
             PrintRacks(racks);
-            string pattern = @"(\d+)"; //Regex pattern for digits 0-9
-            Regex myRegex = new Regex(pattern, RegexOptions.IgnoreCase);
-            foreach (String instruction in instructionStrings)
+            foreach(Instruction instruction in finalInstructions)
             {
-                //Console.WriteLine("Analyzing {0}...", instruction);
-                MatchCollection matches = myRegex.Matches(instruction);
-                int amount = int.Parse(matches[0].ToString());
-                int fromRack = int.Parse(matches[1].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
-                int toRack = int.Parse(matches[2].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
-                MoveCrate(racks, fromRack - 1, toRack - 1, amount, false);
-                //Console.WriteLine("Moving {0} from {1} to {2} with the CrateMover9000...", amount, fromRack, toRack);
+                MoveCrate(racks, instruction.fromRack - 1, instruction.toRack - 1, instruction.amount, false);
+                //Console.WriteLine("Moving {0} from {1} to {2} with the CrateMover9000...", instruction.amount, instruction.fromRack, instruction.toRack);
                 //PrintRacks(racks);
             }
             Console.WriteLine("Final state:");
@@ -138,25 +155,19 @@ namespace Advent_of_Code_2022
             Console.WriteLine("----");
             Console.WriteLine("**Starting over with the CRATEMOVER9001**");
             Console.WriteLine("----");
+            racks = LoadRacks(rowStrings, rackCount); //Yup, we're just regenerating this.
 
             Console.WriteLine("Starting state:");
-            PrintRacks(racksCopy);
-
-            //todo: put this in a function
-            foreach (String instruction in instructionStrings)
+            PrintRacks(racks);
+            foreach (Instruction instruction in finalInstructions)
             {
-                Console.WriteLine("Analyzing {0}...", instruction);
-                MatchCollection matches = myRegex.Matches(instruction);
-                int amount = int.Parse(matches[0].ToString());
-                int fromRack = int.Parse(matches[1].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
-                int toRack = int.Parse(matches[2].ToString()); //Note that this is the number of the rack, substract 1 to get the index of it
-                MoveCrate(racksCopy, fromRack - 1, toRack - 1, amount, true);
-                Console.WriteLine("Moving {0} from {1} to {2} with the CrateMover9001...", amount, fromRack, toRack);
-                PrintRacks(racksCopy);
+                MoveCrate(racks, instruction.fromRack - 1, instruction.toRack - 1, instruction.amount, true);
+                //Console.WriteLine("Moving {0} from {1} to {2} with the CrateMover9001...", instruction.amount, instruction.fromRack, instruction.toRack);
+                //PrintRacks(racks);
             }
             Console.WriteLine("Final state:");
-            PrintRacks(racksCopy);
-            Console.WriteLine("Solution: {0}", GetSolution(racksCopy));
+            PrintRacks(racks);
+            Console.WriteLine("Solution: {0}", GetSolution(racks));
 
         }
     }
