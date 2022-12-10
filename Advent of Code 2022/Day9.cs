@@ -15,24 +15,24 @@ namespace Advent_of_Code_2022
             public int minx = 1;
             public int maxx = 3; //the cooler max
             public List<RopeSegment> segments = new List<RopeSegment>();
-            public HashSet<(int, int)> markedCoords = new HashSet<(int, int)> ();
-            public String Draw(bool drawMarks = false)
+            public HashSet<(int, int)> markedCoords = new HashSet<(int, int)> (); //HashSet means we do not accept duplicates
+            public String Draw(bool drawMarks = false, String separator = "\r\n")
             {
                 String board = "";
                 for(int col = maxy + 1; col > miny - 1; col--)
                 {
                     for(int row = minx - 1; row <= maxx + 1; row++)
                     {
-                        board += getCharForCoords(row, col, drawMarks);
+                        board += GetCharForCoords(row, col, drawMarks);
                     }
-                    board += "\r\n";
+                    board += separator;
                 }
                 return board;
             }
 
-            public char getCharForCoords(int x, int y, bool drawMarks)
+            public char GetCharForCoords(int x, int y, bool drawMarks)
             {
-                if (drawMarks)
+                if (drawMarks) //Draw marks ONLY
                 {
                     if (markedCoords.Contains((x, y)))
                     {
@@ -40,6 +40,7 @@ namespace Advent_of_Code_2022
                     }
                     return '.';
                 }
+
                 if (x == 0 && y == 0)
                 {
                     return 's';
@@ -59,7 +60,9 @@ namespace Advent_of_Code_2022
                 markedCoords.Add(coords);
             }
 
-            public void updateMaxes(RopeSegment seg)
+            //This is only really used to dynamically set how big the board is drawn as when converted to string
+            //Basically we only draw ourselves as big as the farthest that a rope segment has travelled
+            public void UpdateMaxes(RopeSegment seg) 
             {
                 if(seg.x < minx)
                 {
@@ -79,7 +82,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public (int, int) dirToOffsets(String dir)
+            public (int, int) DirToOffsets(String dir)
             {
                 int xoffset = 0;
                 int yoffset = 0;
@@ -122,7 +125,7 @@ namespace Advent_of_Code_2022
                 this.marker = marker;
                 if (marker)
                 {
-                    board.Mark((x, y));
+                    board.Mark((x, y)); //Go ahead and mark the tile that we're born on, since we technically didn't move here
                 }
                 if(child != null)
                 {
@@ -134,7 +137,7 @@ namespace Advent_of_Code_2022
             {
                 x += xoffset;
                 y += yoffset;
-                board.updateMaxes(this);
+                board.UpdateMaxes(this);
                 if (marker)
                 {
                     board.Mark((x, y));
@@ -155,6 +158,7 @@ namespace Advent_of_Code_2022
                 if(distance > 2)
                 {
                     //Shuh oh! Diagonal move time!!
+                    //Math.Sign()*-1 is basically "move 1 tile in the thing's general direction". This assumes that the thing we're following only moves 1 tile at a time...
                     Move(Math.Sign(deltax) * -1, Math.Sign(deltay) * -1);
                     return;
                 }
@@ -209,7 +213,7 @@ namespace Advent_of_Code_2022
                 int steps = int.Parse(lineSplit[1]);
                 for (int i = 0; i < steps; i++)
                 {
-                    (int xoffset, int yoffset) = board.dirToOffsets(direction);
+                    (int xoffset, int yoffset) = board.DirToOffsets(direction);
                     head.Move(xoffset, yoffset);
                 }
                 if (verbose)

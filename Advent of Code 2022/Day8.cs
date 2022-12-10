@@ -11,7 +11,7 @@ namespace Advent_of_Code_2022
     {
         //https://adventofcode.com/2022/day/8
 
-        public static String GetTreeGridString(List<List<int>> treeGrid)
+        public static String GetTreeGridString(List<List<int>> treeGrid, String separator = "\r\n")
         {
             String output = "";
             for(int i = 0; i < treeGrid.Count; i++)
@@ -20,7 +20,7 @@ namespace Advent_of_Code_2022
                 {
                     output += treeGrid[i][j].ToString();
                 }
-                output += "\r\n";
+                output += separator;
             }
             return output;
         }
@@ -42,7 +42,7 @@ namespace Advent_of_Code_2022
             int treesVisible = 0;
             foreach (int t in treesToCheck)
             {
-                treesVisible++;
+                treesVisible++; //Believe it or not, yes, even if a tree is blocking our sight, we CAN see it
                 if (t >= treeHeight)
                 {
                     break;
