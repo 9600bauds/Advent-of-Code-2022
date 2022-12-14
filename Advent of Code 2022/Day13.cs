@@ -92,7 +92,7 @@ namespace Advent_of_Code_2022
             //If we've reached this point, we can be sure they are both lists. Unless the input is invalid, and that's not my problem!
 
             List<string> leftList = SplitTextList(left);
-            List<string> rightList = SplitTextList(right); //How does it work? I don't know, regex is magic.
+            List<string> rightList = SplitTextList(right);
             int shortestList = Math.Min(leftList.Count, rightList.Count);
             for (int i = 0; i < shortestList; i++)
             {
