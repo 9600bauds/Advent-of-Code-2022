@@ -65,7 +65,7 @@ namespace Advent_of_Code_2022
             }
             Console.WriteLine($"Loaded {sensors.Count} sensors and {beacons.Count} beacons. Maxx is {maxx} and minx is {minx}.");
 
-            /*int locationsWhereABeaconCannotBe = 0;
+            int locationsWhereABeaconCannotBe = 0;
             for (int x = minx; x <= maxx; x++)
             {
                 Point currentLoc = new Point(x, yToCheck);
@@ -83,7 +83,7 @@ namespace Advent_of_Code_2022
                     locationsWhereABeaconCannotBe++;
                 }
             }
-            Console.WriteLine($"In row {yToCheck}, there are {locationsWhereABeaconCannotBe} tiles where there cannot be a beacon.");*/
+            Console.WriteLine($"In row {yToCheck}, there are {locationsWhereABeaconCannotBe} tiles where there cannot be a beacon.");
 
             List<Sensor> sensorList = sensors.Values.ToList();
             for (int i = 0; i < sensorList.Count; i++)
@@ -93,54 +93,49 @@ namespace Advent_of_Code_2022
                     Sensor sensorA = sensorList[i];
                     Sensor sensorB = sensorList[j];
                     int dist = ManhattanDistance(sensorA.loc, sensorB.loc);
-                    if(dist > sensorA.distanceToBeacon && dist > sensorB.distanceToBeacon)
+
+                }
+            }
+
+            //Since we know there's only 1 point in the whole area where the beacon CAN be, it must be exactly 1 tile further than a sensor's closest beacon.
+            //So we can just iterate through all sensors and check all the tiles "surrounding" them.
+            //I'm sure there's a proper calculus way to calculate this, but I suck at calculus.
+            foreach (Sensor sensor in sensors.Values.ToList())
+            {
+                List<Point> candidates = GenerateRhombus(sensor.loc, sensor.distanceToBeacon + 1);
+                foreach(Point candidate in candidates)
+                {
+                    if (candidate.x < beaconCoordsMin || candidate.x > beaconCoordsMax || candidate.y < beaconCoordsMin || candidate.y > beaconCoordsMax)
                     {
-                        Point likelyPoint = AveragePoint(sensorA.loc, sensorB.loc);
-                        //Console.WriteLine($"Sensors {sensorA.loc} and {sensorB.loc} are far apart enough to contain a beacon between them... Average: {likelyPoint} ");
-                        foreach (Point point in likelyPoint.SurroundingPoints())
-                        {
-                            if (CanContainUnknownBeacon(point, sensors.Values.ToList()))
-                            {
-                                Console.WriteLine($"The beacon can be at {point}. Tuning frequency: {point.x * 4000000 + point.y}");
-                                return;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"It's not at {point}...");
-                            }
-                        }
-                        
+                        continue;
                     }
-                }
-
-            }
-
-            Console.WriteLine($"Checking the hard way...");
-            //backup plan
-            for (int i = beaconCoordsMin; i <= beaconCoordsMax; i++)
-            {
-                if (CanContainUnknownBeacon(new Point(i, beaconCoordsMin), sensors.Values.ToList())
-                    || CanContainUnknownBeacon(new Point(i, beaconCoordsMax), sensors.Values.ToList())
-                    || CanContainUnknownBeacon(new Point(beaconCoordsMin, i), sensors.Values.ToList())
-                    || CanContainUnknownBeacon(new Point(beaconCoordsMax, i), sensors.Values.ToList()))
-                {
-                    Console.WriteLine($"The beacon can be at asdasd. Tuning frequency: asdasd");
-                    return;
-                }
-            }
-            Console.WriteLine($"Checking the HARDER way...");
-            for (int y = beaconCoordsMin; y <= beaconCoordsMax; y++)
-            {
-                for (int x = beaconCoordsMin; x <= beaconCoordsMax; x++)
-                {
-                    Point currentLoc = new Point(x, y);
-                    if(CanContainUnknownBeacon(currentLoc, sensors.Values.ToList()))
+                    if (CanContainUnknownBeacon(candidate, sensors.Values.ToList()))
                     {
-                        Console.WriteLine($"The beacon can be at {currentLoc}. Tuning frequency: {x*4000000+y}");
+                        Console.WriteLine($"The beacon can be at {candidate}. Tuning frequency: {Coords2TuningFrequency(candidate)}");
                         return;
                     }
                 }
             }
+        }
+
+        public static List<Point> GenerateRhombus(Point center, int radius)
+        {
+            List<Point> points = new List<Point>();
+            int x = center.x;
+            int y = center.y;
+            for (int i = 0; i < radius; i++)
+            {
+                points.Add(new Point(x + radius - i, y - i));
+                points.Add(new Point(x - radius + i, y + i));
+                points.Add(new Point(x - i, y - radius + i));
+                points.Add(new Point(x + i, y + radius - i));
+            }
+            return points;
+        }
+
+        public static long Coords2TuningFrequency(Point p)
+        {
+            return (long)p.x * 4000000 + p.y;
         }
 
         public static bool CanContainUnknownBeacon(Point p, List<Sensor> sensors)
