@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Advent_of_Code_2022
 {
-    internal class Program
+    internal class Day16
     {
-        static void Main(string[] args)
-        {
-            Day15.Run();
-        }
     }
 }

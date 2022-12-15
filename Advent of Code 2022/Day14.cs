@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Advent_of_Code_2022.libs;
 
 namespace Advent_of_Code_2022
 {
@@ -270,43 +271,9 @@ namespace Advent_of_Code_2022
             }
         }
 
-        class Point
-        {
-            public int x;
-            public int y; //technically minus y
-
-            public bool Equals(Point p)
-            {
-                return (x == p.x) && (y == p.y);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-                {
-                    return false;
-                }
-                Point p = (Point)obj;
-                return (x == p.x) && (y == p.y);
-            }
-
-            public override int GetHashCode()
-            {
-                return (x << 2) ^ y;
-            }
-
-            public Point(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-
-            public override string ToString()
-            {
-                return $"{x},{y}";
-            }
-        }
-
+        //Should this really inherit from Point? Inheriting ToString() is nice, but what about Equals()?
+        //Perhaps this should simply have a Point variable instead.
+        //Perhaps there should be a BoardObject class that this inherits from.
         class FallingPoint : Point
         {
             public char sprite;
