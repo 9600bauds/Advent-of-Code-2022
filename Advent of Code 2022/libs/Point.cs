@@ -16,7 +16,7 @@ namespace Advent_of_Code_2022.libs
             return (x == p.x) && (y == p.y);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if ((obj == null) || !this.GetType().Equals(obj.GetType()))
             {
