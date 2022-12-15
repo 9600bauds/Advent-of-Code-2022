@@ -147,10 +147,7 @@ namespace Advent_of_Code_2022
         {
             foreach (Sensor sensor in sensors)
             {
-                int distSensorToUs = ManhattanDistance(p, sensor.loc);
-                int distSensorToKnownBeacon = ManhattanDistance(sensor.loc, sensor.nearestBeacon.loc);
-
-                if (distSensorToUs <= distSensorToKnownBeacon)
+                if (ManhattanDistance(p, sensor.loc) <= sensor.distanceToBeacon)
                 {
                     return false;
                 }
@@ -160,10 +157,7 @@ namespace Advent_of_Code_2022
 
         public static int ManhattanDistance(Point a, Point b)
         {
-            int distance = 0;
-            distance += Math.Abs(a.x - b.x);
-            distance += Math.Abs(a.y - b.y);
-            return distance;
+            return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
         }
 
         public static Point AveragePoint(Point a, Point b)
