@@ -30,8 +30,7 @@ namespace Advent_of_Code_2022
 
             Dictionary<Point, Sensor> sensors = new Dictionary<Point, Sensor>();
             Dictionary<Point, Beacon> beacons = new Dictionary<Point, Beacon>();
-            int minx = int.MaxValue, maxx = int.MinValue;
-
+            
             foreach (string line in inputByLine)
             {
                 Match match = parsingRegex.Match(line);
@@ -55,53 +54,75 @@ namespace Advent_of_Code_2022
                     Point sensorLoc = new Point(sensorX, sensorY);
                     Sensor currentSensor = new Sensor(sensorLoc, currentBeacon);
                     sensors.Add(sensorLoc, currentSensor);
-                    minx = Math.Min(minx, sensorLoc.x - currentSensor.distanceToBeacon - 1);
-                    maxx = Math.Max(maxx, sensorLoc.x + currentSensor.distanceToBeacon + 1);
+
                 }
                 else
                 {
                     Debug.Fail($"Could not parse {line}!");
                 }
             }
-            Console.WriteLine($"Loaded {sensors.Count} sensors and {beacons.Count} beacons. Maxx is {maxx} and minx is {minx}.");
+            Console.WriteLine($"Loaded {sensors.Count} sensors and {beacons.Count} beacons.");
 
+            //Part 1: Calculating the squares in one slice of Y where a beacon cannot be.
+            //First we calculate the leftmost and rightmost tiles that we'll need to check.
+            //Technicaly this is all we need to calculate for our input, since we know that there are no gaps in sensor coverage in the middle of the board.
+            //But this will work in a theoretical input where that might happen.
+            //Anyways, when we detect that we are inside a sensor's coverage, we simply skip forward until the end of the sensor's coverage.
             int locationsWhereABeaconCannotBe = 0;
+            int minx = int.MaxValue, maxx = int.MinValue; //Range in which we want to check in order to cover all of yToCheck.
+            foreach (Sensor sensor in sensors.Values.ToList())
+            {
+                minx = Math.Min(minx, sensor.loc.x - sensor.distanceToBeacon + (Math.Abs(sensor.loc.y - yToCheck)));
+                maxx = Math.Max(maxx, sensor.loc.x + sensor.distanceToBeacon - (Math.Abs(sensor.loc.y - yToCheck)));
+            }
+            HashSet<Beacon> beaconsEncountered = new HashSet<Beacon>();
             for (int x = minx; x <= maxx; x++)
             {
                 Point currentLoc = new Point(x, yToCheck);
-                if (beacons.ContainsKey(currentLoc))
+                //Console.WriteLine($"Checking {currentLoc}...");
+                Sensor? sensor = FindSensorThatHasScannedThis(currentLoc, sensors.Values.ToList());
+                if(sensor != null)
                 {
-                    //This tile evidently can contain a beacon, seeing as it contains one.
-                    continue;
-                }
-                if (!CanContainUnknownBeacon(currentLoc, sensors.Values.ToList()))
-                {
-                    if (x == minx || x == maxx)
+                    if(sensor.nearestBeacon.loc.y == yToCheck)
                     {
-                        Debug.Fail("WARNING: Checking area is too small!");
+                        //Console.WriteLine($"Detected that this sensor's beacon, {sensor.nearestBeacon.loc} is in our y!");
+                        beaconsEncountered.Add(sensor.nearestBeacon); //Keep track of these, since tiles where there are beacons... count as tiles where a beacon can be, I guess? Even though we don't really care about those
                     }
-                    locationsWhereABeaconCannotBe++;
+
+                    int xdiff = sensor.IntersectionWithYAxis(yToCheck);
+                    xdiff -= sensor.distanceToBeacon - ManhattanDistance(currentLoc, sensor.loc) + 1; //Because we might have skipped halfway into a sensor's range, we are not guaranteed to be at the border.
+                    locationsWhereABeaconCannotBe += xdiff + 1;
+                    x += xdiff;
+                    //Console.WriteLine($"Skipping the next {xdiff} ({ManhattanDistance(currentLoc, sensor.loc)}) tiles because we bumped into {sensor.loc}, of range {sensor.distanceToBeacon}.");
                 }
             }
+            locationsWhereABeaconCannotBe -= beaconsEncountered.Count();
             Console.WriteLine($"In row {yToCheck}, there are {locationsWhereABeaconCannotBe} tiles where there cannot be a beacon.");
-
-            List<Sensor> sensorList = sensors.Values.ToList();
-            for (int i = 0; i < sensorList.Count; i++)
-            {
-                for(int j = i+1; j < sensorList.Count; j++)
-                {
-                    Sensor sensorA = sensorList[i];
-                    Sensor sensorB = sensorList[j];
-                    int dist = ManhattanDistance(sensorA.loc, sensorB.loc);
-
-                }
-            }
 
             //Since we know there's only 1 point in the whole area where the beacon CAN be, it must be exactly 1 tile further than a sensor's closest beacon.
             //So we can just iterate through all sensors and check all the tiles "surrounding" them.
             //I'm sure there's a proper calculus way to calculate this, but I suck at calculus.
-            foreach (Sensor sensor in sensors.Values.ToList())
+            //That said, we can speed this up by only checking sensors that are close to touching.
+            List<Sensor> almostTouchingSensors = new();
+            for (int i = 0; i < sensors.Count; i++)
             {
+                for (int j = i + 1; j < sensors.Count; j++)
+                {
+                    Sensor sensorA = sensors.Values.ToList()[i];
+                    Sensor sensorB = sensors.Values.ToList()[j];
+                    int distance = ManhattanDistance(sensorA.loc, sensorB.loc) - sensorA.distanceToBeacon - sensorB.distanceToBeacon;
+                    if(distance > 0 && distance < 5)
+                    {
+                        //Console.WriteLine($"Sensor {sensorA.loc} and Sensor {sensorB.loc} are {distance} tiles apart!");
+                        almostTouchingSensors.Add(sensorA);
+                        almostTouchingSensors.Add(sensorB);
+                    }
+                }
+            }
+            bool finished = false;
+            foreach (Sensor sensor in almostTouchingSensors)
+            {
+                if (finished) break;
                 List<Point> candidates = GenerateRhombus(sensor.loc, sensor.distanceToBeacon + 1);
                 foreach(Point candidate in candidates)
                 {
@@ -109,15 +130,17 @@ namespace Advent_of_Code_2022
                     {
                         continue;
                     }
-                    if (CanContainUnknownBeacon(candidate, sensors.Values.ToList()))
+                    if (FindSensorThatHasScannedThis(candidate, sensors.Values.ToList()) == null)
                     {
-                        Console.WriteLine($"The beacon can be at {candidate}. Tuning frequency: {Coords2TuningFrequency(candidate)}");
-                        return;
+                        Console.WriteLine($"The beacon is at {candidate}. Tuning frequency: {Coords2TuningFrequency(candidate)}");
+                        finished = true;
+                        break;
                     }
                 }
             }
         }
 
+        //Returns a list of points that make up the outline of the rhombus.
         public static List<Point> GenerateRhombus(Point center, int radius)
         {
             List<Point> points = new List<Point>();
@@ -138,28 +161,21 @@ namespace Advent_of_Code_2022
             return (long)p.x * 4000000 + p.y;
         }
 
-        public static bool CanContainUnknownBeacon(Point p, List<Sensor> sensors)
+        public static Sensor? FindSensorThatHasScannedThis(Point p, List<Sensor> sensors)
         {
             foreach (Sensor sensor in sensors)
             {
                 if (ManhattanDistance(p, sensor.loc) <= sensor.distanceToBeacon)
                 {
-                    return false;
+                    return sensor;
                 }
             }
-            return true;
+            return null;
         }
 
         public static int ManhattanDistance(Point a, Point b)
         {
             return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
-        }
-
-        public static Point AveragePoint(Point a, Point b)
-        {
-            int averageX = (a.x + b.x) / 2;
-            int averageY = (a.y + b.y) / 2;
-            return new Point(averageX, averageY);
         }
 
         public class Sensor
@@ -174,6 +190,21 @@ namespace Advent_of_Code_2022
                 this.nearestBeacon = nearestBeacon;
                 distanceToBeacon = ManhattanDistance(loc, nearestBeacon.loc);
             }
+
+            public int IntersectionWithYAxis(int y)
+            {
+                int ydiff = Math.Abs(loc.y - y);
+                if(distanceToBeacon < ydiff)
+                {
+                    return 0;
+                }
+                return (distanceToBeacon - ydiff) * 2 + 1;
+            }
+
+            public override string ToString()
+            {
+                return loc.ToString();
+            }
         }
 
         public class Beacon
@@ -183,6 +214,10 @@ namespace Advent_of_Code_2022
             public Beacon(Point loc)
             {
                 this.loc = loc;
+            }
+            public override string ToString()
+            {
+                return loc.ToString();
             }
         }
     }
