@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,61 +18,46 @@ namespace Advent_of_Code_2022
         public static List<Connection> tunnels = new();
 
         public static int startingTime = 30;
+        public static int elephantTrainingDelay = 4;
         public static string startingValve = "AA";
 
-        public static string input = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\r\nValve BB has flow rate=13; tunnels lead to valves CC, AA\r\nValve CC has flow rate=2; tunnels lead to valves DD, BB\r\nValve DD has flow rate=20; tunnels lead to valves CC, AA, EE\r\nValve EE has flow rate=3; tunnels lead to valves FF, DD\r\nValve FF has flow rate=0; tunnels lead to valves EE, GG\r\nValve GG has flow rate=0; tunnels lead to valves FF, HH\r\nValve HH has flow rate=22; tunnel leads to valve GG\r\nValve II has flow rate=0; tunnels lead to valves AA, JJ\r\nValve JJ has flow rate=21; tunnel leads to valve II";
-        //public static string input = "Valve OQ has flow rate=17; tunnels lead to valves NB, AK, KL\r\nValve HP has flow rate=0; tunnels lead to valves ZX, KQ\r\nValve GO has flow rate=0; tunnels lead to valves HR, GW\r\nValve PD has flow rate=9; tunnels lead to valves XN, EV, QE, MW\r\nValve NQ has flow rate=0; tunnels lead to valves HX, ZX\r\nValve DW has flow rate=0; tunnels lead to valves IR, WE\r\nValve TN has flow rate=24; tunnels lead to valves KL, EI\r\nValve JJ has flow rate=0; tunnels lead to valves EV, HR\r\nValve KH has flow rate=0; tunnels lead to valves ZQ, AA\r\nValve PH has flow rate=0; tunnels lead to valves FN, QE\r\nValve FD has flow rate=0; tunnels lead to valves SM, HX\r\nValve SM has flow rate=7; tunnels lead to valves WW, RZ, FD, HO, KQ\r\nValve PU has flow rate=0; tunnels lead to valves VL, IR\r\nValve OM has flow rate=0; tunnels lead to valves CM, AA\r\nValve KX has flow rate=20; tunnel leads to valve PC\r\nValve IR has flow rate=3; tunnels lead to valves PU, CM, WW, DW, AF\r\nValve XG has flow rate=0; tunnels lead to valves RX, OF\r\nValve QE has flow rate=0; tunnels lead to valves PH, PD\r\nValve GW has flow rate=0; tunnels lead to valves JQ, GO\r\nValve HO has flow rate=0; tunnels lead to valves SM, TY\r\nValve WU has flow rate=0; tunnels lead to valves SG, RZ\r\nValve MS has flow rate=0; tunnels lead to valves UE, OF\r\nValve JS has flow rate=0; tunnels lead to valves DO, ZX\r\nValve YQ has flow rate=0; tunnels lead to valves BC, SG\r\nValve EJ has flow rate=0; tunnels lead to valves AA, LR\r\nValve EI has flow rate=0; tunnels lead to valves BV, TN\r\nValve NC has flow rate=0; tunnels lead to valves TS, BC\r\nValve AF has flow rate=0; tunnels lead to valves IR, HX\r\nValve OX has flow rate=0; tunnels lead to valves HR, BV\r\nValve BF has flow rate=0; tunnels lead to valves JQ, SY\r\nValve CA has flow rate=0; tunnels lead to valves YD, HX\r\nValve KQ has flow rate=0; tunnels lead to valves HP, SM\r\nValve NB has flow rate=0; tunnels lead to valves OQ, OF\r\nValve SY has flow rate=0; tunnels lead to valves BF, BV\r\nValve AA has flow rate=0; tunnels lead to valves KH, EJ, OM, TY, DO\r\nValve BC has flow rate=11; tunnels lead to valves WE, RX, YQ, LR, NC\r\nValve HR has flow rate=14; tunnels lead to valves OX, GO, JJ\r\nValve WE has flow rate=0; tunnels lead to valves DW, BC\r\nValve MW has flow rate=0; tunnels lead to valves JQ, PD\r\nValve DO has flow rate=0; tunnels lead to valves JS, AA\r\nValve PC has flow rate=0; tunnels lead to valves AK, KX\r\nValve YD has flow rate=0; tunnels lead to valves CA, OF\r\nValve RX has flow rate=0; tunnels lead to valves XG, BC\r\nValve CM has flow rate=0; tunnels lead to valves IR, OM\r\nValve HX has flow rate=6; tunnels lead to valves ZQ, NQ, AF, FD, CA\r\nValve ZQ has flow rate=0; tunnels lead to valves KH, HX\r\nValve BV has flow rate=21; tunnels lead to valves SY, OX, EI\r\nValve AK has flow rate=0; tunnels lead to valves PC, OQ\r\nValve UE has flow rate=0; tunnels lead to valves MS, JQ\r\nValve LR has flow rate=0; tunnels lead to valves BC, EJ\r\nValve JQ has flow rate=8; tunnels lead to valves MW, UE, BF, GW\r\nValve VL has flow rate=0; tunnels lead to valves PU, ZX\r\nValve EV has flow rate=0; tunnels lead to valves JJ, PD\r\nValve TS has flow rate=0; tunnels lead to valves NC, ZX\r\nValve RZ has flow rate=0; tunnels lead to valves SM, WU\r\nValve OF has flow rate=13; tunnels lead to valves XG, YD, NB, MS, XN\r\nValve WW has flow rate=0; tunnels lead to valves SM, IR\r\nValve TY has flow rate=0; tunnels lead to valves HO, AA\r\nValve XN has flow rate=0; tunnels lead to valves OF, PD\r\nValve SG has flow rate=15; tunnels lead to valves WU, YQ\r\nValve FN has flow rate=25; tunnel leads to valve PH\r\nValve KL has flow rate=0; tunnels lead to valves TN, OQ\r\nValve ZX has flow rate=5; tunnels lead to valves JS, HP, VL, NQ, TS";
+        //public static string input = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\r\nValve BB has flow rate=13; tunnels lead to valves CC, AA\r\nValve CC has flow rate=2; tunnels lead to valves DD, BB\r\nValve DD has flow rate=20; tunnels lead to valves CC, AA, EE\r\nValve EE has flow rate=3; tunnels lead to valves FF, DD\r\nValve FF has flow rate=0; tunnels lead to valves EE, GG\r\nValve GG has flow rate=0; tunnels lead to valves FF, HH\r\nValve HH has flow rate=22; tunnel leads to valve GG\r\nValve II has flow rate=0; tunnels lead to valves AA, JJ\r\nValve JJ has flow rate=21; tunnel leads to valve II";
+        public static string input = "Valve OQ has flow rate=17; tunnels lead to valves NB, AK, KL\r\nValve HP has flow rate=0; tunnels lead to valves ZX, KQ\r\nValve GO has flow rate=0; tunnels lead to valves HR, GW\r\nValve PD has flow rate=9; tunnels lead to valves XN, EV, QE, MW\r\nValve NQ has flow rate=0; tunnels lead to valves HX, ZX\r\nValve DW has flow rate=0; tunnels lead to valves IR, WE\r\nValve TN has flow rate=24; tunnels lead to valves KL, EI\r\nValve JJ has flow rate=0; tunnels lead to valves EV, HR\r\nValve KH has flow rate=0; tunnels lead to valves ZQ, AA\r\nValve PH has flow rate=0; tunnels lead to valves FN, QE\r\nValve FD has flow rate=0; tunnels lead to valves SM, HX\r\nValve SM has flow rate=7; tunnels lead to valves WW, RZ, FD, HO, KQ\r\nValve PU has flow rate=0; tunnels lead to valves VL, IR\r\nValve OM has flow rate=0; tunnels lead to valves CM, AA\r\nValve KX has flow rate=20; tunnel leads to valve PC\r\nValve IR has flow rate=3; tunnels lead to valves PU, CM, WW, DW, AF\r\nValve XG has flow rate=0; tunnels lead to valves RX, OF\r\nValve QE has flow rate=0; tunnels lead to valves PH, PD\r\nValve GW has flow rate=0; tunnels lead to valves JQ, GO\r\nValve HO has flow rate=0; tunnels lead to valves SM, TY\r\nValve WU has flow rate=0; tunnels lead to valves SG, RZ\r\nValve MS has flow rate=0; tunnels lead to valves UE, OF\r\nValve JS has flow rate=0; tunnels lead to valves DO, ZX\r\nValve YQ has flow rate=0; tunnels lead to valves BC, SG\r\nValve EJ has flow rate=0; tunnels lead to valves AA, LR\r\nValve EI has flow rate=0; tunnels lead to valves BV, TN\r\nValve NC has flow rate=0; tunnels lead to valves TS, BC\r\nValve AF has flow rate=0; tunnels lead to valves IR, HX\r\nValve OX has flow rate=0; tunnels lead to valves HR, BV\r\nValve BF has flow rate=0; tunnels lead to valves JQ, SY\r\nValve CA has flow rate=0; tunnels lead to valves YD, HX\r\nValve KQ has flow rate=0; tunnels lead to valves HP, SM\r\nValve NB has flow rate=0; tunnels lead to valves OQ, OF\r\nValve SY has flow rate=0; tunnels lead to valves BF, BV\r\nValve AA has flow rate=0; tunnels lead to valves KH, EJ, OM, TY, DO\r\nValve BC has flow rate=11; tunnels lead to valves WE, RX, YQ, LR, NC\r\nValve HR has flow rate=14; tunnels lead to valves OX, GO, JJ\r\nValve WE has flow rate=0; tunnels lead to valves DW, BC\r\nValve MW has flow rate=0; tunnels lead to valves JQ, PD\r\nValve DO has flow rate=0; tunnels lead to valves JS, AA\r\nValve PC has flow rate=0; tunnels lead to valves AK, KX\r\nValve YD has flow rate=0; tunnels lead to valves CA, OF\r\nValve RX has flow rate=0; tunnels lead to valves XG, BC\r\nValve CM has flow rate=0; tunnels lead to valves IR, OM\r\nValve HX has flow rate=6; tunnels lead to valves ZQ, NQ, AF, FD, CA\r\nValve ZQ has flow rate=0; tunnels lead to valves KH, HX\r\nValve BV has flow rate=21; tunnels lead to valves SY, OX, EI\r\nValve AK has flow rate=0; tunnels lead to valves PC, OQ\r\nValve UE has flow rate=0; tunnels lead to valves MS, JQ\r\nValve LR has flow rate=0; tunnels lead to valves BC, EJ\r\nValve JQ has flow rate=8; tunnels lead to valves MW, UE, BF, GW\r\nValve VL has flow rate=0; tunnels lead to valves PU, ZX\r\nValve EV has flow rate=0; tunnels lead to valves JJ, PD\r\nValve TS has flow rate=0; tunnels lead to valves NC, ZX\r\nValve RZ has flow rate=0; tunnels lead to valves SM, WU\r\nValve OF has flow rate=13; tunnels lead to valves XG, YD, NB, MS, XN\r\nValve WW has flow rate=0; tunnels lead to valves SM, IR\r\nValve TY has flow rate=0; tunnels lead to valves HO, AA\r\nValve XN has flow rate=0; tunnels lead to valves OF, PD\r\nValve SG has flow rate=15; tunnels lead to valves WU, YQ\r\nValve FN has flow rate=25; tunnel leads to valve PH\r\nValve KL has flow rate=0; tunnels lead to valves TN, OQ\r\nValve ZX has flow rate=5; tunnels lead to valves JS, HP, VL, NQ, TS";
 
         public static void Run()
         {
-            
-            Initialize(input);
+            Initialize(input, true);
 
-            Gamestate bestGame = null;
-            HashSet<Gamestate> unfinishedGamestates = new();
-            unfinishedGamestates.Add(new Gamestate(new List<string> { startingValve }));
+            HashSet<Node> allChoices = valves.Values.ToHashSet();
+            Node starterValve = valves[startingValve];
+            allChoices.Remove(starterValve);
 
-            List<string> testInstructions = "AA,DD,Open,CC,BB,Open,JJ,Open,EE,HH,Open,EE,Open,CC,Open".Split(',').ToList();
-            Gamestate testCase = new Gamestate(testInstructions);
-            testCase.PlaybackSequence(true);
-            testCase.GameOver();
-
-            //For each sequence of things we could do, we have a few choices: Open the valve if available, or move to another room.
-            /*
-            int gamesTested = 0;
-            while(unfinishedGamestates.Count > 0)
+            //Hasty verification routine with the example input
+            /*Gamestate testGame = new Gamestate(0, allChoices.ToHashSet(), "");
+            Player starterPlayer = new Player(starterValve, startingTime, testGame);
+            HashSet<Node> sequence = new(){ valves["DD"], valves["BB"], valves["JJ"], valves["HH"], valves["EE"], valves["CC"] }; //DD,BB,JJ,HH,EE,CC
+            foreach (Node node in sequence)
             {
-                Gamestate pending = unfinishedGamestates.First();
-                unfinishedGamestates.Remove(pending);
-                pending.PlaybackSequence();
-                List<string> choices = pending.GetChoices();
-                if(choices.Count == 0)
-                {
-                    pending.GameOver();
-                    if(bestGame == null || pending.score > bestGame.score)
-                    {
-                        bestGame = pending;
-                        Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
-                        //Console.ReadLine();
-                    }
-                    continue;
-                }
-                foreach(string choice in choices)
-                {
-                    List<string> pendingSequence = pending.sequence.ToList();
-                    pendingSequence.Add(choice);
-                    Gamestate unfinishedGamestate = new Gamestate(pendingSequence);
-                    //Console.WriteLine($"Adding {unfinishedGamestate}...");
-                    unfinishedGamestates.Add(unfinishedGamestate);
-                }
+                starterPlayer.TakeTurn(node, true);
+            }*/
+            
+            HashSet<Gamestate> unfinishedGamestates = new();
 
-                gamesTested++;
-                if(gamesTested % 50000 == 0)
-                {
-                    Console.WriteLine($"{gamesTested} done, {unfinishedGamestates.Count} to go. Current: {pending}");
-                }
-            }
-            Console.WriteLine($"All done! High score: {bestGame.score} - {bestGame}");*/
+            Console.WriteLine($"=== GAME ONE ===");
+            Console.WriteLine($"=== One player, no elephants ===");
+            Gamestate starterGame = new Gamestate(0, allChoices.ToHashSet(), "");
+            starterGame.players.Add(new Player(starterValve, startingTime, starterGame));
+            unfinishedGamestates.Add(starterGame);
+            starterGame.DrStrange(unfinishedGamestates);
+
+            Console.WriteLine($"=== GAME TWO ===");
+            Console.WriteLine($"=== One player, one elephant ===");
+
+            Gamestate gameTwo = new Gamestate(0, allChoices.ToHashSet(), "");
+            gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
+            gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
+            unfinishedGamestates.Add(gameTwo);
+            gameTwo.DrStrange(unfinishedGamestates);
         }
 
         public static void Initialize(string input, bool verbose = false)
@@ -99,15 +85,23 @@ namespace Advent_of_Code_2022
             }
             foreach (KeyValuePair<string, string[]> entry in tempConnections)
             {
-                Node valve = valves[entry.Key];
+                string id = entry.Key.Substring(0, 2);
+                Node valve = valves[id];
                 foreach (string tunnel in entry.Value)
                 {
-                    Node to = valves[tunnel];
-                    if (to.connections.ContainsKey(valve))
+                    int cost = 1;
+                    if (tunnel.Length > 2)
+                    {
+                        cost = int.Parse(tunnel.Substring(2));
+                    }
+                    string to = tunnel.Substring(0, 2);
+                    Node destination = valves[to];
+
+                    if (destination.connections.ContainsKey(valve))
                     {
                         continue;
                     }
-                    tunnels.Add(new Connection(valve, to, 1));
+                    tunnels.Add(new Connection(valve, destination, cost));
                 }
             }
 
@@ -125,7 +119,7 @@ namespace Advent_of_Code_2022
                     {
                         continue;
                     }
-                    if (valve.Simplify() != null)
+                    if (valve.Simplify())
                     {
                         connectionsSimplified++;
                         finished = false;
@@ -133,81 +127,134 @@ namespace Advent_of_Code_2022
                 }
             }
             if (verbose) Console.WriteLine($"Simplified {connectionsSimplified} connections. {valves.Count} nodes remaining.");
+
+            foreach (Node valve in valves.Values)
+            {
+                valve.DepthFirstSearch(valve, 0);
+            }
+            if (verbose) Console.WriteLine($"Calculated depths.");
+
+            if (verbose)
+            {
+                List<String> newLines = new();
+                foreach (Node valve in valves.Values)
+                {
+                    List<string> connectionStrings = new();
+                    foreach (KeyValuePair<Node, int> entry in valve.distanceToNode)
+                    {
+                        connectionStrings.Add($"{entry.Key.id}{entry.Value}");
+                    }
+                    newLines.Add($"Valve {valve.id} has flow rate={valve.flowRate}; tunnels lead to valves {String.Join(", ", connectionStrings)}");
+                }
+                Console.WriteLine($"Optimized input:");
+                Console.WriteLine(String.Join("\r\n", newLines));
+            }
         }
 
-        public class Gamestate
+        public class Player
         {
-            public List<String> sequence = new();
-            public Node? currNode;
-            public Node? lastNode;
-            public int currFlowRate = 0;
-            public int timeLeft = startingTime;
-            public int score = 0;
+            public Node currNode;
+            public int timeLeft;
+            public Gamestate game;
 
-            public Gamestate(List<string> sequence)
+            public Player(Node currNode, int timeLeft, Gamestate game)
             {
-                this.sequence = sequence;
+                this.currNode = currNode;
+                this.timeLeft = timeLeft;
+                this.game = game;
+                game.players.Add(this);
+            }
+
+            public void TakeTurn(Node node, bool verbose = false)
+            {
+                timeLeft -= node.GetCost(currNode);
+                currNode = node;
+                game.score += node.GetScore(timeLeft);
+                game.nodesLeft.Remove(node);
+                game.sequence += $"{node.id},";
+                if (verbose)
+                    Console.WriteLine($"I am now at {node.id}. The minute is {startingTime - timeLeft}, just got {node.GetScore(timeLeft)} score ({node.flowRate}*{timeLeft})");
             }
 
             public void GameOver()
             {
-                DeductTime(timeLeft);
+                game.players.Remove(this);
+                game.sequence += "/";
             }
 
-            public void DeductTime(int amt)
+            public bool CanAfford(Node node)
             {
-                timeLeft -= amt;
-                score += currFlowRate * amt;
-                //Console.WriteLine(String.Concat(Enumerable.Repeat($"{currFlowRate}+", amt)));
-                //Console.WriteLine($"Score is {score} with {timeLeft} remaining! Current rate: {currFlowRate}");
+                return node.GetCost(currNode) <= timeLeft;
+            }
+        }
+
+        public class Gamestate
+        {
+            public int score = 0;
+            public HashSet<Node> nodesLeft = new();
+            public HashSet<Player> players = new();
+            public string sequence = "";
+
+            public Gamestate(int score, HashSet<Node> nodesLeft, string sequence)
+            {
+                this.score = score;
+                this.nodesLeft = nodesLeft;
+                this.sequence = sequence;
             }
 
-            public void PlaybackSequence(bool verbose = false)
+            public Gamestate(Gamestate original)
             {
-                Initialize(input);
-                currNode = valves[sequence[0]];
-                foreach (string step in sequence.Skip(1))
+                this.score = original.score;
+                this.nodesLeft = original.nodesLeft.ToHashSet(); //make sure we are cloning it, not making a reference
+                this.sequence = original.sequence;
+            }
+
+            public void DrStrange(HashSet<Gamestate> unfinishedGamestates)
+            {
+                int gamesTested = 0;
+                Gamestate bestGame = unfinishedGamestates.First();
+                while (unfinishedGamestates.Count > 0)
                 {
-                    if(step == "Open")
+                    Gamestate game = unfinishedGamestates.First();
+                    Player player = game.players.First();
+                    List<Node> choices = game.GetChoicesForPlayer(player);
+                    if (choices.Count == 0)
                     {
-                        DeductTime(1);
-                        if(verbose) Console.WriteLine($"Opened {currNode.id} at minute {startingTime - timeLeft}!");
-                        currNode.open = true;
-                        currFlowRate += currNode.flowRate;
-                        continue;
+                        if (game.players.Count > 1)
+                        {
+                            player.GameOver();
+                            continue; //Do not remove us from the list
+                        }
+                        if (game.score > bestGame.score)
+                        {
+                            bestGame = game;
+                            Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
+                        }
                     }
-                    Node destination = valves[step];
-                    Connection connection = currNode.connections[destination];
-                    DeductTime(connection.cost);
-                    if (verbose) Console.WriteLine($"Moving to {destination.id}, this costs {connection.cost} at minute {startingTime - timeLeft}!");
-                    if (!currNode.CanOpen())
+                    foreach (Node choice in choices)
                     {
-                        lastNode = currNode.Simplify();
+                        Gamestate newGame = new Gamestate(game);
+                        Player newPlayer = new Player(player.currNode, player.timeLeft, newGame);
+                        newPlayer.TakeTurn(choice);
+                        unfinishedGamestates.Add(newGame);
+                        foreach (Player otherPlayer in game.players.Skip(1))
+                        {
+                            newGame.players.Add(otherPlayer); //Since we took no action we don't need to clone it, just use a reference
+                        }
                     }
-                    else
-                    {
-                        lastNode = currNode;
-                    }
-                    currNode = destination;
+                    unfinishedGamestates.Remove(game);
+                    gamesTested++;
                 }
+                Console.WriteLine($"{gamesTested} games tested! High score: {bestGame.score} - {bestGame}");
             }
 
-            public List<string> GetChoices()
+            public List<Node> GetChoicesForPlayer(Player player)
             {
-                List<string> choices = new();
-                if (currNode.CanOpen() && timeLeft > 1)
+                List<Node> choices = new();
+                foreach(Node node in nodesLeft)
                 {
-                    choices.Add("Open");
-                }
-                foreach (Connection connection in currNode.connections.Values)
-                {
-                    if (lastNode != null && !currNode.open && connection.GetPartner(currNode) == lastNode)
-                    {
-                        continue;
-                    }
-                    if (connection.cost <= timeLeft)
-                    {
-                        choices.Add(connection.GetPartner(currNode).id);
+                    if (player.CanAfford(node)) {
+                        choices.Add(node);
                     }
                 }
                 return choices;
@@ -224,7 +271,7 @@ namespace Advent_of_Code_2022
             public string id;
             public int flowRate;
             public Dictionary<Node, Connection> connections = new();
-            public bool open;
+            public Dictionary<Node, int> distanceToNode = new();
 
             public Node(string id, int flowRate)
             {
@@ -232,41 +279,69 @@ namespace Advent_of_Code_2022
                 this.flowRate = flowRate;
             }
 
-            public bool CanOpen()
+            public int GetScore(int timeLeft)
             {
-                return (!open) && flowRate > 0;
+                return flowRate * (timeLeft);
             }
 
-            public Node Simplify()
+            public int GetCost(Node node)
             {
-                if(connections.Count < 1)
+                return distanceToNode[node] + 1; //+1 for the time it would take to open it!
+            }
+
+            public bool Simplify()
+            {
+                if (connections.Count < 2)
                 {
                     Delete();
-                    return null;
+                    return true;
                 }
-                else if (connections.Count == 1)
+                else if (connections.Count == 2)
                 {
-                    Node myReplacement = connections.Keys.First();
+                    List<Connection> connectionsMade = new();
+                    for (int i = 0; i < connections.Keys.Count; i++)
+                    {
+                        Node myReplacement = connections.Keys.ToArray()[i];
+                        List<Node> affectedNodes = connections.Keys.Skip(i + 1).ToList();
+                        foreach (Node node in affectedNodes)
+                        {
+                            Connection connectionA = connections[myReplacement];
+                            Connection connectionB = connections[node];
+                            int costSum = connectionA.cost + connectionB.cost;
+                            Connection newConnection = new Connection(myReplacement, node, costSum);
+                            tunnels.Add(newConnection);
+                            connectionsMade.Add(newConnection);
+                        }
+                    }
+                    //Console.WriteLine($"Simplifying {this} with {connectionsMade.Count} new connection{(connectionsMade.Count > 1 ? 's' : null)}: {String.Join(", ", connectionsMade)}");
                     Delete();
-                    return myReplacement;
+                    /*foreach (Connection c in tunnels)
+                    {
+                        Console.WriteLine($"{c.nodeA.id} {c.nodeB.id} {c.cost}");
+                    }*/
+                    return true;
                 }
                 else
                 {
-                    Node myReplacement = connections.Keys.First();
-                    List<Node> affectedNodes = connections.Keys.Skip(1).ToList();
-                    List<Connection> connectionsMade = new();
-                    foreach(Node node in affectedNodes)
+                    return false; //I wasn't able to get this working satisfactorily, and in the end, realized that I didn't need it to begin with.
+                }
+            }
+
+            //Recursive function used to find how far away the other nodes are.
+            public void DepthFirstSearch(Node requester, int depth) 
+            {
+                List<Connection> newDiscoveries = new();
+                foreach (KeyValuePair<Node, Connection> entry in connections)
+                {
+                    if (!requester.distanceToNode.ContainsKey(entry.Key))
                     {
-                        Connection connectionA = connections[myReplacement];
-                        Connection connectionB = connections[node];
-                        int costSum = connectionA.cost + connectionB.cost;
-                        Connection newConnection = new Connection(myReplacement, node, costSum);
-                        tunnels.Add(newConnection);
-                        connectionsMade.Add(newConnection);
+                        requester.distanceToNode.Add(entry.Key, depth + entry.Value.cost);
+                        newDiscoveries.Add(entry.Value);
                     }
-                    Console.WriteLine($"Simplifying {this} with {connectionsMade.Count} new connection{(connectionsMade.Count > 1 ? 's' : null)}: {String.Join(", ", connectionsMade)}");
-                    Delete();
-                    return myReplacement;
+                }
+                foreach (Connection c in newDiscoveries)
+                {
+                    c.GetPartner(this).DepthFirstSearch(requester, depth + c.cost);
                 }
             }
 
@@ -296,13 +371,6 @@ namespace Advent_of_Code_2022
             public Node nodeB;
             public int cost;
 
-            public void Delete()
-            {
-                nodeA.connections.Remove(nodeB);
-                nodeB.connections.Remove(nodeA);
-                tunnels.Remove(this);
-            }
-
             public Connection(Node nodeA, Node nodeB, int cost)
             {
                 this.nodeA = nodeA;
@@ -312,7 +380,12 @@ namespace Advent_of_Code_2022
                 nodeA.connections[nodeB] = this;
                 nodeB.connections[nodeA] = this;
             }
-
+            public void Delete()
+            {
+                nodeA.connections.Remove(nodeB);
+                nodeB.connections.Remove(nodeA);
+                tunnels.Remove(this);
+            }
             public Node GetPartner(Node node)
             {
                 if(node == nodeA)
