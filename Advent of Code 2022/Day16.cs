@@ -22,7 +22,6 @@ namespace Advent_of_Code_2022
         public static string startingValve = "AA";
 
         public static Node stopNode = new("STOP", 0);
-        public static Gamestate multithreadedGamestate;
 
         //public static string input = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\r\nValve BB has flow rate=13; tunnels lead to valves CC, AA\r\nValve CC has flow rate=2; tunnels lead to valves DD, BB\r\nValve DD has flow rate=20; tunnels lead to valves CC, AA, EE\r\nValve EE has flow rate=3; tunnels lead to valves FF, DD\r\nValve FF has flow rate=0; tunnels lead to valves EE, GG\r\nValve GG has flow rate=0; tunnels lead to valves FF, HH\r\nValve HH has flow rate=22; tunnel leads to valve GG\r\nValve II has flow rate=0; tunnels lead to valves AA, JJ\r\nValve JJ has flow rate=21; tunnel leads to valve II";
         public static string input = "Valve OQ has flow rate=17; tunnels lead to valves NB, AK, KL\r\nValve HP has flow rate=0; tunnels lead to valves ZX, KQ\r\nValve GO has flow rate=0; tunnels lead to valves HR, GW\r\nValve PD has flow rate=9; tunnels lead to valves XN, EV, QE, MW\r\nValve NQ has flow rate=0; tunnels lead to valves HX, ZX\r\nValve DW has flow rate=0; tunnels lead to valves IR, WE\r\nValve TN has flow rate=24; tunnels lead to valves KL, EI\r\nValve JJ has flow rate=0; tunnels lead to valves EV, HR\r\nValve KH has flow rate=0; tunnels lead to valves ZQ, AA\r\nValve PH has flow rate=0; tunnels lead to valves FN, QE\r\nValve FD has flow rate=0; tunnels lead to valves SM, HX\r\nValve SM has flow rate=7; tunnels lead to valves WW, RZ, FD, HO, KQ\r\nValve PU has flow rate=0; tunnels lead to valves VL, IR\r\nValve OM has flow rate=0; tunnels lead to valves CM, AA\r\nValve KX has flow rate=20; tunnel leads to valve PC\r\nValve IR has flow rate=3; tunnels lead to valves PU, CM, WW, DW, AF\r\nValve XG has flow rate=0; tunnels lead to valves RX, OF\r\nValve QE has flow rate=0; tunnels lead to valves PH, PD\r\nValve GW has flow rate=0; tunnels lead to valves JQ, GO\r\nValve HO has flow rate=0; tunnels lead to valves SM, TY\r\nValve WU has flow rate=0; tunnels lead to valves SG, RZ\r\nValve MS has flow rate=0; tunnels lead to valves UE, OF\r\nValve JS has flow rate=0; tunnels lead to valves DO, ZX\r\nValve YQ has flow rate=0; tunnels lead to valves BC, SG\r\nValve EJ has flow rate=0; tunnels lead to valves AA, LR\r\nValve EI has flow rate=0; tunnels lead to valves BV, TN\r\nValve NC has flow rate=0; tunnels lead to valves TS, BC\r\nValve AF has flow rate=0; tunnels lead to valves IR, HX\r\nValve OX has flow rate=0; tunnels lead to valves HR, BV\r\nValve BF has flow rate=0; tunnels lead to valves JQ, SY\r\nValve CA has flow rate=0; tunnels lead to valves YD, HX\r\nValve KQ has flow rate=0; tunnels lead to valves HP, SM\r\nValve NB has flow rate=0; tunnels lead to valves OQ, OF\r\nValve SY has flow rate=0; tunnels lead to valves BF, BV\r\nValve AA has flow rate=0; tunnels lead to valves KH, EJ, OM, TY, DO\r\nValve BC has flow rate=11; tunnels lead to valves WE, RX, YQ, LR, NC\r\nValve HR has flow rate=14; tunnels lead to valves OX, GO, JJ\r\nValve WE has flow rate=0; tunnels lead to valves DW, BC\r\nValve MW has flow rate=0; tunnels lead to valves JQ, PD\r\nValve DO has flow rate=0; tunnels lead to valves JS, AA\r\nValve PC has flow rate=0; tunnels lead to valves AK, KX\r\nValve YD has flow rate=0; tunnels lead to valves CA, OF\r\nValve RX has flow rate=0; tunnels lead to valves XG, BC\r\nValve CM has flow rate=0; tunnels lead to valves IR, OM\r\nValve HX has flow rate=6; tunnels lead to valves ZQ, NQ, AF, FD, CA\r\nValve ZQ has flow rate=0; tunnels lead to valves KH, HX\r\nValve BV has flow rate=21; tunnels lead to valves SY, OX, EI\r\nValve AK has flow rate=0; tunnels lead to valves PC, OQ\r\nValve UE has flow rate=0; tunnels lead to valves MS, JQ\r\nValve LR has flow rate=0; tunnels lead to valves BC, EJ\r\nValve JQ has flow rate=8; tunnels lead to valves MW, UE, BF, GW\r\nValve VL has flow rate=0; tunnels lead to valves PU, ZX\r\nValve EV has flow rate=0; tunnels lead to valves JJ, PD\r\nValve TS has flow rate=0; tunnels lead to valves NC, ZX\r\nValve RZ has flow rate=0; tunnels lead to valves SM, WU\r\nValve OF has flow rate=13; tunnels lead to valves XG, YD, NB, MS, XN\r\nValve WW has flow rate=0; tunnels lead to valves SM, IR\r\nValve TY has flow rate=0; tunnels lead to valves HO, AA\r\nValve XN has flow rate=0; tunnels lead to valves OF, PD\r\nValve SG has flow rate=15; tunnels lead to valves WU, YQ\r\nValve FN has flow rate=25; tunnel leads to valve PH\r\nValve KL has flow rate=0; tunnels lead to valves TN, OQ\r\nValve ZX has flow rate=5; tunnels lead to valves JS, HP, VL, NQ, TS";
@@ -44,14 +43,14 @@ namespace Advent_of_Code_2022
                 starterPlayer.TakeTurn(node, true);
             }*/
             
-            List<Gamestate> unfinishedGamestates = new();
+            HashSet<Gamestate> unfinishedGamestates = new();
 
             Console.WriteLine($"=== GAME ONE ===");
             Console.WriteLine($"=== One player, no elephants ===");
             Gamestate starterGame = new Gamestate(0, allChoices.ToHashSet(), "");
             starterGame.players.Add(new Player(starterValve, startingTime, starterGame));
             unfinishedGamestates.Add(starterGame);
-            starterGame.DrStrange(unfinishedGamestates);
+            starterGame.SearchAllPossibilities(unfinishedGamestates);
 
             Console.WriteLine($"=== GAME TWO ===");
             Console.WriteLine($"=== One player, one elephant ===");
@@ -60,20 +59,7 @@ namespace Advent_of_Code_2022
             gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
             gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
             unfinishedGamestates.Add(gameTwo);
-
-            multithreadedGamestate = gameTwo;
-            Thread t1 = new Thread(new ParameterizedThreadStart(myMethod));
-            t1.Start(unfinishedGamestates);
-            Thread t2 = new Thread(new ParameterizedThreadStart(myMethod));
-            t2.Start(unfinishedGamestates);
-            Thread t3 = new Thread(new ParameterizedThreadStart(myMethod));
-            t3.Start(unfinishedGamestates);
-            //gameTwo.DrStrange(unfinishedGamestates);
-        }
-
-        public static void myMethod(object info)
-        {
-            multithreadedGamestate.DrStrange((List<Gamestate>)info);
+            gameTwo.SearchAllPossibilities(unfinishedGamestates);
         }
 
         public static void Initialize(string input, bool verbose = false)
@@ -235,7 +221,7 @@ namespace Advent_of_Code_2022
                 this.sequence = original.sequence;
             }
 
-            public void DrStrange(List<Gamestate> unfinishedGamestates)
+            public void SearchAllPossibilities(HashSet<Gamestate> unfinishedGamestates)
             {
                 int gamesTested = 0;
                 Gamestate bestGame = unfinishedGamestates.First();
