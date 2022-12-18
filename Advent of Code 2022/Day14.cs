@@ -105,6 +105,7 @@ namespace Advent_of_Code_2022
                 Console.WriteLine($"Overflowed into the limitless harrowing void with {overflowedIntoVoidAt} sands at rest.");
         }
 
+        //Primitive code here, I later remade these and put them into my libraries.
         class Board
         {
             public int minx = int.MaxValue, miny = 0, maxx = int.MinValue, maxy = int.MinValue;
@@ -227,7 +228,7 @@ namespace Advent_of_Code_2022
                 return true;
             }
 
-            public void Render(int posx, int posy, List<Point> highlights = null, char highlightChar = '█')
+            public void Render(int posx, int posy, List<Point>? highlights = null, char highlightChar = '█')
             {
                 int oldy = Console.CursorTop;
                 int oldX = Console.CursorLeft;
