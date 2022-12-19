@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,83 +34,164 @@ namespace Advent_of_Code_2022
             int ydelta = maxy - miny;
             int zdelta = maxz - minz;
 
-            bool[,,] drop = new bool[maxx + 1, maxy + 1, maxz + 1];
+            bool[,,] drop = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
 
-            
-
-            int sides = 0;
+            int sides1 = 0;
             foreach((int x, int y, int z) coord in coords)
             {
-                Console.WriteLine($"{coord.x} {coord.y} {coord.z}");
-                drop[coord.x, coord.y, coord.z] = true;
-                sides += 6;
+                drop[coord.x - minx, coord.y - miny, coord.z - minz] = true;
+                sides1 += 6;
             }
 
-            Console.WriteLine($"Processed {coords.Count} lines. Created a {maxx}x{maxy}x{maxz} cube.");
-
-            for (int x = 0; x <= maxx - 1; x++)
+            Console.WriteLine($"Processed {coords.Count} lines. Created a {xdelta}x{ydelta}x{zdelta} cube.");
+            //We do 3 passes through the cube, once along the entire X axis, once along the entire Y axis, and once along the entire Z axis.
+            //Basically blowing up a 3d cube into 3 MRI scans.
+            //For every 2 cubes whose sides are touching in each pass, we substract 2 sides.
+            //Example: Checking a hollow 3x3 show along the X axis
+            // ### <- -4 sides | ### <- -4 sides | ### <- -4 sides 
+            // ### <- -4 sides | # # <- nothing  | ### <- -4 sides 
+            // ### <- -4 sides | ### <- -4 sides | ### <- -4 sides  
+            for (int x = 0; x <= xdelta - 1; x++)
             {
-                for (int y = 0; y <= maxy; y++)
+                for (int y = 0; y <= ydelta; y++)
                 {
-                    for (int z = 0; z <= maxz; z++)
+                    for (int z = 0; z <= zdelta; z++)
                     {
                         bool cube1 = drop[x, y, z];
                         bool cube2 = drop[x + 1, y, z];
                         if (cube1 && cube2)
                         {
-                            sides -= 2;
+                            sides1 -= 2;
                         }
                     }
                 }
             }
-
-            for (int y = 0; y <= maxy - 1; y++)
+            for (int y = 0; y <= ydelta - 1; y++)
             {
-                for (int x = 0; x <= maxx; x++)
+                for (int x = 0; x <= xdelta; x++)
                 {
-                    for (int z = 0; z <= maxz; z++)
+                    for (int z = 0; z <= zdelta; z++)
                     {
                         bool cube1 = drop[x, y, z];
-                        bool cube2 = drop[x, y + 1, z];
+                        bool cube2 = drop[x, y+ 1, z];
                         if (cube1 && cube2)
                         {
-                            sides -= 2;
+                            sides1 -= 2;
                         }
                     }
                 }
             }
-
-            for (int z = 0; z <= maxz - 1; z++)
+            for (int z = 0; z <= zdelta - 1; z++)
             {
-                for (int x = 0; x <= maxx; x++)
+                for (int x = 0; x <= xdelta; x++)
                 {
-                    for (int y = 0; y <= maxy; y++)
+                    for (int y = 0; y <= ydelta; y++)
                     {
                         bool cube1 = drop[x, y, z];
                         bool cube2 = drop[x, y, z + 1];
                         if (cube1 && cube2)
                         {
-                            sides -= 2;
+                            sides1 -= 2;
                         }
                     }
                 }
             }
+            Console.WriteLine($"Number of sides accounting for interior surface area: {sides1}");
 
-            //3532 2high
 
-            for (int z = 0; z < zdelta; z++)
+            //Part 2: Now we need to check only the outside surface.
+            //To do this, we have to check:
+            // 1) Every air tile that's NOT inside the rock itself,
+            // 2) Every rock tile that's touching out-of-bounds. Remember, out-of-bounds counts as surface area.
+            //So, we'll do a depth first search.
+            //The search starts with all the outermost tiles of the cube, which will satisfy 2 and also make sure we miss no valid air tiles.
+            //Then the search will spread from air tile to air tile, but will NOT spread to rock tiles.
+            //At each tile searched: If we're air and our neighbor is rock, add 1 side. If we're rock and our neighbor is OOB, add 1 side.
+            bool[,,] visited = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
+            int sides2 = 0;
+            List<(int x, int y, int z)> toCheck = new() {};
+            for (int y = 0; y <= ydelta; y++) 
             {
-                for (int y = 0; y < ydelta; y++)
+                for (int z = 0; z <= zdelta; z++)
                 {
-                    for (int x = 0; x < xdelta; x++)
+                    toCheck.Add((0, y, z));
+                    toCheck.Add((xdelta, y, z));
+                }
+            }
+            for (int x = 0; x <= xdelta; x++)
+            {
+                for (int z = 0; z <= zdelta; z++)
+                {
+                    toCheck.Add((x, 0, z));
+                    toCheck.Add((x, ydelta, z));
+                }
+            }
+            for (int x = 0; x <= xdelta; x++)
+            {
+                for (int y = 0; y <= ydelta; y++)
+                {
+                    toCheck.Add((x, y, 0));
+                    toCheck.Add((x, y, zdelta));
+                }
+            }
+            //Done adding all the outermost tiles.
+
+            (int x, int y, int z) nextCheck;
+            while (toCheck.Count > 0) //Each air tile checked will add its neighbor air tiles to this list, thus propagating the search. We're done when this list is empty.
+            {
+                nextCheck = toCheck[0];
+                toCheck.RemoveAt(0);
+                DepthFirstSearch(nextCheck.x, nextCheck.y, nextCheck.z, drop, visited, ref sides2, toCheck);
+            }
+
+            Console.WriteLine($"Finished checking! Exterior surface area: {sides2}");
+
+        }
+
+        public static void DepthFirstSearch(int x, int y, int z, bool[,,] cube, bool[,,] visited, ref int sides, List<(int x, int y, int z)> toCheck)
+        {
+            //Don't visit the same tiles twice!
+            if (visited[x, y, z])
+            {
+                return;
+            }
+            visited[x, y, z] = true;
+
+            bool isSolid = cube[x, y, z];
+
+            int xdelta = cube.GetLength(0) - 1;
+            int ydelta = cube.GetLength(1) - 1;
+            int zdelta = cube.GetLength(2) - 1;
+            List<(int x, int y, int z)> offsets = new(){ (1, 0, 0), (-1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, 1), (0, 0, -1) };
+            foreach ((int x, int y, int z) offset in offsets)
+            {
+                int newx = x + offset.x;
+                int newy = y + offset.y;
+                int newz = z + offset.z;
+
+                bool oob = newx < 0 || newx > xdelta || newy < 0 || newy > ydelta || newz < 0 || newz > zdelta;
+                if (oob)
+                {
+                    if (isSolid)
                     {
-                        //drop[x, y, z] = true;
+                        sides++;
+                    }
+                    continue;
+                }
+
+                if (!isSolid)
+                {
+                    bool otherCube = cube[newx, newy, newz];
+                    if (otherCube)
+                    {
+                        sides++;
+                    }
+                    if (!visited[newx, newy, newz])
+                    {
+                        toCheck.Add((newx, newy, newz));
                     }
                 }
             }
-
-            Console.WriteLine(sides);
-
         }
     }
 }
