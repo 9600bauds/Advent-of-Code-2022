@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static Advent_of_Code_2022.Day16;
 
 namespace Advent_of_Code_2022
 {

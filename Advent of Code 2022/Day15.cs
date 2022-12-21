@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Advent_of_Code_2022.libs;
-using static Advent_of_Code_2022.Day15;
 
 namespace Advent_of_Code_2022
 {
