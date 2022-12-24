@@ -15,6 +15,16 @@ namespace Advent_of_Code_2022.libs
             return (int1 - 1) / int2 + 1;
         }
 
+        public static int RealModulo(int num, int mod)
+        {
+            num %= mod;
+            if(num < 0)
+            {
+                num += mod;
+            }
+            return num;
+        }
+
         public static void PrintList<T>(List<T> list)
         {
             Console.WriteLine(String.Join(", ", list));

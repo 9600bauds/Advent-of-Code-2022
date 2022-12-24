@@ -42,6 +42,11 @@ namespace Advent_of_Code_2022.libs
             return $"{x},{y}";
         }
 
+        public double GetDistance(Point b)
+        {
+            return Math.Sqrt(Math.Pow((b.x - x), 2) + Math.Pow((b.y - y), 2));
+        }
+
         public List<Point> SurroundingPoints()
         {
             return new List<Point> { new Point(x + 1, y), new Point(x - 1, y), new Point(x, y + 1), new Point(x, y -1 ),
