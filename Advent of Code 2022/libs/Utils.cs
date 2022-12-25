@@ -15,6 +15,7 @@ namespace Advent_of_Code_2022.libs
             return (int1 - 1) / int2 + 1;
         }
 
+        //For whatever god-forsaken reason, % is "remainder" and not "modulo" in C, so -2 % 6 = -2. This is effectively REAL modulo.
         public static int RealModulo(int num, int mod)
         {
             num %= mod;
@@ -23,6 +24,40 @@ namespace Advent_of_Code_2022.libs
                 num += mod;
             }
             return num;
+        }
+
+        public static int ManhattanDistance(System.Drawing.Point a, System.Drawing.Point b)
+        {
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+        }
+
+
+        public static void WriteProgress(string s, int x)
+        {
+            int origRow = Console.CursorTop;
+            int origCol = Console.CursorLeft;
+            // Console.WindowWidth = 10;  // this works. 
+            int width = Console.WindowWidth;
+            x = x % width;
+            try
+            {
+                Console.SetCursorPosition(x, 1);
+                Console.Write(s);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+
+            }
+            finally
+            {
+                try
+                {
+                    Console.SetCursorPosition(origCol, origRow);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                }
+            }
         }
 
         public static void PrintList<T>(List<T> list)

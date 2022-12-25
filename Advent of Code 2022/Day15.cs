@@ -89,7 +89,7 @@ namespace Advent_of_Code_2022
                     }
 
                     int xdiff = sensor.IntersectionWithYAxis(yToCheck);
-                    xdiff -= sensor.distanceToBeacon - ManhattanDistance(currentLoc, sensor.loc) + 1; //Because we might have skipped halfway into a sensor's range, we are not guaranteed to be at the border.
+                    xdiff -= sensor.distanceToBeacon - Utils.ManhattanDistance(new(currentLoc.x, currentLoc.y), new(sensor.loc.x, sensor.loc.y)) + 1; //Because we might have skipped halfway into a sensor's range, we are not guaranteed to be at the border.
                     locationsWhereABeaconCannotBe += xdiff + 1;
                     x += xdiff;
                     //Console.WriteLine($"Skipping the next {xdiff} ({ManhattanDistance(currentLoc, sensor.loc)}) tiles because we bumped into {sensor.loc}, of range {sensor.distanceToBeacon}.");
@@ -109,7 +109,7 @@ namespace Advent_of_Code_2022
                 {
                     Sensor sensorA = sensors.Values.ToList()[i];
                     Sensor sensorB = sensors.Values.ToList()[j];
-                    int distance = ManhattanDistance(sensorA.loc, sensorB.loc) - sensorA.distanceToBeacon - sensorB.distanceToBeacon;
+                    int distance = Utils.ManhattanDistance(new(sensorA.loc.x, sensorA.loc.y), new(sensorB.loc.x, sensorB.loc.y)) - sensorA.distanceToBeacon - sensorB.distanceToBeacon;
                     if(distance > 0 && distance < 5)
                     {
                         //Console.WriteLine($"Sensor {sensorA.loc} and Sensor {sensorB.loc} are {distance} tiles apart!");
@@ -164,17 +164,12 @@ namespace Advent_of_Code_2022
         {
             foreach (Sensor sensor in sensors)
             {
-                if (ManhattanDistance(p, sensor.loc) <= sensor.distanceToBeacon)
+                if (Utils.ManhattanDistance(new(p.x, p.y), new(sensor.loc.x, sensor.loc.y)) <= sensor.distanceToBeacon)
                 {
                     return sensor;
                 }
             }
             return null;
-        }
-
-        public static int ManhattanDistance(Point a, Point b)
-        {
-            return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
         }
 
         public class Sensor
@@ -187,7 +182,7 @@ namespace Advent_of_Code_2022
             {
                 this.loc = loc;
                 this.nearestBeacon = nearestBeacon;
-                distanceToBeacon = ManhattanDistance(loc, nearestBeacon.loc);
+                distanceToBeacon = Utils.ManhattanDistance(new(loc.x, loc.y), new(nearestBeacon.loc.x, nearestBeacon.loc.y));
             }
 
             public int IntersectionWithYAxis(int y)

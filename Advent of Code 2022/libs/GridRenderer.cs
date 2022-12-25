@@ -8,7 +8,7 @@ namespace Advent_of_Code_2022.libs
 {
     public static class GridRenderer
     {
-        public static void Render(int posx, int posy, char[,] grid)
+        public static void Render(int posx, int posy, char[,] grid, List<System.Drawing.Point>? highlights = null)
         {
             int oldy = Console.CursorTop;
             int oldX = Console.CursorLeft;
@@ -20,7 +20,19 @@ namespace Advent_of_Code_2022.libs
                 Console.SetCursorPosition(posx, posy + height - y);
                 for (int x = 0; x <= width - 1; x++)
                 {
-                    temp += grid[x, y];
+                    if(highlights != null && highlights.Contains(new(x, y)))
+                    {
+                        Console.Write(temp);
+                        temp = "";
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.Write(grid[x, y]);
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        temp += grid[x, y];
+                    }
+                    
                 }
                 temp += "\n";
                 Console.Write(temp);
