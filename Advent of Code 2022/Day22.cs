@@ -39,13 +39,13 @@ namespace Advent_of_Code_2022
 
         class Player
         {
-            public Point loc;
+            public DeprecatedPoint loc;
             public int dir { get; set; }
             public List<string> instructions;
             public Board board;
             public char sprite;
 
-            public Player(Point loc, int dir, List<string> instructions, Board board, char sprite)
+            public Player(DeprecatedPoint loc, int dir, List<string> instructions, Board board, char sprite)
             {
                 this.loc = loc;
                 this.dir = dir;
@@ -64,7 +64,7 @@ namespace Advent_of_Code_2022
                 return sum;
             }
 
-            public bool Move(Point p)
+            public bool Move(DeprecatedPoint p)
             {
                 /*if(loc.GetDistance(p) > 1)
                 {
@@ -85,8 +85,8 @@ namespace Advent_of_Code_2022
 
             public bool Step()
             {
-                (Point, int) result = board.GetNextPoint(loc, dir);
-                Point nextPoint = result.Item1;
+                (DeprecatedPoint, int) result = board.GetNextPoint(loc, dir);
+                DeprecatedPoint nextPoint = result.Item1;
 
                 if (board.GetPixel(nextPoint) == '#')
                 {
@@ -174,11 +174,11 @@ namespace Advent_of_Code_2022
                 height = grid.GetLength(1);
             }
 
-            public bool IsOutOfBounds(Point p)
+            public bool IsOutOfBounds(DeprecatedPoint p)
             {
                 return (p.x < 0) || (p.x > width - 1) || (p.y < 0) || (p.y > height - 1);
             }
-            public void GetInBounds(Point p)
+            public void GetInBounds(DeprecatedPoint p)
             {
                 p.x %= width;
                 if (p.x < 0) { p.x = width - 1; }
@@ -186,9 +186,9 @@ namespace Advent_of_Code_2022
                 if (p.y < 0) { p.y = height - 1; }
             }
 
-            public virtual (Point, int) GetNextPoint(Point start, int dir)
+            public virtual (DeprecatedPoint, int) GetNextPoint(DeprecatedPoint start, int dir)
             {
-                Point curr = new Point(start.x, start.y);
+                DeprecatedPoint curr = new DeprecatedPoint(start.x, start.y);
                 int dirDelta = 0;
                 ShiftPoint(curr, dir);
                 if (IsOutOfBounds(curr))
@@ -202,14 +202,14 @@ namespace Advent_of_Code_2022
                 return (curr, dirDelta);
             }
 
-            public Point WrapAround(Point curr, int dir)
+            public DeprecatedPoint WrapAround(DeprecatedPoint curr, int dir)
             {
                 ShiftPoint(curr, dir);
                 GetInBounds(curr);
                 return curr;
             }
 
-            public void ShiftPoint(Point curr, int dir)
+            public void ShiftPoint(DeprecatedPoint curr, int dir)
             {
                 switch (dir)
                 {
@@ -230,7 +230,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public Point GetStarterPoint()
+            public DeprecatedPoint GetStarterPoint()
             {
                 for (int y = height - 1; y >= 0; y--)
                 {
@@ -238,20 +238,20 @@ namespace Advent_of_Code_2022
                     {
                         if (grid[x, y] == '.')
                         {
-                            return new Point(x, y);
+                            return new DeprecatedPoint(x, y);
                         }
                     }
                 }
                 throw new Exception("Could not locate an open tile!");
             }
 
-            public char SetPixel(Point p, char c)
+            public char SetPixel(DeprecatedPoint p, char c)
             {
                 grid[p.x, p.y] = c;
                 return c;
             }
 
-            public char GetPixel(Point p)
+            public char GetPixel(DeprecatedPoint p)
             {
                 return grid[p.x, p.y];
             }
@@ -266,7 +266,7 @@ namespace Advent_of_Code_2022
                 this.cubeEdges = cubeEdges;
             }
 
-            public (Point, int) CrossCubeEdge(Point p, int dir)
+            public (DeprecatedPoint, int) CrossCubeEdge(DeprecatedPoint p, int dir)
             {
                 if (cubeEdges == null)
                 {
@@ -329,15 +329,15 @@ namespace Advent_of_Code_2022
                             throw new ArgumentException("Could not determine vector for opposite edge!");
                         }
 
-                        return (new Point((int)meIn3d.x, (int)meIn3d.y), dirChange);
+                        return (new DeprecatedPoint((int)meIn3d.x, (int)meIn3d.y), dirChange);
                     }
                 }
                 throw new Exception("Could not find an edge to teleport us!");
             }
 
-            public override (Point, int) GetNextPoint(Point start, int dir)
+            public override (DeprecatedPoint, int) GetNextPoint(DeprecatedPoint start, int dir)
             {
-                Point curr = new(start.x, start.y);
+                DeprecatedPoint curr = new(start.x, start.y);
                 int dirDelta = 0;
                 ShiftPoint(curr, dir);
                 if (IsOutOfBounds(curr) || GetPixel(curr) == ' ')

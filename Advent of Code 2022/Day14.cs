@@ -87,7 +87,7 @@ namespace Advent_of_Code_2022
                 stepsTaken++;
                 if(stepsTaken % delay == 0)
                 {
-                    List<Point> highlights = new List<Point>();
+                    List<DeprecatedPoint> highlights = new List<DeprecatedPoint>();
                     if(currentSand != null)
                     {
                         highlights = currentSand.trajectory;
@@ -125,7 +125,7 @@ namespace Advent_of_Code_2022
                     for (int i = 0; i < pointStrings.Length; i++)
                     {
                         string[] pointString = pointStrings[i].Split(',');
-                        Point thisPoint = new Point(int.Parse(pointString[0]), int.Parse(pointString[1]));
+                        DeprecatedPoint thisPoint = new DeprecatedPoint(int.Parse(pointString[0]), int.Parse(pointString[1]));
                         thisRockPath.points.Add(thisPoint);
                         UpdateMaxes(thisPoint);
                     }
@@ -138,7 +138,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public void UpdateMaxes(Point point)
+            public void UpdateMaxes(DeprecatedPoint point)
             {
                 maxy = Math.Max(maxy, point.y + 2);
                 miny = Math.Min(miny, point.y);
@@ -155,7 +155,7 @@ namespace Advent_of_Code_2022
 
             }
 
-            public void DrawRectangle(Point startingPoint, Point endingPoint, char asChar) //What are lines if not flat rectangles?
+            public void DrawRectangle(DeprecatedPoint startingPoint, DeprecatedPoint endingPoint, char asChar) //What are lines if not flat rectangles?
             {
                 int minx = Math.Min(startingPoint.x, endingPoint.x);
                 int maxx = Math.Max(startingPoint.x, endingPoint.x);
@@ -180,7 +180,7 @@ namespace Advent_of_Code_2022
                 return maxy - y; //The coordinates in the assignment go up-to-down but we go down-to-up.
             }
 
-            public void DrawPoint(Point p, char asChar)
+            public void DrawPoint(DeprecatedPoint p, char asChar)
             {
                 DrawPoint(p.x, p.y, asChar);
             }
@@ -189,7 +189,7 @@ namespace Advent_of_Code_2022
                 charGrid[ConvertX(x), ConvertY(y)] = asChar;
             }
 
-            public char GetPoint(Point p)
+            public char GetPoint(DeprecatedPoint p)
             {
                 return GetPoint(p.x, p.y);
             }
@@ -220,7 +220,7 @@ namespace Advent_of_Code_2022
                     }
                 }
             }
-            public bool InBounds(Point p) { 
+            public bool InBounds(DeprecatedPoint p) { 
                 if(p.x < minx || p.x > maxx || p.y < miny || p.y > maxy)
                 {
                     return false;
@@ -228,7 +228,7 @@ namespace Advent_of_Code_2022
                 return true;
             }
 
-            public void Render(int posx, int posy, List<Point>? highlights = null, char highlightChar = '█')
+            public void Render(int posx, int posy, List<DeprecatedPoint>? highlights = null, char highlightChar = '█')
             {
                 int oldy = Console.CursorTop;
                 int oldX = Console.CursorLeft;
@@ -240,7 +240,7 @@ namespace Advent_of_Code_2022
                     Console.SetCursorPosition(posx, posy + height - y);
                     for (int x = 0; x <= width - 1; x++)
                     {
-                        if (highlights != null && highlights.Contains(new Point(x, y)))
+                        if (highlights != null && highlights.Contains(new DeprecatedPoint(x, y)))
                         {
                             temp += highlightChar;
                         }
@@ -258,14 +258,14 @@ namespace Advent_of_Code_2022
 
         class RockPath
         {
-            public List<Point> points = new List<Point>();
+            public List<DeprecatedPoint> points = new List<DeprecatedPoint>();
 
             public void Draw(Board board)
             {
-                Point currentPoint = points[0]; //Starting with the initial point
+                DeprecatedPoint currentPoint = points[0]; //Starting with the initial point
                 for (int i = 1; i < points.Count; i++)
                 {
-                    Point nextPoint = points[i];
+                    DeprecatedPoint nextPoint = points[i];
                     board.DrawRectangle(currentPoint, nextPoint, wallChar);
                     currentPoint = nextPoint;
                 }
@@ -275,11 +275,11 @@ namespace Advent_of_Code_2022
         //Should this really inherit from Point? Inheriting ToString() is nice, but what about Equals()?
         //Perhaps this should simply have a Point variable instead.
         //Perhaps there should be a BoardObject class that this inherits from.
-        class FallingPoint : Point
+        class FallingPoint : DeprecatedPoint
         {
             public char sprite;
             public Board board;
-            public List<Point> trajectory = new List<Point>();
+            public List<DeprecatedPoint> trajectory = new List<DeprecatedPoint>();
 
             public FallingPoint(int x, int y, char sprite, Board board) : base(x, y)
             {
@@ -288,27 +288,27 @@ namespace Advent_of_Code_2022
                 board.DrawPoint(x, y, sprite);
             }
 
-            public List<Point> GetCandidates()
+            public List<DeprecatedPoint> GetCandidates()
             {
-                Point down = new Point(x, y + 1); //Down is up, because the assignment's coordinate system says so
-                Point downAndToTheLeft = new Point(x - 1, y + 1);
-                Point downAndToTheRight = new Point(x + 1, y + 1);
-                return new List<Point> { down, downAndToTheLeft, downAndToTheRight }; //In that order of preference please!
+                DeprecatedPoint down = new DeprecatedPoint(x, y + 1); //Down is up, because the assignment's coordinate system says so
+                DeprecatedPoint downAndToTheLeft = new DeprecatedPoint(x - 1, y + 1);
+                DeprecatedPoint downAndToTheRight = new DeprecatedPoint(x + 1, y + 1);
+                return new List<DeprecatedPoint> { down, downAndToTheLeft, downAndToTheRight }; //In that order of preference please!
             }
 
             public int Fall()
             {
-                List<Point> candidates = GetCandidates();
+                List<DeprecatedPoint> candidates = GetCandidates();
                 for(int i = 0; i < candidates.Count; i++)
                 {
-                    Point candidate = candidates[i];
+                    DeprecatedPoint candidate = candidates[i];
                     if (!board.InBounds(candidate))
                     {
                         return SAND_OVERFLOWING_INTO_HARROWING_VOID;
                     }
                     if(board.GetPoint(candidate) == board.defaultChar)
                     {
-                        trajectory.Add(new Point(board.ConvertX(x), board.ConvertY(y)));
+                        trajectory.Add(new DeprecatedPoint(board.ConvertX(x), board.ConvertY(y)));
                         board.DrawPoint(x, y, board.defaultChar);
                         board.DrawPoint(candidate, sprite);
                         x = candidate.x;

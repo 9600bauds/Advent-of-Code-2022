@@ -27,8 +27,8 @@ namespace Advent_of_Code_2022
             string input = "Sensor at x=3890859, y=2762958: closest beacon is at x=4037927, y=2985317\r\nSensor at x=671793, y=1531646: closest beacon is at x=351996, y=1184837\r\nSensor at x=3699203, y=3052069: closest beacon is at x=4037927, y=2985317\r\nSensor at x=3969720, y=629205: closest beacon is at x=4285415, y=81270\r\nSensor at x=41343, y=57178: closest beacon is at x=351996, y=1184837\r\nSensor at x=2135702, y=1658955: closest beacon is at x=1295288, y=2000000\r\nSensor at x=24022, y=1500343: closest beacon is at x=351996, y=1184837\r\nSensor at x=3040604, y=3457552: closest beacon is at x=2994959, y=4070511\r\nSensor at x=357905, y=3997215: closest beacon is at x=-101509, y=3502675\r\nSensor at x=117943, y=3670308: closest beacon is at x=-101509, y=3502675\r\nSensor at x=841852, y=702520: closest beacon is at x=351996, y=1184837\r\nSensor at x=3425318, y=3984088: closest beacon is at x=2994959, y=4070511\r\nSensor at x=3825628, y=3589947: closest beacon is at x=4299658, y=3299020\r\nSensor at x=2745170, y=139176: closest beacon is at x=4285415, y=81270\r\nSensor at x=878421, y=2039332: closest beacon is at x=1295288, y=2000000\r\nSensor at x=1736736, y=811875: closest beacon is at x=1295288, y=2000000\r\nSensor at x=180028, y=2627284: closest beacon is at x=-101509, y=3502675\r\nSensor at x=3957016, y=2468479: closest beacon is at x=3640739, y=2511853\r\nSensor at x=3227780, y=2760865: closest beacon is at x=3640739, y=2511853\r\nSensor at x=1083678, y=2357766: closest beacon is at x=1295288, y=2000000\r\nSensor at x=1336681, y=2182469: closest beacon is at x=1295288, y=2000000\r\nSensor at x=3332913, y=1556848: closest beacon is at x=3640739, y=2511853\r\nSensor at x=3663725, y=2525708: closest beacon is at x=3640739, y=2511853\r\nSensor at x=2570900, y=2419316: closest beacon is at x=3640739, y=2511853\r\nSensor at x=1879148, y=3584980: closest beacon is at x=2994959, y=4070511\r\nSensor at x=3949871, y=2889309: closest beacon is at x=4037927, y=2985317";
             List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
 
-            Dictionary<Point, Sensor> sensors = new Dictionary<Point, Sensor>();
-            Dictionary<Point, Beacon> beacons = new Dictionary<Point, Beacon>();
+            Dictionary<DeprecatedPoint, Sensor> sensors = new Dictionary<DeprecatedPoint, Sensor>();
+            Dictionary<DeprecatedPoint, Beacon> beacons = new Dictionary<DeprecatedPoint, Beacon>();
             
             foreach (string line in inputByLine)
             {
@@ -37,7 +37,7 @@ namespace Advent_of_Code_2022
                 {
                     int beaconX = int.Parse(match.Groups["beaconX"].Value);
                     int beaconY = int.Parse(match.Groups["beaconY"].Value);
-                    Point beaconLoc = new Point(beaconX, beaconY);
+                    DeprecatedPoint beaconLoc = new DeprecatedPoint(beaconX, beaconY);
                     Beacon currentBeacon;
                     if (beacons.ContainsKey(beaconLoc))
                     {
@@ -50,7 +50,7 @@ namespace Advent_of_Code_2022
                     }
                     int sensorX = int.Parse(match.Groups["sensorX"].Value);
                     int sensorY = int.Parse(match.Groups["sensorY"].Value);
-                    Point sensorLoc = new Point(sensorX, sensorY);
+                    DeprecatedPoint sensorLoc = new DeprecatedPoint(sensorX, sensorY);
                     Sensor currentSensor = new Sensor(sensorLoc, currentBeacon);
                     sensors.Add(sensorLoc, currentSensor);
 
@@ -77,7 +77,7 @@ namespace Advent_of_Code_2022
             HashSet<Beacon> beaconsEncountered = new HashSet<Beacon>();
             for (int x = minx; x <= maxx; x++)
             {
-                Point currentLoc = new Point(x, yToCheck);
+                DeprecatedPoint currentLoc = new DeprecatedPoint(x, yToCheck);
                 //Console.WriteLine($"Checking {currentLoc}...");
                 Sensor? sensor = FindSensorThatHasScannedThis(currentLoc, sensors.Values.ToList());
                 if(sensor != null)
@@ -122,8 +122,8 @@ namespace Advent_of_Code_2022
             foreach (Sensor sensor in almostTouchingSensors)
             {
                 if (finished) break;
-                List<Point> candidates = GenerateRhombus(sensor.loc, sensor.distanceToBeacon + 1);
-                foreach(Point candidate in candidates)
+                List<DeprecatedPoint> candidates = GenerateRhombus(sensor.loc, sensor.distanceToBeacon + 1);
+                foreach(DeprecatedPoint candidate in candidates)
                 {
                     if (candidate.x < beaconCoordsMin || candidate.x > beaconCoordsMax || candidate.y < beaconCoordsMin || candidate.y > beaconCoordsMax)
                     {
@@ -140,27 +140,27 @@ namespace Advent_of_Code_2022
         }
 
         //Returns a list of points that make up the outline of the rhombus.
-        public static List<Point> GenerateRhombus(Point center, int radius)
+        public static List<DeprecatedPoint> GenerateRhombus(DeprecatedPoint center, int radius)
         {
-            List<Point> points = new List<Point>();
+            List<DeprecatedPoint> points = new List<DeprecatedPoint>();
             int x = center.x;
             int y = center.y;
             for (int i = 0; i < radius; i++)
             {
-                points.Add(new Point(x + radius - i, y - i));
-                points.Add(new Point(x - radius + i, y + i));
-                points.Add(new Point(x - i, y - radius + i));
-                points.Add(new Point(x + i, y + radius - i));
+                points.Add(new DeprecatedPoint(x + radius - i, y - i));
+                points.Add(new DeprecatedPoint(x - radius + i, y + i));
+                points.Add(new DeprecatedPoint(x - i, y - radius + i));
+                points.Add(new DeprecatedPoint(x + i, y + radius - i));
             }
             return points;
         }
 
-        public static long Coords2TuningFrequency(Point p)
+        public static long Coords2TuningFrequency(DeprecatedPoint p)
         {
             return (long)p.x * 4000000 + p.y;
         }
 
-        public static Sensor? FindSensorThatHasScannedThis(Point p, List<Sensor> sensors)
+        public static Sensor? FindSensorThatHasScannedThis(DeprecatedPoint p, List<Sensor> sensors)
         {
             foreach (Sensor sensor in sensors)
             {
@@ -174,11 +174,11 @@ namespace Advent_of_Code_2022
 
         public class Sensor
         {
-            public Point loc;
+            public DeprecatedPoint loc;
             public Beacon nearestBeacon;
             public int distanceToBeacon;
 
-            public Sensor(Point loc, Beacon nearestBeacon)
+            public Sensor(DeprecatedPoint loc, Beacon nearestBeacon)
             {
                 this.loc = loc;
                 this.nearestBeacon = nearestBeacon;
@@ -203,9 +203,9 @@ namespace Advent_of_Code_2022
 
         public class Beacon
         {
-            public Point loc;
+            public DeprecatedPoint loc;
 
-            public Beacon(Point loc)
+            public Beacon(DeprecatedPoint loc)
             {
                 this.loc = loc;
             }

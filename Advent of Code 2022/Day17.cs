@@ -29,7 +29,7 @@ namespace Advent_of_Code_2022
             {
                 pieceIndex = pieceIndex % pieceOrder.Count;
                 Type pieceType = pieceOrder[pieceIndex];
-                Point loc = new Point(2, board.highestRockY + 3);
+                DeprecatedPoint loc = new DeprecatedPoint(2, board.highestRockY + 3);
                 Piece? piece = (Piece?)Activator.CreateInstance(pieceType, loc, board);
                 if(piece == null)
                 {
@@ -158,8 +158,8 @@ namespace Advent_of_Code_2022
             {
                 for (int x = 0; x <= maxx; x++)
                 {
-                    bool top = IsPointColliding(new Point(x, y));
-                    bool bottom = IsPointColliding(new Point(x, y - 1));
+                    bool top = IsPointColliding(new DeprecatedPoint(x, y));
+                    bool bottom = IsPointColliding(new DeprecatedPoint(x, y - 1));
                     if (!top && !bottom)
                     {
                         return false;
@@ -196,7 +196,7 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public bool IsPointColliding(Point point)
+            public bool IsPointColliding(DeprecatedPoint point)
             {
                 foreach (Piece piece in pieces)
                 {
@@ -208,7 +208,7 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public char DrawPoint(Point point)
+            public char DrawPoint(DeprecatedPoint point)
             {
                 if (IsPointColliding(point))
                 {
@@ -227,7 +227,7 @@ namespace Advent_of_Code_2022
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        grid[x, y] = DrawPoint(new Point(x + minx, y + miny));
+                        grid[x, y] = DrawPoint(new DeprecatedPoint(x + minx, y + miny));
                     }
                 }
                 return grid;
@@ -236,8 +236,8 @@ namespace Advent_of_Code_2022
 
         public class Piece
         {
-            public Point loc; //Bottomleftmost corner of our bounding box
-            public HashSet<Point> points = new(); //Collection of points that make us up
+            public DeprecatedPoint loc; //Bottomleftmost corner of our bounding box
+            public HashSet<DeprecatedPoint> points = new(); //Collection of points that make us up
 
             public Board board;
 
@@ -248,20 +248,20 @@ namespace Advent_of_Code_2022
             {
                 loc.x += x;
                 loc.y += y;
-                foreach(Point point in points)
+                foreach(DeprecatedPoint point in points)
                 {
                     point.x += x;
                     point.y += y;
                 }
             }
 
-            public bool CollidesWith(Point point)
+            public bool CollidesWith(DeprecatedPoint point)
             {
                 if(point.y < loc.y || point.y > loc.y + height || point.x < loc.x || point.x > loc.x + width)
                 {
                     return false;
                 }
-                foreach (Point p in points)
+                foreach (DeprecatedPoint p in points)
                 {
                     if (point.Equals(p))
                     {
@@ -278,7 +278,7 @@ namespace Advent_of_Code_2022
                 {
                     return false;
                 }
-                foreach(Point point in points)
+                foreach(DeprecatedPoint point in points)
                 {
                     if (otherPiece.CollidesWith(point))
                     {
@@ -288,14 +288,14 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public Piece(Point loc, Board board, List<(int, int)> pointCoords)
+            public Piece(DeprecatedPoint loc, Board board, List<(int, int)> pointCoords)
             {
                 this.loc = loc;
                 this.board = board;
 
                 foreach((int, int) offset in pointCoords)
                 {
-                    points.Add(new Point(loc.x + offset.Item1, loc.y + offset.Item2));
+                    points.Add(new DeprecatedPoint(loc.x + offset.Item1, loc.y + offset.Item2));
                 }
                 width = pointCoords.Max(coord => coord.Item1) + 1;
                 height = pointCoords.Max(coord => coord.Item2) + 1;
@@ -306,14 +306,14 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (1, 0), (0, 1), (1, 1), (2, 1), (1, 2) };
 
-            public Cross(Point loc, Board board) : base(loc, board, pointCoords)
+            public Cross(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
         public class Minus : Piece
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (2, 0), (3, 0) };
-            public Minus(Point loc, Board board) : base(loc, board, pointCoords)
+            public Minus(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -321,7 +321,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (2, 0), (2, 1), (2, 2) };
 
-            public Corner(Point loc, Board board) : base(loc, board, pointCoords)
+            public Corner(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -329,7 +329,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (0, 1), (0, 2), (0, 3) };
 
-            public Line(Point loc, Board board) : base(loc, board, pointCoords)
+            public Line(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -337,7 +337,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (0, 1), (1, 1) };
 
-            public Block(Point loc, Board board) : base(loc, board, pointCoords)
+            public Block(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Advent_of_Code_2022.libs
 {
-    public class Point
+    public class DeprecatedPoint
     {
         public int x;
         public int y;
 
-        public bool Equals(Point p)
+        public bool Equals(DeprecatedPoint p)
         {
             return (x == p.x) && (y == p.y);
         }
@@ -22,7 +22,7 @@ namespace Advent_of_Code_2022.libs
             {
                 return false;
             }
-            Point p = (Point)obj;
+            DeprecatedPoint p = (DeprecatedPoint)obj;
             return (x == p.x) && (y == p.y);
         }
 
@@ -31,7 +31,7 @@ namespace Advent_of_Code_2022.libs
             return (x << 2) ^ y;
         }
 
-        public Point(int x, int y)
+        public DeprecatedPoint(int x, int y)
         {
             this.x = x;
             this.y = y;
@@ -42,15 +42,15 @@ namespace Advent_of_Code_2022.libs
             return $"{x},{y}";
         }
 
-        public double GetDistance(Point b)
+        public double GetDistance(DeprecatedPoint b)
         {
             return Math.Sqrt(Math.Pow((b.x - x), 2) + Math.Pow((b.y - y), 2));
         }
 
-        public List<Point> SurroundingPoints()
+        public List<DeprecatedPoint> SurroundingPoints()
         {
-            return new List<Point> { new Point(x + 1, y), new Point(x - 1, y), new Point(x, y + 1), new Point(x, y -1 ),
-                new Point(x + 1, y + 1), new Point(x - 1, y - 1), new Point(x + 1, y - 1), new Point(x - 1, y + 1 )};
+            return new List<DeprecatedPoint> { new DeprecatedPoint(x + 1, y), new DeprecatedPoint(x - 1, y), new DeprecatedPoint(x, y + 1), new DeprecatedPoint(x, y -1 ),
+                new DeprecatedPoint(x + 1, y + 1), new DeprecatedPoint(x - 1, y - 1), new DeprecatedPoint(x + 1, y - 1), new DeprecatedPoint(x - 1, y + 1 )};
         }
     }
 }

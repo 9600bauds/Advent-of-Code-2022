@@ -8,6 +8,7 @@ namespace Advent_of_Code_2022
 {
     internal class Day24
     {
+        //https://adventofcode.com/2022/day/24
         //const string input = "#.######\r\n#>>.<^<#\r\n#.<..<<#\r\n#>v.><>#\r\n#<^v^^>#\r\n######.#";
         const string input = "#.########################################################################################################################\r\n#.v^<>^^.<^^<v>v>>>.<^<<v.^>vv>>^<<<v>.v<^v^<v<<^<^^<^<^v><^vv.v^^.>^><vv><^<.<^v<>.v<v..^>><v>.vvv.v>^^<^>.<<^<^<^>v.^^<#\r\n#.^^<v>><<v><vv<>..<>v<^v><<>><>v.>v.^^<<.v.^<^<vv><v<<v><<^<>^v>v>><>v..v^<^.v><>^>><v<<>v^<<v<v>v.v<v>><<v>^v<v^...<<<>#\r\n#><vv>>v>v<^>^^^^vv^<v^<<v<>^<^.^^>^<^vv>^v>><<^^<.>^>v<^v<.v.^<^^v.<.>.<^>v^>.v>>^vv^v.>>>v<<<<v.^^v<^^<^><<<<.^>.>vvv>>#\r\n#<.vv>.><<.<^v.>v^v>><v>><<^vv>^v^>.><v>>><^><v<v^^vv>.v^^<v>vv<>v>^v.>>v^>..v<>^v.^>><.vv><^...<>^^>v>vvv>^<^<><v>v<^^^<#\r\n#>^.^>vvv>vv>^^vv>v^^v>vv>v^v>^<v>>vvvv^>.v^<v^><^>vvv<>vv<^v<.<^v^>^vv^<><>.^.^>><<^^>^<v^>>>>v><<v^^>^^>>v^v.<^vv^<^v<>#\r\n#><^>><vv^vvv.v><v<>^v>^<<<^^<><^<<v<>^<<v><<<v>><v<^^<vv<.>^v>^<v>.>v>>^^>^>><>.<<v<^><>>>^.<vv>.^^<.^^>>v.><<v<>><>v^><#\r\n#>>^.<<v.^v>^^v.>v.vv^<<.v<v<..<<v^^>^v.><>v<^^<<.>v>v>v>^v>.<>v<><<^v><^>><^v>v^v>^vvv>>>..>^>>.><v><>.^^v.><<vv<.v>^^<.#\r\n#>vv>^^.<>^v<^<<v^>v<^^v><>>>>v^vv>v<^v^><><^.<v^>.<^.v^>><vv>>vvv>^v<<<><vv<v^<<>v>>^v>^^^>^v><^^>^^^<<^^<v<<v<v>^^^<^>>#\r\n#>.v^<<.vv<^v>^>>v<>v^v^^v^v<^^<<..<<^v<<<<^<v>^>.<>v<v<v<.<.v>vv^>><^.<.v<^<^v><v<v>.v.><<^>>v^.^vv.vv^.>^^>vv<>^..v>^v<#\r\n#..v.>^><<>..<>.<^<<v>^^^^><<><<vv><^>v>^v<vv>v><vv.^<.<<<<v^v<>^^^vv>.>>>v^v<v<^.<v<<^.v<><<>>v<<<.>>v.^^>^^.>.<.>vv>^>>#\r\n#>^^vv<<><<v<^.v>>v>^^^v^<v.^><<<<<v^v>v<<^v..^<.vv.^v>vvv>^v<..v<><<^<<vv<>>>>^>^^<>^<^<^^.vv>>^>^>^v^>.<^.<<.>v^>vv<.^<#\r\n#<v^vv>^^v>vv>^.^>v>v^v>vv.>>.>v^v^>.^v<^.>^<<<v.>^>^^<>vv<.<^^<^v<^><v^v^.^<><v^^v^>.<vv^>v^v<v^><>^<vv>v<><^v<v.<<^.>^>#\r\n#<>^<^<v><^^.^^>..^^>v>>>>^v<.<>>.<^v^>vvvvv>^<<.><^<v<.v<^><^^>vv<^<^<>v>v<>^^v>>^^>>v<^^<v>v^^^vvv<<<<<>>>v>^v.<^^>^>^<#\r\n#>.<^v<.<^v.v>^.>>><^<<^^<<.<>><>>>^vvv<v<v<<^^vv<<<^v^v^vv<^v>>^^vv.^>^.v^^^>>v^>.<>.^^>v^^^^><^^>^>>.v<v^<^>^v^>^<<<v<<#\r\n#>><><.>v^<>^^>.^>^v>^.^<v><><>.<v<^v>>>>v.<>>.^vv>v.vv.><vv^v>^<>>v>vv.v>v>v<><>>>^..^v>^^><..^..^..^vvv>><>v<>v<^<<>v<<#\r\n#<vv^vvv><>v^v.<^v^^v<.<>v<>.^v^<<^<><.^vv<>^>>.v<<><vv<^^<>>v^.^v><v^^<>v.v<.>^^v^<<<^^<<v<^^^<<<<>^^v>><><<><>v>v<v.>^>#\r\n#.<.^>^>^>^v..v>^.<v<^<<<^vvv>vv><^^v^<.>>.^<.^^<<>>^><<>>^^.^<<^^><^v<.><>.<<<.vvv>>vv^v<^v<>vv<<^v^^<v.v^<<^>v^>v<><vv<#\r\n#.vvvv>>^>^<..^>>^>vv^.^>^<<v>^^v>v>^<>.>vv<v^>>>^.^<<^>>^>^>vvv><vv^^<^.^^.<^^v.<v<>^<<<v^>><<.^^^^>^>>>v<<>>v>v<>v<v><.#\r\n#<<vv.<v>^^v<.>>^>^<>^><.<v^><>>.^<v^v<<.v>>.<>.v>^>^v><><^<><<<v^<><<v^..^v^v>^.><>>>v^.^>vv<<^>v<><.^^v<>vv>v^v<><^>>><#\r\n#><>^v>v<>><vv>>v<>^<v>v^^>^v^>^^<v>v>^^v><<^v>>vv<^><>^>^^>>v^^<^<v>.^>v^vv^<.v>^v^.v^><><>>v.v^vv^<v>^>^><v>^>^>v>^v..<#\r\n#>v<^^<^>.<>v<v<.^vv^>>v><^^v<^^>>^>^<^^>>>^<v<^v<>v<^>v>^>v^v>^.<<v^>vv<^<.><^><<^>v><^<v>^<^v>v^>><^vvv^>>v>>vv>v^>^><<#\r\n#<vvv<><^.>v.^><v<^^<v><^<vvv.^..v^>...v^><<^^><^>^^vv>^v>v^<v<<>^>^^..<^<<v><<>.><<>^vvvv>v^><.^^>>v>>>^>>^<^<^<v^>vvv>>#\r\n#><<<^^.^<.^.^^<>^.vv^^^<v^<<<vv<<>^<v<^>>v^>>v<<v^^.v^<.vv<v<><<.v><<^>>v><.v><v>v^^v^v<^><vvvvv<^.<<>v^.<>^.^><>^v><>^<#\r\n#<.<>.>v^><<>^^<<vv>^>^v>>>v>v><^v><v.>>^<>>.<vv<<<v<v^<<vv^<.v^^>vv>>^<^<v<v<<>vv.><v..>>>.>^v<<vv><v^^^vv^^<>^>v<^^>v.>#\r\n#<>^^<>>^v>v<<>^.>>^^^<<v>^vv^<^<.<<<vv>>v>^^<^v><><>.<>.^><<^^^>^vv><>v.<>v<.<v>>><v.^>^>vv<v>^<v^<<v^v>v..>^^<^^.><>^><#\r\n########################################################################################################################.#";
 
@@ -15,30 +16,28 @@ namespace Advent_of_Code_2022
         {
             Board board = new(input);
 
-            Gamestate winner = new(board.start, board.end, 0, "");
-            GamestateIterator iterator = new(new() { winner }, board);
-            //iterator.PlaybackSequence(winner, "SS·NEESWNE·SSEEESS");
-            //iterator.PlaybackSequence(winner, "·······SEE·SSEEESS");
-            //iterator.PlaybackSequence(winner, "SSSSSSEENEENSSNEN·NEWW·NEEE·SEEESSWNN·EESEEEESEEENSSEWSEEE·EEENS·SSEEE·EWESEEES·E·NWESES·EEEEENESEN·E·EES··EEESEEE·SENNNENSEE·E·SSESENE·EE·EEESENN·SEESSEEEEESEE·E····EEENENEEESEEEE·SWSNESEE·N·ESN·SSSS·S·NESENWSEESSNN·SSEEEESEEEEENNESEESEESEEEEENE·EEE·S·EENES·NNNSESEESS·············NNNNNNN·WWWNWN·NWNN·WWNNWNNWN·WW·WEWWWWNWWWWNWWNWNWS·WSWWWWSWWWSSSEESS·SWWWNN·NNNW···ENWWSWW·SSWWWWWWW·WWWWWW·W·WSWS·SWSWENWENWENENWW·SWNWWWWSWWWEWSESW·NNWSWWWSW·WNNWNNWWWSSWWWWWNWN·WWWWNEWWW·NWW·NW·WNWWWSS·NWSWWWESWSS·SE·SSNSWWWWWWWNNWWW·WWNN·WWN·WNWW·SWWSWWNWWWWNNNNNNNNN············SEEESES·SEEEEENEWSESE·EEEENSSS·EE·ESENEE·S··NEWES·EESE·SESESSS·NSEEEENEEN·EEEESEESENENSSEEWEE·EESSEEEESEEE·EESWEEEEE·N·NNN·EEESWESN·EEEEEEEEENE·WEEEEEENWESEEEEEEN·NESSEEENNSSNEEEE·NNWNSS·EEEES·N·ENWEWESEEEEE·EEEWSESESEEESS·ESE·ESSEENN·EE·SSSESENS·ESENNSESSSS", 15); return;
+            Gamestate game = new(board.start, board.end, 0, "");
+            GamestateIterator iterator = new(board);
+            //iterator.PlaybackSequence(winner, "SS·NEESWNE·SSEEESS"); return;
 
-            winner = iterator.FindWinner();
-            Console.WriteLine($"Extraction point reached in {winner.time} turns! Sequence: {winner.sequence}");
-            board.Render(winner);
+            game = iterator.FindOptimalSolution(game);
+            Console.WriteLine($"Extraction point reached in {game.time} turns! Sequence: {game.sequence}");
+            board.Render(game);
             Console.ReadKey();
-            winner.targetPos = board.start;
-            iterator.unfinishedGames.Add(winner);
-            winner = iterator.FindWinner();
+
+            game.targetPos = board.start;
+            game = iterator.FindOptimalSolution(game);
             Console.Clear();
-            Console.WriteLine($"Got the snacks in {winner.time} turns! Sequence: {winner.sequence}");
-            board.Render(winner);
+            Console.WriteLine($"Got the snacks in {game.time} turns! Sequence: {game.sequence}");
+            board.Render(game);
             Console.ReadKey();
-            board.Render(winner);
-            winner.targetPos = board.end;
-            iterator.unfinishedGames.Add(winner);
-            winner = iterator.FindWinner();
+
+            board.Render(game);
+            game.targetPos = board.end;
+            game = iterator.FindOptimalSolution(game);
             Console.Clear();
-            Console.WriteLine($"All done in {winner.time} turns! Sequence: {winner.sequence}");
-            board.Render(winner);
+            Console.WriteLine($"All done in {game.time} turns! Sequence: {game.sequence}");
+            board.Render(game);
         }
 
         class Board
@@ -212,14 +211,15 @@ namespace Advent_of_Code_2022
             public SortedSet<Gamestate> unfinishedGames;
             public Board board;
 
-            public GamestateIterator(SortedSet<Gamestate> unfinishedGames, Board board)
+            public GamestateIterator(Board board)
             {
-                this.unfinishedGames = unfinishedGames;
+                this.unfinishedGames = new();
                 this.board = board;
             }
 
-            public Gamestate FindWinner()
+            public Gamestate FindOptimalSolution(Gamestate starter)
             {
+                unfinishedGames.Add(starter);
                 while (unfinishedGames.Any())
                 {
                     Gamestate game = unfinishedGames.First();
