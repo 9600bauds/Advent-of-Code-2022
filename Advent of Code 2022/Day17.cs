@@ -1,10 +1,6 @@
 ﻿using Advent_of_Code_2022.libs;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Advent_of_Code_2022
 {
@@ -19,19 +15,19 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            Board board = new Board(0, 0, 6, 10, '.', '#');
+            Board board = new(0, 0, 6, 10, '.', '#');
 
             int pieceIndex = 0;
             long piecesAtRest = 0;
             int rockPushIndex = 0;
 
-            while(true)
+            while (true)
             {
                 pieceIndex = pieceIndex % pieceOrder.Count;
                 Type pieceType = pieceOrder[pieceIndex];
-                DeprecatedPoint loc = new DeprecatedPoint(2, board.highestRockY + 3);
+                Point loc = new(2, board.highestRockY + 3);
                 Piece? piece = (Piece?)Activator.CreateInstance(pieceType, loc, board);
-                if(piece == null)
+                if (piece == null)
                 {
                     Debug.Fail("Piece is somehow null!");
                     return;
@@ -44,9 +40,9 @@ namespace Advent_of_Code_2022
                 {
                     RockPush(piece, ref rockPushIndex);
 
-                    if(rockPushIndex == 1)
+                    if (rockPushIndex == 1)
                     {
-                        if(piecesAtRest > 0)
+                        if (piecesAtRest > 0)
                         {
                             Console.WriteLine($"{piecesAtRest} - {board.highestRockY} - time to boosh?");
                             /*if(booshed == false)
@@ -66,12 +62,12 @@ namespace Advent_of_Code_2022
 
                 }
                 piecesAtRest++;
-                if(piecesAtRest % 50 == 0)
+                if (piecesAtRest % 50 == 0)
                 {
                     board.TrimTheFat();
                 }
-                
-                if(piecesAtRest == 1000000000000)
+
+                if (piecesAtRest == 1000000000000)
                 {
                     GridRenderer.Render(5, 10, board.MakeGrid());
                     Console.WriteLine(board.highestRockY);
@@ -87,12 +83,12 @@ namespace Advent_of_Code_2022
             rockPushTurn++;
             int xOffset = direction == '>' ? 1 : -1;
 
-            if (piece.loc.x + xOffset < 0 || piece.loc.x + piece.width + xOffset > piece.board.maxx + 1)
+            if (piece.loc.X + xOffset < 0 || piece.loc.X + piece.width + xOffset > piece.board.maxx + 1)
             {
                 return false;
             }
             piece.Shift(xOffset, 0);
-            if(piece.board.IsPieceColliding(piece))
+            if (piece.board.IsPieceColliding(piece))
             {
                 piece.Shift(-xOffset, 0);
                 return false;
@@ -102,7 +98,7 @@ namespace Advent_of_Code_2022
 
         public static bool FallPiece(Piece piece)
         {
-            if (piece.loc.y - 1 < 0)
+            if (piece.loc.Y - 1 < 0)
             {
                 return false;
             }
@@ -143,7 +139,7 @@ namespace Advent_of_Code_2022
                     {
                         foreach (Piece piece in pieces)
                         {
-                            if(piece.loc.y + piece.height < y)
+                            if (piece.loc.Y + piece.height < y)
                             {
                                 pieces.Remove(piece);
                             }
@@ -158,8 +154,8 @@ namespace Advent_of_Code_2022
             {
                 for (int x = 0; x <= maxx; x++)
                 {
-                    bool top = IsPointColliding(new DeprecatedPoint(x, y));
-                    bool bottom = IsPointColliding(new DeprecatedPoint(x, y - 1));
+                    bool top = IsPointColliding(new Point(x, y));
+                    bool bottom = IsPointColliding(new Point(x, y - 1));
                     if (!top && !bottom)
                     {
                         return false;
@@ -176,15 +172,15 @@ namespace Advent_of_Code_2022
 
             public void UpdateMaxes(Piece piece)
             {
-                highestRockY = Math.Max(highestRockY, piece.loc.y + piece.height);
+                highestRockY = Math.Max(highestRockY, piece.loc.Y + piece.height);
                 maxy = highestRockY + 2;
             }
 
             public bool IsPieceColliding(Piece piece)
             {
-                foreach(Piece otherPiece in pieces)
+                foreach (Piece otherPiece in pieces)
                 {
-                    if(otherPiece == piece)
+                    if (otherPiece == piece)
                     {
                         continue;
                     }
@@ -196,7 +192,7 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public bool IsPointColliding(DeprecatedPoint point)
+            public bool IsPointColliding(Point point)
             {
                 foreach (Piece piece in pieces)
                 {
@@ -208,7 +204,7 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public char DrawPoint(DeprecatedPoint point)
+            public char DrawPoint(Point point)
             {
                 if (IsPointColliding(point))
                 {
@@ -227,7 +223,7 @@ namespace Advent_of_Code_2022
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        grid[x, y] = DrawPoint(new DeprecatedPoint(x + minx, y + miny));
+                        grid[x, y] = DrawPoint(new Point(x + minx, y + miny));
                     }
                 }
                 return grid;
@@ -236,8 +232,8 @@ namespace Advent_of_Code_2022
 
         public class Piece
         {
-            public DeprecatedPoint loc; //Bottomleftmost corner of our bounding box
-            public HashSet<DeprecatedPoint> points = new(); //Collection of points that make us up
+            public Point loc; //Bottomleftmost corner of our bounding box
+            public HashSet<Point> points = new(); //Collection of points that make us up
 
             public Board board;
 
@@ -246,22 +242,20 @@ namespace Advent_of_Code_2022
 
             public void Shift(int x, int y)
             {
-                loc.x += x;
-                loc.y += y;
-                foreach(DeprecatedPoint point in points)
+                loc.Offset(x, y);
+                foreach (Point point in points)
                 {
-                    point.x += x;
-                    point.y += y;
+                    point.Offset(x, y);
                 }
             }
 
-            public bool CollidesWith(DeprecatedPoint point)
+            public bool CollidesWith(Point point)
             {
-                if(point.y < loc.y || point.y > loc.y + height || point.x < loc.x || point.x > loc.x + width)
+                if (point.Y < loc.Y || point.Y > loc.Y + height || point.X < loc.X || point.X > loc.X + width)
                 {
                     return false;
                 }
-                foreach (DeprecatedPoint p in points)
+                foreach (Point p in points)
                 {
                     if (point.Equals(p))
                     {
@@ -273,12 +267,12 @@ namespace Advent_of_Code_2022
 
             public bool CollidesWith(Piece otherPiece)
             {
-                if(otherPiece.loc.x > loc.x + width || otherPiece.loc.x + otherPiece.width < loc.x
-                    || otherPiece.loc.y > loc.y + height || otherPiece.loc.y + otherPiece.height < loc.y)
+                if (otherPiece.loc.X > loc.X + width || otherPiece.loc.X + otherPiece.width < loc.X
+                    || otherPiece.loc.Y > loc.Y + height || otherPiece.loc.Y + otherPiece.height < loc.Y)
                 {
                     return false;
                 }
-                foreach(DeprecatedPoint point in points)
+                foreach (Point point in points)
                 {
                     if (otherPiece.CollidesWith(point))
                     {
@@ -288,32 +282,32 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public Piece(DeprecatedPoint loc, Board board, List<(int, int)> pointCoords)
+            public Piece(Point loc, Board board, List<(int, int)> pointCoords)
             {
                 this.loc = loc;
                 this.board = board;
 
-                foreach((int, int) offset in pointCoords)
+                foreach ((int, int) offset in pointCoords)
                 {
-                    points.Add(new DeprecatedPoint(loc.x + offset.Item1, loc.y + offset.Item2));
+                    points.Add(new Point(loc.X + offset.Item1, loc.X + offset.Item2));
                 }
                 width = pointCoords.Max(coord => coord.Item1) + 1;
                 height = pointCoords.Max(coord => coord.Item2) + 1;
-                
+
             }
         }
         public class Cross : Piece
         {
             readonly static List<(int, int)> pointCoords = new() { (1, 0), (0, 1), (1, 1), (2, 1), (1, 2) };
 
-            public Cross(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
+            public Cross(Point loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
         public class Minus : Piece
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (2, 0), (3, 0) };
-            public Minus(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
+            public Minus(Point loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -321,7 +315,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (2, 0), (2, 1), (2, 2) };
 
-            public Corner(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
+            public Corner(Point loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -329,7 +323,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (0, 1), (0, 2), (0, 3) };
 
-            public Line(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
+            public Line(Point loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }
@@ -337,7 +331,7 @@ namespace Advent_of_Code_2022
         {
             readonly static List<(int, int)> pointCoords = new() { (0, 0), (1, 0), (0, 1), (1, 1) };
 
-            public Block(DeprecatedPoint loc, Board board) : base(loc, board, pointCoords)
+            public Block(Point loc, Board board) : base(loc, board, pointCoords)
             {
             }
         }

@@ -8,12 +8,12 @@ namespace Advent_of_Code_2022.libs
 {
     public class DeprecatedPoint
     {
-        public int x;
-        public int y;
+        public int X;
+        public int Y;
 
         public bool Equals(DeprecatedPoint p)
         {
-            return (x == p.x) && (y == p.y);
+            return (X == p.X) && (Y == p.Y);
         }
 
         public override bool Equals(object? obj)
@@ -23,34 +23,34 @@ namespace Advent_of_Code_2022.libs
                 return false;
             }
             DeprecatedPoint p = (DeprecatedPoint)obj;
-            return (x == p.x) && (y == p.y);
+            return (X == p.X) && (Y == p.Y);
         }
 
         public override int GetHashCode()
         {
-            return (x << 2) ^ y;
+            return (X << 2) ^ Y;
         }
 
         public DeprecatedPoint(int x, int y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         public override string ToString()
         {
-            return $"{x},{y}";
+            return $"{X},{Y}";
         }
 
         public double GetDistance(DeprecatedPoint b)
         {
-            return Math.Sqrt(Math.Pow((b.x - x), 2) + Math.Pow((b.y - y), 2));
+            return Math.Sqrt(Math.Pow((b.X - X), 2) + Math.Pow((b.Y - Y), 2));
         }
 
         public List<DeprecatedPoint> SurroundingPoints()
         {
-            return new List<DeprecatedPoint> { new DeprecatedPoint(x + 1, y), new DeprecatedPoint(x - 1, y), new DeprecatedPoint(x, y + 1), new DeprecatedPoint(x, y -1 ),
-                new DeprecatedPoint(x + 1, y + 1), new DeprecatedPoint(x - 1, y - 1), new DeprecatedPoint(x + 1, y - 1), new DeprecatedPoint(x - 1, y + 1 )};
+            return new List<DeprecatedPoint> { new DeprecatedPoint(X + 1, Y), new DeprecatedPoint(X - 1, Y), new DeprecatedPoint(X, Y + 1), new DeprecatedPoint(X, Y -1 ),
+                new DeprecatedPoint(X + 1, Y + 1), new DeprecatedPoint(X - 1, Y - 1), new DeprecatedPoint(X + 1, Y - 1), new DeprecatedPoint(X - 1, Y + 1 )};
         }
     }
 }

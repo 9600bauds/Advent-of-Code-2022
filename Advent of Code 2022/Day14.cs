@@ -68,7 +68,7 @@ namespace Advent_of_Code_2022
                 int result = currentSand.Fall();
                 if(result == SAND_STILL_FALLING)
                 {
-                    if(reachedFloorAt == 0 && currentSand.y == board.maxy - 1)
+                    if(reachedFloorAt == 0 && currentSand.Y == board.maxy - 1)
                     {
                         reachedFloorAt = sandsAtRest;
                     }
@@ -140,8 +140,8 @@ namespace Advent_of_Code_2022
 
             public void UpdateMaxes(DeprecatedPoint point)
             {
-                maxy = Math.Max(maxy, point.y + 2);
-                miny = Math.Min(miny, point.y);
+                maxy = Math.Max(maxy, point.Y + 2);
+                miny = Math.Min(miny, point.Y);
                 if (expandBoard)
                 {
                     minx = (startingX - maxy);
@@ -149,18 +149,18 @@ namespace Advent_of_Code_2022
                 }
                 else
                 {
-                    minx = Math.Min(minx, point.x);
-                    maxx = Math.Max(maxx, point.x);
+                    minx = Math.Min(minx, point.X);
+                    maxx = Math.Max(maxx, point.X);
                 }
 
             }
 
             public void DrawRectangle(DeprecatedPoint startingPoint, DeprecatedPoint endingPoint, char asChar) //What are lines if not flat rectangles?
             {
-                int minx = Math.Min(startingPoint.x, endingPoint.x);
-                int maxx = Math.Max(startingPoint.x, endingPoint.x);
-                int miny = Math.Min(startingPoint.y, endingPoint.y);
-                int maxy = Math.Max(startingPoint.y, endingPoint.y);
+                int minx = Math.Min(startingPoint.X, endingPoint.X);
+                int maxx = Math.Max(startingPoint.X, endingPoint.X);
+                int miny = Math.Min(startingPoint.Y, endingPoint.Y);
+                int maxy = Math.Max(startingPoint.Y, endingPoint.Y);
 
                 for (int y = miny; y <= maxy; y++)
                 {
@@ -182,7 +182,7 @@ namespace Advent_of_Code_2022
 
             public void DrawPoint(DeprecatedPoint p, char asChar)
             {
-                DrawPoint(p.x, p.y, asChar);
+                DrawPoint(p.X, p.Y, asChar);
             }
             public void DrawPoint(int x, int y, char asChar)
             {
@@ -191,7 +191,7 @@ namespace Advent_of_Code_2022
 
             public char GetPoint(DeprecatedPoint p)
             {
-                return GetPoint(p.x, p.y);
+                return GetPoint(p.X, p.Y);
             }
             public char GetPoint(int x, int y)
             {
@@ -221,7 +221,7 @@ namespace Advent_of_Code_2022
                 }
             }
             public bool InBounds(DeprecatedPoint p) { 
-                if(p.x < minx || p.x > maxx || p.y < miny || p.y > maxy)
+                if(p.X < minx || p.X > maxx || p.Y < miny || p.Y > maxy)
                 {
                     return false;
                 }
@@ -290,9 +290,9 @@ namespace Advent_of_Code_2022
 
             public List<DeprecatedPoint> GetCandidates()
             {
-                DeprecatedPoint down = new DeprecatedPoint(x, y + 1); //Down is up, because the assignment's coordinate system says so
-                DeprecatedPoint downAndToTheLeft = new DeprecatedPoint(x - 1, y + 1);
-                DeprecatedPoint downAndToTheRight = new DeprecatedPoint(x + 1, y + 1);
+                DeprecatedPoint down = new DeprecatedPoint(X, Y + 1); //Down is up, because the assignment's coordinate system says so
+                DeprecatedPoint downAndToTheLeft = new DeprecatedPoint(X - 1, Y + 1);
+                DeprecatedPoint downAndToTheRight = new DeprecatedPoint(X + 1, Y + 1);
                 return new List<DeprecatedPoint> { down, downAndToTheLeft, downAndToTheRight }; //In that order of preference please!
             }
 
@@ -308,11 +308,11 @@ namespace Advent_of_Code_2022
                     }
                     if(board.GetPoint(candidate) == board.defaultChar)
                     {
-                        trajectory.Add(new DeprecatedPoint(board.ConvertX(x), board.ConvertY(y)));
-                        board.DrawPoint(x, y, board.defaultChar);
+                        trajectory.Add(new DeprecatedPoint(board.ConvertX(X), board.ConvertY(Y)));
+                        board.DrawPoint(X, Y, board.defaultChar);
                         board.DrawPoint(candidate, sprite);
-                        x = candidate.x;
-                        y = candidate.y;
+                        X = candidate.X;
+                        Y = candidate.Y;
                         return SAND_STILL_FALLING;
                     }
                 }

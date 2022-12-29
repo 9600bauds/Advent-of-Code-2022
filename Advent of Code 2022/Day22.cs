@@ -58,8 +58,8 @@ namespace Advent_of_Code_2022
             public long GetFinalSum()
             {
                 long sum = 0;
-                sum += (board.height - (long)loc.y) * 1000;
-                sum += ((long)loc.x + 1) * 4;
+                sum += (board.height - (long)loc.Y) * 1000;
+                sum += ((long)loc.X + 1) * 4;
                 sum += dir;
                 return sum;
             }
@@ -176,19 +176,19 @@ namespace Advent_of_Code_2022
 
             public bool IsOutOfBounds(DeprecatedPoint p)
             {
-                return (p.x < 0) || (p.x > width - 1) || (p.y < 0) || (p.y > height - 1);
+                return (p.X < 0) || (p.X > width - 1) || (p.Y < 0) || (p.Y > height - 1);
             }
             public void GetInBounds(DeprecatedPoint p)
             {
-                p.x %= width;
-                if (p.x < 0) { p.x = width - 1; }
-                p.y %= height;
-                if (p.y < 0) { p.y = height - 1; }
+                p.X %= width;
+                if (p.X < 0) { p.X = width - 1; }
+                p.Y %= height;
+                if (p.Y < 0) { p.Y = height - 1; }
             }
 
             public virtual (DeprecatedPoint, int) GetNextPoint(DeprecatedPoint start, int dir)
             {
-                DeprecatedPoint curr = new DeprecatedPoint(start.x, start.y);
+                DeprecatedPoint curr = new DeprecatedPoint(start.X, start.Y);
                 int dirDelta = 0;
                 ShiftPoint(curr, dir);
                 if (IsOutOfBounds(curr))
@@ -214,16 +214,16 @@ namespace Advent_of_Code_2022
                 switch (dir)
                 {
                     case DIR_RIGHT:
-                        curr.x++;
+                        curr.X++;
                         break;
                     case DIR_LEFT:
-                        curr.x--;
+                        curr.X--;
                         break;
                     case DIR_UP:
-                        curr.y++;
+                        curr.Y++;
                         break;
                     case DIR_DOWN:
-                        curr.y--;
+                        curr.Y--;
                         break;
                     default:
                         throw new ArgumentException();
@@ -247,13 +247,13 @@ namespace Advent_of_Code_2022
 
             public char SetPixel(DeprecatedPoint p, char c)
             {
-                grid[p.x, p.y] = c;
+                grid[p.X, p.Y] = c;
                 return c;
             }
 
             public char GetPixel(DeprecatedPoint p)
             {
-                return grid[p.x, p.y];
+                return grid[p.X, p.Y];
             }
         }
 
@@ -273,7 +273,7 @@ namespace Advent_of_Code_2022
                     throw new ArgumentException("Cube edges were null!");
                 }
                 //We're a 2D point, but the cube has been folded flat anyways so just make a dummy 3d point with z = 0
-                Trig.Point3D meIn3d = new Trig.Point3D(p.x, p.y, 0);
+                Trig.Point3D meIn3d = new Trig.Point3D(p.X, p.Y, 0);
                 foreach (Edge edge in cubeEdges)
                 {
                     bool intersectsUs = edge.Intersects(meIn3d);
@@ -337,7 +337,7 @@ namespace Advent_of_Code_2022
 
             public override (DeprecatedPoint, int) GetNextPoint(DeprecatedPoint start, int dir)
             {
-                DeprecatedPoint curr = new(start.x, start.y);
+                DeprecatedPoint curr = new(start.X, start.Y);
                 int dirDelta = 0;
                 ShiftPoint(curr, dir);
                 if (IsOutOfBounds(curr) || GetPixel(curr) == ' ')

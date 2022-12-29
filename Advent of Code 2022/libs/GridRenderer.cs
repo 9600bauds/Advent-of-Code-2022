@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace Advent_of_Code_2022.libs
 {
     public static class GridRenderer
     {
-        public static void Render(int posx, int posy, char[,] grid, List<System.Drawing.Point>? highlights = null)
+        public static void Render(int posx, int posy, char[,] grid, List<Point>? highlights = null)
         {
             int oldy = Console.CursorTop;
             int oldX = Console.CursorLeft;
@@ -20,7 +16,7 @@ namespace Advent_of_Code_2022.libs
                 Console.SetCursorPosition(posx, posy + height - y);
                 for (int x = 0; x <= width - 1; x++)
                 {
-                    if(highlights != null && highlights.Contains(new(x, y)))
+                    if (highlights != null && highlights.Contains(new(x, y)))
                     {
                         Console.Write(temp);
                         temp = "";
@@ -32,7 +28,7 @@ namespace Advent_of_Code_2022.libs
                     {
                         temp += grid[x, y];
                     }
-                    
+
                 }
                 temp += "\n";
                 Console.Write(temp);

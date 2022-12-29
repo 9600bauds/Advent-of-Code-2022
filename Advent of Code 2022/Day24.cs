@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Runtime.Intrinsics.X86;
+using System.Drawing;
 
 namespace Advent_of_Code_2022
 {
@@ -42,8 +43,8 @@ namespace Advent_of_Code_2022
 
         class Board
         {
-            public System.Drawing.Point start;
-            public System.Drawing.Point end;
+            public Point start;
+            public Point end;
             public int width;
             public int height;
             //Blizzards are stored as a set of 2d arrays representing their initial position. To get the position of a blizzard at minute M,
@@ -92,7 +93,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public char[,] Board2Grid(System.Drawing.Point expedition, int time)
+            public char[,] Board2Grid(Point expedition, int time)
             {
                 char[,] grid = new char[width, height];
                 for (int y = height - 1; y >= 0; y--)
@@ -105,9 +106,9 @@ namespace Advent_of_Code_2022
                 return grid;
             }
 
-            public char GetPixel(int x, int y, System.Drawing.Point expedition, int time)
+            public char GetPixel(int x, int y, Point expedition, int time)
             {
-                System.Drawing.Point p = new(x, y);
+                Point p = new(x, y);
                 if (p == expedition)
                 {
                     return 'E';
@@ -167,7 +168,7 @@ namespace Advent_of_Code_2022
             //Basically a more performant way of checking if getPixel == '·'
             public bool CoordIsSafe(int x, int y, int time)
             {
-                System.Drawing.Point coord = new(x, y);
+                Point coord = new(x, y);
                 if (coord == start || coord == end)
                 {
                     return true;
@@ -202,7 +203,7 @@ namespace Advent_of_Code_2022
 
             public void Render(Gamestate game)
             {
-                GridRenderer.Render(0, 10, Board2Grid(game.expeditionPos, game.time), new List<System.Drawing.Point>() { game.expeditionPos });
+                GridRenderer.Render(0, 10, Board2Grid(game.expeditionPos, game.time), new List<Point>() { game.expeditionPos });
             }
         }
 
@@ -257,8 +258,8 @@ namespace Advent_of_Code_2022
 
         class Gamestate : IComparable
         {
-            public System.Drawing.Point expeditionPos;
-            public System.Drawing.Point targetPos;
+            public Point expeditionPos;
+            public Point targetPos;
             public int time;
             public int score;
             public int distance;
@@ -267,7 +268,7 @@ namespace Advent_of_Code_2022
             public static Dictionary<char, (int, int)> destinations = new() { { 'S', (0, -1)}, { 'E', (1, 0) }, { '·', (0, 0) }, { 'N', (0, 1) }, { 'W', (-1, 0)} };
             public static Dictionary<char, int> timewastage = new() { { 'S', 0 }, { 'E', 0 }, { '·', 1 }, { 'N', 2 }, { 'W', 2 } };
 
-            public Gamestate(System.Drawing.Point expeditionPos, System.Drawing.Point targetPos, int time, string sequence)
+            public Gamestate(Point expeditionPos, Point targetPos, int time, string sequence)
             {
                 this.expeditionPos = expeditionPos;
                 this.targetPos = targetPos;
@@ -281,7 +282,7 @@ namespace Advent_of_Code_2022
             public List<Gamestate> Children(Board board)
             {
                 List<Gamestate> children = new();
-                foreach (KeyValuePair<System.Drawing.Point, char> entry in GetValidDestinations(board))
+                foreach (KeyValuePair<Point, char> entry in GetValidDestinations(board))
                 {
                     Gamestate child = new(entry.Key, targetPos, time + 1, sequence + entry.Value);
                     children.Add(child);
@@ -289,9 +290,9 @@ namespace Advent_of_Code_2022
                 return children;
             }
 
-            public Dictionary<System.Drawing.Point, char> GetValidDestinations(Board board)
+            public Dictionary<Point, char> GetValidDestinations(Board board)
             {
-                Dictionary <System.Drawing.Point, char> validDestinations = new();
+                Dictionary <Point, char> validDestinations = new();
                 foreach (KeyValuePair<char, (int X, int Y)> entry in destinations)
                 {
                     //Note that we don't actually care about the state of the board right now. 
@@ -301,7 +302,7 @@ namespace Advent_of_Code_2022
                     int y = expeditionPos.Y + entry.Value.Y;
                     if (board.CoordIsSafe(x, y, time + 1))
                     {
-                        validDestinations.Add(new System.Drawing.Point(x, y), entry.Key);
+                        validDestinations.Add(new Point(x, y), entry.Key);
                     }
                 }
                 return validDestinations;

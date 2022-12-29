@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace Advent_of_Code_2022.libs
 {
@@ -19,14 +15,14 @@ namespace Advent_of_Code_2022.libs
         public static int RealModulo(int num, int mod)
         {
             num %= mod;
-            if(num < 0)
+            if (num < 0)
             {
                 num += mod;
             }
             return num;
         }
 
-        public static int ManhattanDistance(System.Drawing.Point a, System.Drawing.Point b)
+        public static int ManhattanDistance(Point a, Point b)
         {
             return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }

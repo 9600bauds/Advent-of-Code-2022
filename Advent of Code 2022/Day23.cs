@@ -45,12 +45,12 @@ namespace Advent_of_Code_2022
 
         public class Elf
         {
-            public System.Drawing.Point coords;
+            public Point coords;
             public static char sprite = '#';
             public static string[] propositionDirs = { "N", "S", "W", "E" };
 
 
-            public Elf(System.Drawing.Point coords)
+            public Elf(Point coords)
             {
                 this.coords = coords;
             }
@@ -60,21 +60,21 @@ namespace Advent_of_Code_2022
                 return coords.ToString();
             }
 
-            public void Move(System.Drawing.Point coords)
+            public void Move(Point coords)
             {
                 this.coords = coords;
             }
 
             public void ProposeMovement(Gamestate gamestate)
             {
-                Dictionary<System.Drawing.Point, Elf> elves = gamestate.board.elves;
+                Dictionary<Point, Elf> elves = gamestate.board.elves;
 
                 List<string> takenSpots = new();
                 foreach (KeyValuePair<string, (short, short)> entry in Dir2Offset)
                 {
                     string dir = entry.Key;
                     (short X, short Y) = entry.Value;
-                    System.Drawing.Point toCheck = new(coords.X + X, coords.Y + Y);
+                    Point toCheck = new(coords.X + X, coords.Y + Y);
                     if (elves.ContainsKey(toCheck))
                     {
                         takenSpots.Add(dir);
@@ -95,7 +95,7 @@ namespace Advent_of_Code_2022
                     if(takenSpots.Intersect(dirsToCheck).Count() == 0)
                     {
                         (short X, short Y) = Dir2Offset[dir];
-                        System.Drawing.Point myDestination = new(coords.X + X, coords.Y + Y);
+                        Point myDestination = new(coords.X + X, coords.Y + Y);
                         gamestate.AddProposition(myDestination, this);
                         return;
                     }
@@ -106,7 +106,7 @@ namespace Advent_of_Code_2022
         public class Gamestate
         {
             public int turnsElapsed = 0;
-            public Dictionary<System.Drawing.Point, List<Elf>> elfPropositions = new();
+            public Dictionary<Point, List<Elf>> elfPropositions = new();
             public Board board;
 
             public Gamestate(Board board)
@@ -125,8 +125,8 @@ namespace Advent_of_Code_2022
             public void ElfMovingPhase()
             {
 
-                foreach(KeyValuePair<System.Drawing.Point, List<Elf>> entry in elfPropositions){
-                    System.Drawing.Point p = entry.Key;
+                foreach(KeyValuePair<Point, List<Elf>> entry in elfPropositions){
+                    Point p = entry.Key;
                     List<Elf> list = entry.Value;
                     if(list.Count > 1)
                     {
@@ -150,7 +150,7 @@ namespace Advent_of_Code_2022
                 return true;
             }
 
-            public void MoveElf(System.Drawing.Point oldLoc, System.Drawing.Point newLoc)
+            public void MoveElf(Point oldLoc, Point newLoc)
             {
                 Elf elf = board.elves[oldLoc];
                 board.elves.Remove(oldLoc);
@@ -159,7 +159,7 @@ namespace Advent_of_Code_2022
                 board.AdjustSize(newLoc);
             }
 
-            public void AddProposition(System.Drawing.Point coords, Elf elf)
+            public void AddProposition(Point coords, Elf elf)
             {
                 if (!elfPropositions.ContainsKey(coords))
                 {
@@ -172,7 +172,7 @@ namespace Advent_of_Code_2022
         public class Board 
         {
             public Rectangle viewport;
-            public Dictionary<System.Drawing.Point, Elf> elves;
+            public Dictionary<Point, Elf> elves;
             public char background;
             public Gamestate gamestate;
 
@@ -193,7 +193,7 @@ namespace Advent_of_Code_2022
                         char currChar = inputByLine[height - 1 - y][x];
                         if(currChar == Elf.sprite)
                         {
-                            Elf elf = new(new System.Drawing.Point(x, y));
+                            Elf elf = new(new Point(x, y));
                             elves.Add(elf.coords, elf);
                             AdjustSize(elf.coords);
                         }
@@ -206,7 +206,7 @@ namespace Advent_of_Code_2022
                 GridRenderer.Render(20 - viewport.Width / 2, 20 - viewport.Height / 2, ToCharGrid());
             }
             
-            public void AdjustSize(System.Drawing.Point coords)
+            public void AdjustSize(Point coords)
             {
                 if(coords.X < viewport.X)
                 {
@@ -247,7 +247,7 @@ namespace Advent_of_Code_2022
 
             public char GetPixel(int x, int y)
             {
-                if(elves.ContainsKey(new System.Drawing.Point(x, y)))
+                if(elves.ContainsKey(new Point(x, y)))
                 {
                     return Elf.sprite;
                 }
@@ -258,7 +258,7 @@ namespace Advent_of_Code_2022
             {
                 int emptySpots = 0;
                 int minx = int.MaxValue; int miny = int.MaxValue, maxx = int.MinValue, maxy = int.MinValue;
-                foreach(System.Drawing.Point p in elves.Keys)
+                foreach(Point p in elves.Keys)
                 {
                     minx = Math.Min(minx, p.X);
                     miny = Math.Min(miny, p.Y);
@@ -270,7 +270,7 @@ namespace Advent_of_Code_2022
                 {
                     for (int x = minx; x <= maxx; x++)
                     {
-                        if (!elves.ContainsKey(new System.Drawing.Point(x, y)))
+                        if (!elves.ContainsKey(new Point(x, y)))
                         {
                             emptySpots++;
                         }
