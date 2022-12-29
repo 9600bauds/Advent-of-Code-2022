@@ -317,7 +317,7 @@ namespace Advent_of_Code_2022
                     throw new ArgumentException("Object is not a Gamestate!");
 
                 int scoreCompare = this.score.CompareTo(otherGame.score);
-                if(scoreCompare != 0) //If scores are the same, we still want to add both, sort them based on the sequence instead
+                if(scoreCompare != 0)
                 {
                     return scoreCompare;
                 }
@@ -329,13 +329,15 @@ namespace Advent_of_Code_2022
                 int distCompare = this.distance.CompareTo(otherGame.distance);
                 if (distCompare != 0)
                 {
-                    return distCompare;
+                    return -distCompare; //Smaller distance = better
                 }
                 if (this.expeditionPos == otherGame.expeditionPos && this.time == otherGame.time)
                 {
                     return 0; //You know what yeah they're the same.
                 }
-                return -1; //Nondeterministic, don't care
+                //This is nondeterministic, since the order in which the games are analyzed would affect the final order
+                //But this works for my purposes so, I find it acceptable.
+                return -1; 
             }
 
             public override string? ToString()

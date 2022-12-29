@@ -37,10 +37,9 @@ namespace Advent_of_Code_2022
             {
                 board.Draw();
             }
+            //This assumes that the number of turns before people stop moving is >10, but whatever...
             Console.WriteLine($"First turn where noone moved: {board.gamestate.turnsElapsed + 1}");
             board.Draw();
-
-
         }
 
         public class Elf
@@ -70,6 +69,8 @@ namespace Advent_of_Code_2022
                 Dictionary<Point, Elf> elves = gamestate.board.elves;
 
                 List<string> takenSpots = new();
+                //First we simply check all 8 tiles around us, disregarding which one is supposed to come first.
+                //This will tell us if we need to move at all, and also we can reference the results later so we don't need to check everything again.
                 foreach (KeyValuePair<string, (short, short)> entry in Dir2Offset)
                 {
                     string dir = entry.Key;
@@ -87,12 +88,13 @@ namespace Advent_of_Code_2022
                
                 for (int i = 0; i < propositionDirs.Length; i++)
                 {
+                    //We know which direction to start from by keeping track of the turns elapsed and using modulo on the sequence of directions.
                     int index = Utils.RealModulo(gamestate.turnsElapsed + i, propositionDirs.Length);
                     string dir = propositionDirs[index];
-                    List<string> dirsToCheck = new() { dir };
-                    dirsToCheck.AddRange(AdjacentDirs[dir]);
+                    List<string> dirsToCheck = new() { dir }; //We start with just the cardinal direction (e.g. North)
+                    dirsToCheck.AddRange(AdjacentDirs[dir]); //We add the adjacent diagonal directions (e.g. NW, NE)
 
-                    if(takenSpots.Intersect(dirsToCheck).Count() == 0)
+                    if(takenSpots.Intersect(dirsToCheck).Count() == 0) //Get the intersection between the tiles to check and the taken tiles.
                     {
                         (short X, short Y) = Dir2Offset[dir];
                         Point myDestination = new(coords.X + X, coords.Y + Y);
@@ -124,11 +126,10 @@ namespace Advent_of_Code_2022
 
             public void ElfMovingPhase()
             {
-
                 foreach(KeyValuePair<Point, List<Elf>> entry in elfPropositions){
                     Point p = entry.Key;
                     List<Elf> list = entry.Value;
-                    if(list.Count > 1)
+                    if(list.Count > 1) //No move for you
                     {
                         continue;
                     }
@@ -203,7 +204,7 @@ namespace Advent_of_Code_2022
 
             public void Draw()
             {
-                GridRenderer.Render(20 - viewport.Width / 2, 20 - viewport.Height / 2, ToCharGrid());
+                GridRenderer.Render(20 - viewport.Width / 2, 20 - viewport.Height / 2, ToCharGrid()); //needs some work
             }
             
             public void AdjustSize(Point coords)

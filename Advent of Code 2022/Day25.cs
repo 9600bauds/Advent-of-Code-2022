@@ -54,11 +54,15 @@
                     output = dec2Char[(int)(tmp / currPow)] + output;
                     input -= tmp;
                 }
-                else if (tmp < nextPow)
+                else if (tmp < nextPow) //Should always be true
                 {
                     long times = (nextPow - tmp) / currPow;
                     output = dec2Char[(int)times * -1] + output;
                     input += currPow * times;
+                }
+                else
+                {
+                    throw new Exception($"Failed to parse dec2snafu for number: {input}");
                 }
             }
             return output;
