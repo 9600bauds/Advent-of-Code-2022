@@ -19,23 +19,23 @@ namespace Advent_of_Code_2022
 
             Gamestate game = new(board.start, board.end, 0, "");
             GamestateIterator iterator = new(board);
-            //iterator.PlaybackSequence(winner, "SS·NEESWNE·SSEEESS"); return;
+            //iterator.PlaybackSequence(game, "SS·NEESWNE·SSEEESS"); return;
 
             game = iterator.FindOptimalSolution(game);
             Console.WriteLine($"Extraction point reached in {game.time} turns! Sequence: {game.sequence}");
             board.Render(game);
-            Console.ReadKey();
-
             game.targetPos = board.start;
             game = iterator.FindOptimalSolution(game);
+            Console.ReadKey();
+
             Console.Clear();
             Console.WriteLine($"Got the snacks in {game.time} turns! Sequence: {game.sequence}");
             board.Render(game);
+            game.targetPos = board.end;
+            game = iterator.FindOptimalSolution(game);
             Console.ReadKey();
 
             board.Render(game);
-            game.targetPos = board.end;
-            game = iterator.FindOptimalSolution(game);
             Console.Clear();
             Console.WriteLine($"All done in {game.time} turns! Sequence: {game.sequence}");
             board.Render(game);
@@ -211,10 +211,11 @@ namespace Advent_of_Code_2022
         {
             public SortedSet<Gamestate> unfinishedGames;
             public Board board;
+            public static Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => {return Gamestate.CompareGames(a, b);});
 
             public GamestateIterator(Board board)
             {
-                this.unfinishedGames = new();
+                this.unfinishedGames = new(comparer);
                 this.board = board;
             }
 
@@ -256,7 +257,7 @@ namespace Advent_of_Code_2022
             }
         }
 
-        class Gamestate : IComparable
+        class Gamestate
         {
             public Point expeditionPos;
             public Point targetPos;
@@ -266,7 +267,6 @@ namespace Advent_of_Code_2022
             public string sequence;
             //List of tiles that we could move to each turn, in order of preference: S, E, wait, N, W.
             public static Dictionary<char, (int, int)> destinations = new() { { 'S', (0, -1)}, { 'E', (1, 0) }, { '·', (0, 0) }, { 'N', (0, 1) }, { 'W', (-1, 0)} };
-            public static Dictionary<char, int> timewastage = new() { { 'S', 0 }, { 'E', 0 }, { '·', 1 }, { 'N', 2 }, { 'W', 2 } };
 
             public Gamestate(Point expeditionPos, Point targetPos, int time, string sequence)
             {
@@ -308,36 +308,24 @@ namespace Advent_of_Code_2022
                 return validDestinations;
             }
 
-            public int CompareTo(object? obj)
+            // 0: Games are functionally equal.
+            // 1: B is better than A.
+            //-1: A is better than B, or the games are different but equally good. This will result in a nondeterministic order, which is OK for our purposes,
+            //but would be improper for an IComparable, which is why we're doing it like this, so we can use a custom Comparer instead.
+            public static int CompareGames(Gamestate a, Gamestate b)
             {
-                if (obj == null) return 1;
+                if (a.score < b.score) return -1;
+                if (a.score > b.score) return 1;
 
-                Gamestate? otherGame = obj as Gamestate;
-                if (otherGame == null)
-                    throw new ArgumentException("Object is not a Gamestate!");
+                if (a.distance < b.distance) return -1; //Smaller distance is better
+                if (a.distance > b.distance) return 1;
 
-                int scoreCompare = this.score.CompareTo(otherGame.score);
-                if(scoreCompare != 0)
+                if (a.expeditionPos == b.expeditionPos)
                 {
-                    return scoreCompare;
+                    return 0; //Same score, same location? Yeah it doesn't matter how they got there, they're functionally identical
                 }
-                int timeCompare = this.time.CompareTo(otherGame.time);
-                if (timeCompare != 0)
-                {
-                    return timeCompare;
-                }
-                int distCompare = this.distance.CompareTo(otherGame.distance);
-                if (distCompare != 0)
-                {
-                    return -distCompare; //Smaller distance = better
-                }
-                if (this.expeditionPos == otherGame.expeditionPos && this.time == otherGame.time)
-                {
-                    return 0; //You know what yeah they're the same.
-                }
-                //This is nondeterministic, since the order in which the games are analyzed would affect the final order
-                //But this works for my purposes so, I find it acceptable.
-                return -1; 
+
+                return -1; //Otherwise, they are different but equally good
             }
 
             public override string? ToString()
