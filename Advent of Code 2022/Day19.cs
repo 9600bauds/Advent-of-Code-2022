@@ -8,10 +8,11 @@ namespace Advent_of_Code_2022
     {
         static Regex parsingRegex = new Regex(@"Blueprint (?<blueprintId>[0-9\-]+): Each ore robot costs (?<orebotCost>[0-9\-]+) ore\. Each clay robot costs (?<claybotCost>[0-9\-]+) ore. Each obsidian robot costs (?<obsidianBotCost1>[0-9\-]+) ore and (?<obsidianBotCost2>[0-9\-]+) clay\. Each geode robot costs (?<geodebotCost1>[0-9\-]+) ore and (?<geodebotCost2>[0-9\-]+) obsidian\.");
 
-        //static string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
-        static string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 11 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 20 clay. Each geode robot costs 2 ore and 8 obsidian.\r\nBlueprint 3: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 4 ore and 16 obsidian.\r\nBlueprint 4: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 5: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 6: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 18 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 7: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 20 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 8: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 3 ore and 20 obsidian.\r\nBlueprint 9: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 4 ore and 9 obsidian.\r\nBlueprint 10: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 9 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 11: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 12: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 16 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 13: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 6 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 14: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 15: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 17 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 16: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 15 clay. Each geode robot costs 4 ore and 17 obsidian.\r\nBlueprint 17: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 18: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 19: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 4 ore and 15 obsidian.\r\nBlueprint 20: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 21: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 22: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 7 clay. Each geode robot costs 2 ore and 16 obsidian.\r\nBlueprint 23: Each ore robot costs 2 ore. Each clay robot costs 2 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 2 ore and 14 obsidian.\r\nBlueprint 24: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 25: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 11 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 26: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 7 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 27: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 16 clay. Each geode robot costs 2 ore and 9 obsidian.\r\nBlueprint 28: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 19 clay. Each geode robot costs 4 ore and 11 obsidian.\r\nBlueprint 29: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 5 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 30: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 20 clay. Each geode robot costs 2 ore and 17 obsidian.";
+        //const string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
+        const string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 11 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 20 clay. Each geode robot costs 2 ore and 8 obsidian.\r\nBlueprint 3: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 4 ore and 16 obsidian.\r\nBlueprint 4: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 5: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 6: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 18 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 7: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 20 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 8: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 3 ore and 20 obsidian.\r\nBlueprint 9: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 4 ore and 9 obsidian.\r\nBlueprint 10: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 9 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 11: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 12: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 16 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 13: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 6 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 14: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 15: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 17 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 16: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 15 clay. Each geode robot costs 4 ore and 17 obsidian.\r\nBlueprint 17: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 18: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 19: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 4 ore and 15 obsidian.\r\nBlueprint 20: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 21: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 22: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 7 clay. Each geode robot costs 2 ore and 16 obsidian.\r\nBlueprint 23: Each ore robot costs 2 ore. Each clay robot costs 2 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 2 ore and 14 obsidian.\r\nBlueprint 24: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 25: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 11 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 26: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 7 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 27: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 16 clay. Each geode robot costs 2 ore and 9 obsidian.\r\nBlueprint 28: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 19 clay. Each geode robot costs 4 ore and 11 obsidian.\r\nBlueprint 29: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 5 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 30: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 20 clay. Each geode robot costs 2 ore and 17 obsidian.";
 
-        static int starterTime = 32;
+        static int starterTime = 24;
+        //static int starterTime = 32;
 
         public static void Run()
         {
@@ -25,195 +26,187 @@ namespace Advent_of_Code_2022
                     Debug.Fail($"Could not parse {line}!");
                 }
                 int blueprintId = int.Parse(match.Groups["blueprintId"].Value);
-                int orebotCost = int.Parse(match.Groups["orebotCost"].Value);
-                int claybotCost = int.Parse(match.Groups["claybotCost"].Value);
-                (int, int) obsidianbotCost = (int.Parse(match.Groups["obsidianBotCost1"].Value), int.Parse(match.Groups["obsidianBotCost2"].Value));
-                (int, int) geodebotCost = (int.Parse(match.Groups["geodebotCost1"].Value), int.Parse(match.Groups["geodebotCost2"].Value));
-                blueprints.Add(blueprintId, new Blueprint(orebotCost, claybotCost, obsidianbotCost, geodebotCost));
+
+                Resources oreBotCost = new(int.Parse(match.Groups["orebotCost"].Value), 0, 0);
+                Resources clayBotcost = new(int.Parse(match.Groups["claybotCost"].Value), 0, 0);
+                Resources obsidianBotCost = new(int.Parse(match.Groups["obsidianBotCost1"].Value), int.Parse(match.Groups["obsidianBotCost2"].Value), 0);
+                Resources geodeBotCost = new(int.Parse(match.Groups["geodebotCost1"].Value), 0, int.Parse(match.Groups["geodebotCost2"].Value));
+
+                blueprints.Add(blueprintId, new Blueprint(oreBotCost, clayBotcost, obsidianBotCost, geodeBotCost));
             }
 
 
-            /*Gamestate bestGame = new Gamestate(blueprints[2], "", new[] { 1, 0, 0, 0 }, new[] { 0, 0, 0, 0 }, starterTime);
-            GameIterator.PlaybackGame(bestGame, "ore,ore,clay,clay,clay,clay,clay,obsidian,clay,obsidian,obsidian,ore,obsidian,obsidian,geode,obsidian,geode,obsidian,geode,obsidian,geode");
+            //Test case for the example given for Part 2, with 32 minutes
+            /*Gamestate bestGame = new Gamestate(blueprints[1], starterTime);
+            GameIterator.PlaybackGame(bestGame, "ore,clay,clay,clay,clay,clay,clay,clay,obsidian,obsidian,obsidian,obsidian,geode,obsidian,geode,geode,geode,geode,geode,geode,geode,geode");
             return;*/
 
             int qualityNumberSum = 0;
             foreach (KeyValuePair<int, Blueprint> entry in blueprints)
             {
-                Gamestate starterGame = new Gamestate(entry.Value, "", new[] { 1, 0, 0, 0 }, new[] { 0, 0, 0, 0 }, starterTime);
-                GameIterator iterator = new GameIterator(new HashSet<Gamestate>() { starterGame });
+                Gamestate starterGame = new(entry.Value, starterTime);
+                GameIterator iterator = new(new HashSet<Gamestate>() { starterGame });
                 iterator.StartDepthFirstSearch();
-                Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.resources[3]} geodes, quality number: {iterator.bestGame.resources[3] * entry.Key}");
-                qualityNumberSum += iterator.bestGame.resources[3] * entry.Key;
+                Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.score} geodes, quality number: {iterator.bestGame.score * entry.Key}");
+                qualityNumberSum += iterator.bestGame.score * entry.Key;
             }
             Console.WriteLine($"Sum of quality numbers: {qualityNumberSum}.");
 
-
-            //HashSet<Gamestate> SortedList = iterator.finishedGames.OrderBy(o => o.resources[3]).Reverse().ToHashSet();
         }
 
         class Gamestate
         {
             public Blueprint blueprint;
             public string sequence;
-            public int[] bots;
-            public int[] resources;
+            public Resources bank; //We don't need to keep track of geodes per-turn, since nothing uses them
+            public Resources bots; //We don't need to keep track of geodebots, since their lifetime gains are deterministic
+            public int score; //This represents how many geodes we will have when our time runs out
             public int timeleft;
-            public string? choice;
+            public string choice;
             public static string[] choices = new[] { "ore", "clay", "obsidian", "geode" };
 
-            public Gamestate(Blueprint blueprint, string sequence, int[] bots, int[] resources, int timeleft)
+            public Gamestate(Blueprint blueprint, string sequence, Resources bots, Resources bank, int score, int timeleft)
             {
                 this.blueprint = blueprint;
                 this.sequence = sequence;
                 this.bots = bots;
-                this.resources = resources;
+                this.bank = bank;
+                this.score = score;
                 this.timeleft = timeleft;
+                choice = "";
             }
 
             public Gamestate(Gamestate original, string choice)
             {
                 this.blueprint = original.blueprint;
                 this.sequence = original.sequence + "," + choice;
-                this.bots = original.bots.ToArray();
-                this.resources = original.resources.ToArray();
+                this.bots = original.bots;
+                this.bank = original.bank;
                 this.timeleft = original.timeleft;
+                this.score = original.score;
                 this.choice = choice;
+            }
+
+            public Gamestate(Blueprint blueprint, int timeleft)
+            {
+                this.blueprint = blueprint;
+                this.timeleft = timeleft;
+                sequence = "";
+                bank = new(0, 0, 0);
+                bots = new(1, 0, 0);
+                score = 0;
+                choice = "";
             }
 
             public override string ToString()
             {
-                return $"{resources[3]}${sequence}";
-            }
-
-            public void SetChoice(string newChoice = "")
-            {
-                if (newChoice != "")
-                {
-                    choice = newChoice;
-                    return;
-                }
+                return $"{score}${sequence}";
             }
 
             public void FastForward(bool verbose = false)
             {
-                if (choice == "")
+                Resources botCost = blueprint.string2cost[choice];
+                int tta = TimeToAfford(botCost);
+                if (tta > UsableTimeRemaining())
                 {
-                    while (!IsFinished())
-                    {
-                        PassTime(1, verbose);
-                        return;
-                    }
-                }
-                int tta = TimeToAfford(choice);
-                if (tta > timeleft)
-                {
-                    PassTime(timeleft, verbose);
+                    PassTime(timeleft, verbose); //Game over!
                     return;
                 }
                 if (tta > 0)
                 {
                     PassTime(tta, verbose);
                 }
-                if (TimeToAfford(choice) <= 0 && timeleft > 0)
-                {
-                    PassTime(1, verbose);
-                    AddBot(choice, verbose);
-                }
+                PassTime(1, verbose, true);
+                DeductBotCost(choice, verbose);                
+                AddBot(choice, verbose);
             }
 
-            public void PassTime(int turns, bool verbose)
+            public void PassTime(int turns, bool verbose, bool suppressStats = false)
             {
                 timeleft -= turns;
-                for (int i = 0; i < resources.Length; i++)
-                {
-                    resources[i] += bots[i] * turns;
-                }
+                bank.ore += bots.ore * turns;
+                bank.clay += bots.clay * turns;
+                bank.obsidian += bots.obsidian * turns;
                 if (verbose)
                 {
                     Console.WriteLine($"==MINUTE {starterTime - timeleft}==");
-                    Console.WriteLine($"Bots: {string.Join(",", bots)} | Resources: {string.Join(",", resources)}");
+                    if (!suppressStats)
+                    {
+                        Console.WriteLine($"Bots: {string.Join(",", bots)} | Resources: {string.Join(",", bank)} | Score: {score}");
+                    }
+                }
+            }
+
+            public void DeductBotCost(string newBot, bool verbose)
+            {
+                Resources cost = blueprint.string2cost[newBot];
+                bank.ore -= cost.ore;
+                bank.clay -= cost.clay;
+                bank.obsidian -= cost.obsidian;
+                if (verbose)
+                {
+                    Console.WriteLine($"Spending {cost} to build {newBot}bot.");
                 }
             }
 
             public void AddBot(string newBot, bool verbose)
             {
+                if (newBot == "geode")
+                {
+                    score += timeleft;
+                    if (verbose)
+                    {
+                        Console.WriteLine($"Adding 1 {newBot}bot. It will make {timeleft} geodes, bringing our score to {score}.");
+                        Console.WriteLine($"Bots: {string.Join(",", bots)} | Resources: {string.Join(",", bank)} | Score: {score}");
+                    }
+                    return;
+                }
+
                 switch (newBot)
                 {
                     case "ore":
-                        resources[0] -= blueprint.orebotCost;
-                        bots[0]++;
-                        break;
+                        bots.ore++; break;
                     case "clay":
-                        resources[0] -= blueprint.claybotCost;
-                        bots[1]++;
-                        break;
+                        bots.clay++; break;
                     case "obsidian":
-                        resources[0] -= blueprint.obsidianbotCost.Item1;
-                        resources[1] -= blueprint.obsidianbotCost.Item2;
-                        bots[2]++;
-                        break;
-                    case "geode":
-                        resources[0] -= blueprint.geodebotCost.Item1;
-                        resources[2] -= blueprint.geodebotCost.Item2;
-                        bots[3]++;
-                        break;
+                        bots.obsidian++; break;
                 }
                 if (verbose)
                 {
                     Console.WriteLine($"Adding 1 {newBot}bot...");
-                    Console.WriteLine($"Bots: {string.Join(",", bots)} | Resources: {string.Join(",", resources)}");
+                    Console.WriteLine($"Bots: {string.Join(",", bots)} | Resources: {string.Join(",", bank)} | Score: {score}");
                 }
             }
 
-            public int TimeToAfford(string bot)
+            public int TimeToAfford(Resources botCost)
             {
-                int tta = 999;
-                int tta2;
-                switch (bot)
+                int tta = 0;
+                if (botCost.ore > bank.ore)
                 {
-                    case "ore":
-                        tta = blueprint.orebotCost - resources[0];
-                        if (tta <= 0) { return 0; }
-                        tta = Utils.DivideIntsAndRoundUp(tta, bots[0]);
-                        break;
-                    case "clay":
-                        tta = blueprint.claybotCost - resources[0];
-                        if (tta <= 0) { return 0; }
-                        tta = Utils.DivideIntsAndRoundUp(tta, bots[0]);
-                        break;
-                    case "obsidian":
-                        tta = blueprint.obsidianbotCost.Item1 - resources[0];
-                        tta2 = blueprint.obsidianbotCost.Item2 - resources[1];
-                        if (tta <= 0 && tta2 <= 0) { return 0; }
-                        tta = Utils.DivideIntsAndRoundUp(tta, bots[0]);
-                        tta2 = Utils.DivideIntsAndRoundUp(tta2, bots[1]);
-                        tta = Math.Max(tta, tta2);
-                        break;
-                    case "geode":
-                        tta = blueprint.geodebotCost.Item1 - resources[0];
-                        tta2 = blueprint.geodebotCost.Item2 - resources[2];
-                        if (tta <= 0 && tta2 <= 0) { return 0; }
-                        tta = Utils.DivideIntsAndRoundUp(tta, bots[0]);
-                        tta2 = Utils.DivideIntsAndRoundUp(tta2, bots[2]);
-                        tta = Math.Max(tta, tta2);
-                        break;
-                    default:
-                        Debug.Fail($"TTA called with invalid argument! {bot}");
-                        break;
+                    int deficit = Math.Max(0, botCost.ore - bank.ore);
+                    tta = Math.Max(tta, Utils.DivideIntsAndRoundUp(deficit, bots.ore));
+                }
+                if (botCost.clay > bank.clay)
+                {
+                    int deficit = Math.Max(0, botCost.clay - bank.clay);
+                    tta = Math.Max(tta, Utils.DivideIntsAndRoundUp(deficit, bots.clay));
+                }
+                if (botCost.obsidian > bank.obsidian)
+                {
+                    int deficit = Math.Max(0, botCost.obsidian - bank.obsidian);
+                    tta = Math.Max(tta, Utils.DivideIntsAndRoundUp(deficit, bots.obsidian));
                 }
                 return tta;
+            }
 
+            public int UsableTimeRemaining()
+            {
+                return timeleft - 1; //The last turn doesn't really matter, since nothing we can do will affect our total geode count.
             }
 
             public bool IsFinished()
             {
-                return timeleft == 0;
-            }
-
-            public void GameOver()
-            {
-
+                return UsableTimeRemaining() <= 0;
             }
 
             public void Clone(HashSet<Gamestate> unfinishedGames)
@@ -230,20 +223,19 @@ namespace Advent_of_Code_2022
             {
                 List<string> myChoices = choices.ToList();
 
-                int maxOreCost = new[] { blueprint.orebotCost, blueprint.claybotCost, blueprint.obsidianbotCost.Item1, blueprint.geodebotCost.Item1 }.Max();
-                if (bots[0] >= maxOreCost || resources[0] > maxOreCost * 2 || TimeToAfford("ore") > timeleft)
+                if (bots.ore >= blueprint.maxOreCost || bots.ore > blueprint.maxOreCost * 2 || TimeToAfford(blueprint.oreBotCost) > timeleft)
                 {
                     myChoices.Remove("ore");
                 }
-                if (bots[1] >= blueprint.obsidianbotCost.Item2 || resources[1] > blueprint.obsidianbotCost.Item2 * 2 || TimeToAfford("clay") > timeleft)
+                if (bots.clay >= blueprint.obsidianBotCost.clay || bank.clay > blueprint.obsidianBotCost.clay * 2 || TimeToAfford(blueprint.clayBotCost) > timeleft)
                 {
                     myChoices.Remove("clay");
                 }
-                if (bots[2] >= blueprint.geodebotCost.Item2 || resources[2] >= blueprint.geodebotCost.Item2 * 2 || bots[1] == 0 || TimeToAfford("obsidian") > timeleft)
+                if (bots.obsidian >= blueprint.geodeBotCost.obsidian || bank.obsidian >= blueprint.geodeBotCost.obsidian * 2 || bots.clay == 0 || TimeToAfford(blueprint.obsidianBotCost) > timeleft)
                 {
                     myChoices.Remove("obsidian");
                 }
-                if (bots[2] == 0 || TimeToAfford("geode") > timeleft)
+                if (bots.obsidian == 0 || TimeToAfford(blueprint.geodeBotCost) > timeleft)
                 {
                     myChoices.Remove("geode");
                 }
@@ -269,12 +261,12 @@ namespace Advent_of_Code_2022
                 List<string> stepList = steps.Split(',').ToList();
                 foreach (string step in stepList)
                 {
-                    game.SetChoice(step);
+                    game.choice = step;
                     game.FastForward(true);
                 }
                 while (!game.IsFinished())
                 {
-                    game.FastForward(true);
+                    game.PassTime(1, true);
                 }
             }
 
@@ -295,8 +287,7 @@ namespace Advent_of_Code_2022
                     game.FastForward();
                     if (game.IsFinished())
                     {
-                        game.GameOver();
-                        if (bestGame == null || bestGame.resources[3] < game.resources[3])
+                        if (bestGame == null || bestGame.score < game.score)
                         {
                             bestGame = game;
                             Console.WriteLine(game.sequence);
@@ -306,7 +297,6 @@ namespace Advent_of_Code_2022
                     {
                         game.Clone(unfinishedGames);
                     }
-                    //finishedGames.Add(game);
                     unfinishedGames.Remove(game);
 
                 }
@@ -315,17 +305,43 @@ namespace Advent_of_Code_2022
 
         class Blueprint
         {
-            public int orebotCost;
-            public int claybotCost;
-            public (int, int) obsidianbotCost;
-            public (int, int) geodebotCost;
+            public Resources oreBotCost;
+            public Resources clayBotCost;
+            public Resources obsidianBotCost;
+            public Resources geodeBotCost;
+            public Dictionary<string, Resources> string2cost;
+            public int maxOreCost;
 
-            public Blueprint(int orebotCost, int claybotCost, (int, int) obsidianbotCost, (int, int) geodebotCost)
+            public Blueprint(Resources oreBotCost, Resources clayBotCost, Resources obsidianBotCost, Resources geodeBotCost)
             {
-                this.orebotCost = orebotCost;
-                this.claybotCost = claybotCost;
-                this.obsidianbotCost = obsidianbotCost;
-                this.geodebotCost = geodebotCost;
+                this.oreBotCost = oreBotCost;
+                this.clayBotCost = clayBotCost;
+                this.obsidianBotCost = obsidianBotCost;
+                this.geodeBotCost = geodeBotCost;
+
+                string2cost = new() { { "ore", oreBotCost }, { "clay", clayBotCost }, { "obsidian", obsidianBotCost }, { "geode", geodeBotCost } };
+
+                int[] oreCosts = { oreBotCost.ore, clayBotCost.ore, obsidianBotCost.ore, geodeBotCost.ore };
+                maxOreCost = oreCosts.Max();
+            }
+        }
+
+        struct Resources
+        {
+            public int ore;
+            public int clay;
+            public int obsidian;
+
+            public Resources(int ore, int clay, int obsidian)
+            {
+                this.ore = ore;
+                this.clay = clay;
+                this.obsidian = obsidian;
+            }
+
+            public override string? ToString()
+            {
+                return $"{ore} ore, {clay} clay, {obsidian} obsidian";
             }
         }
     }
