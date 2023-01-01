@@ -25,28 +25,32 @@ namespace Advent_of_Code_2022
             GameIterator.PlaybackGame(bestGame, "ore,clay,clay,clay,clay,clay,clay,clay,obsidian,obsidian,obsidian,obsidian,geode,obsidian,geode,geode,geode,geode,geode,geode,geode,geode");
             return;*/
 
-            Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
+            Stopwatch stopwatch = new Stopwatch();
 
             Console.WriteLine($" == PART 1: {blueprints.Count} blueprints, {starterTime} minutes per ==");
-            PrintAnswer(blueprints, comparer);
+            stopwatch.Start();
+            PrintAnswer(blueprints);
+            Console.WriteLine($"Calculated Part 1 in {stopwatch.ElapsedMilliseconds} ms.");
 
-            Console.WriteLine($"\r\nPress any key for part 2...");
+            Console.WriteLine($"\r\nPress any key for part 2...\r\n");
             Console.ReadKey();
 
             Dictionary<int, Blueprint> blueprintsShort = blueprints.Where(kvp => kvp.Key < 4).ToDictionary(kvp => kvp.Key, kvp => kvp.Value); //Using the power of linq!!!
             starterTime = starterTimePart2;
             Console.WriteLine($" == PART 2: {blueprintsShort.Count} blueprints, {starterTime} minutes per ==");
-            PrintAnswer(blueprintsShort, comparer);
+            stopwatch.Restart();
+            PrintAnswer(blueprintsShort);
+            Console.WriteLine($"Calculated Part 2 in {stopwatch.ElapsedMilliseconds} ms.");
         }
 
-        public static void PrintAnswer(Dictionary<int, Blueprint> blueprints, Comparer<Gamestate> comparer)
+        public static void PrintAnswer(Dictionary<int, Blueprint> blueprints)
         {
             int qualityNumberSum = 0;
             long geodeMultiplication = 1;
             foreach (KeyValuePair<int, Blueprint> entry in blueprints)
             {
                 Gamestate starterGame = new(entry.Value, starterTime);
-                GameIterator iterator = new(starterGame, comparer);
+                GameIterator iterator = new(starterGame, Gamestate.comparer);
                 iterator.StartDepthFirstSearch();
                 Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.score} geodes, quality number: {iterator.bestGame.score * entry.Key}");
                 qualityNumberSum += iterator.bestGame.score * entry.Key;
@@ -88,7 +92,7 @@ namespace Advent_of_Code_2022
             public int score; //This represents how many geodes we will have when our time runs out
             public int timeleft;
             public string choice;
-            public static List<string> choices = new(){ "ore", "clay", "obsidian", "geode" };
+            public static Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
 
             public Gamestate(Blueprint blueprint, string sequence, Resources bots, Resources bank, int score, int timeleft)
             {
@@ -146,7 +150,7 @@ namespace Advent_of_Code_2022
                 AddBot(choice, verbose);
             }
 
-            public void PassTime(int turns, bool verbose, bool suppressStats = false)
+            public void PassTime(int turns, bool verbose = false, bool suppressStats = false)
             {
                 timeleft -= turns;
                 bank.ore += bots.ore * turns;
@@ -162,7 +166,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public void DeductBotCost(string newBot, bool verbose)
+            public void DeductBotCost(string newBot, bool verbose = false)
             {
                 Resources cost = blueprint.string2cost[newBot];
                 bank.ore -= cost.ore;
@@ -174,7 +178,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public void AddBot(string newBot, bool verbose)
+            public void AddBot(string newBot, bool verbose = false)
             {
                 if (newBot == "geode")
                 {
@@ -224,6 +228,11 @@ namespace Advent_of_Code_2022
                 return tta;
             }
 
+            public bool CanAfford(Resources botCost)
+            {
+                return bank.ore >= botCost.ore && bank.clay >= botCost.clay && bank.obsidian >= botCost.obsidian;
+            }
+
             public int UsableTimeRemaining()
             {
                 return timeleft - 1; //The last turn doesn't really matter, since nothing we can do will affect our total geode count.
@@ -248,17 +257,37 @@ namespace Advent_of_Code_2022
             {
                 //Assume that we were somehow able to build 1 geodebot per turn for the rest of the game, even if this is wildly unrealistic.
                 //If we STILL can't beat the best game, then we have literally no chance.
-                //Can probably add a more advanced heuristic here, but this works well enough.
                 int usableTime = UsableTimeRemaining();
-                int penalty = 0;
-                if (bots.clay == 0) penalty++;
-                if (bots.obsidian == 0) penalty++;
-                usableTime -= penalty;
-                int maxScorePossible = score + (usableTime * (usableTime + 1)) / 2;
-                if(maxScorePossible < bestGame.score)
+                int maxScorePossible = score + Utils.GaussSummation(usableTime);
+                if(maxScorePossible <= bestGame.score)
                 {
                     return true;
                 }
+                //Round 2! Let's actually create a mirror gamestate, our slightly-less-unrealistic utopia.
+                //In this utopia, we'll try to build a geodebot every single turn. And if we can't, we get an obsidianbot and an orebot for FREE!
+                //We'll actually simulate this utopia to see if it beats the best game.
+                //Simulating this isn't cheap, but it rules out so many dead ends that it cuts down total run time by around 50%.
+                Gamestate utopia = new Gamestate(this, "");
+                utopia.PassTime(1); //we check this as soon as our action finishes, so, hold that utopia for 1 turn
+                while (!utopia.IsFinished())
+                {
+                    if (utopia.CanAfford(blueprint.geodeBotCost))
+                    {
+                        utopia.DeductBotCost("geode");
+                        utopia.AddBot("geode");
+                    }
+                    else
+                    {
+                        utopia.AddBot("obsidian");
+                        utopia.AddBot("ore");
+                    }
+                    utopia.PassTime(1);
+                }
+                if(utopia.score <= bestGame.score)
+                {
+                    return true;
+                }
+
                 return false;
             }
 
@@ -343,12 +372,16 @@ namespace Advent_of_Code_2022
 
                     unfinishedGames.Remove(game);
 
-                    if (game.IsDeadEnd(bestGame))
+                    game.FastForward();
+
+                    if (bestGame.score > 0)
                     {
-                        continue;
+                        if (game.IsDeadEnd(bestGame))
+                        {
+                            continue;
+                        }
                     }
 
-                    game.FastForward();
                     if (game.IsFinished())
                     {
                         if (bestGame == null || bestGame.score < game.score)

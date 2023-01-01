@@ -27,6 +27,10 @@ namespace Advent_of_Code_2022.libs
             return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }
 
+        public static int GaussSummation(int num)
+        {
+            return (num * (num + 1)) / 2; //1 + 2 + 3 + 4 + ... + n-2 + n-1 + n. Basically the story of how Gauss quickly worked out the sum of the numbers from 1 to 100 was 5050.
+        }
 
         public static void WriteProgress(string s, int x)
         {
