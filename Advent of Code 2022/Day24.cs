@@ -314,7 +314,7 @@ namespace Advent_of_Code_2022
             //but would be improper for an IComparable, which is why we're doing it like this, so we can use a custom Comparer instead.
             public static int CompareGames(Gamestate a, Gamestate b)
             {
-                if (a.score < b.score) return -1;
+                if (a.score < b.score) return -1; //Smaller score is better (i don't really understand why but it is)
                 if (a.score > b.score) return 1;
 
                 if (a.distance < b.distance) return -1; //Smaller distance is better

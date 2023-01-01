@@ -11,10 +11,52 @@ namespace Advent_of_Code_2022
         //const string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
         const string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 11 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 20 clay. Each geode robot costs 2 ore and 8 obsidian.\r\nBlueprint 3: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 4 ore and 16 obsidian.\r\nBlueprint 4: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 5: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 6: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 18 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 7: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 20 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 8: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 15 clay. Each geode robot costs 3 ore and 20 obsidian.\r\nBlueprint 9: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 4 ore and 9 obsidian.\r\nBlueprint 10: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 9 clay. Each geode robot costs 3 ore and 15 obsidian.\r\nBlueprint 11: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 12: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 16 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 13: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 6 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 14: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 3 ore and 8 obsidian.\r\nBlueprint 15: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 17 clay. Each geode robot costs 3 ore and 16 obsidian.\r\nBlueprint 16: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 15 clay. Each geode robot costs 4 ore and 17 obsidian.\r\nBlueprint 17: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 9 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 18: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 8 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 19: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 4 ore and 15 obsidian.\r\nBlueprint 20: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 21: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 15 clay. Each geode robot costs 3 ore and 7 obsidian.\r\nBlueprint 22: Each ore robot costs 4 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 7 clay. Each geode robot costs 2 ore and 16 obsidian.\r\nBlueprint 23: Each ore robot costs 2 ore. Each clay robot costs 2 ore. Each obsidian robot costs 2 ore and 7 clay. Each geode robot costs 2 ore and 14 obsidian.\r\nBlueprint 24: Each ore robot costs 3 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 19 clay. Each geode robot costs 3 ore and 19 obsidian.\r\nBlueprint 25: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 11 clay. Each geode robot costs 3 ore and 14 obsidian.\r\nBlueprint 26: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 7 clay. Each geode robot costs 3 ore and 9 obsidian.\r\nBlueprint 27: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 2 ore and 16 clay. Each geode robot costs 2 ore and 9 obsidian.\r\nBlueprint 28: Each ore robot costs 3 ore. Each clay robot costs 4 ore. Each obsidian robot costs 4 ore and 19 clay. Each geode robot costs 4 ore and 11 obsidian.\r\nBlueprint 29: Each ore robot costs 4 ore. Each clay robot costs 3 ore. Each obsidian robot costs 2 ore and 5 clay. Each geode robot costs 2 ore and 10 obsidian.\r\nBlueprint 30: Each ore robot costs 2 ore. Each clay robot costs 4 ore. Each obsidian robot costs 3 ore and 20 clay. Each geode robot costs 2 ore and 17 obsidian.";
 
-        static int starterTime = 24;
-        //static int starterTime = 32;
+        const int starterTimePart1 = 24;
+        const int starterTimePart2 = 32;
+
+        static int starterTime = starterTimePart1;
 
         public static void Run()
+        {
+            Dictionary<int, Blueprint> blueprints = ParseInput(input);
+
+            //Test case for the example given for Part 2, with 32 minutes (make sure you're using the example input)
+            /*Gamestate bestGame = new Gamestate(blueprints[1], starterTime);
+            GameIterator.PlaybackGame(bestGame, "ore,clay,clay,clay,clay,clay,clay,clay,obsidian,obsidian,obsidian,obsidian,geode,obsidian,geode,geode,geode,geode,geode,geode,geode,geode");
+            return;*/
+
+            Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
+
+            Console.WriteLine($" == PART 1: {blueprints.Count} blueprints, {starterTime} minutes per ==");
+            PrintAnswer(blueprints, comparer);
+
+            Console.WriteLine($"\r\nPress any key for part 2...");
+            Console.ReadKey();
+
+            Dictionary<int, Blueprint> blueprintsShort = blueprints.Where(kvp => kvp.Key < 4).ToDictionary(kvp => kvp.Key, kvp => kvp.Value); //Using the power of linq!!!
+            starterTime = starterTimePart2;
+            Console.WriteLine($" == PART 2: {blueprintsShort.Count} blueprints, {starterTime} minutes per ==");
+            PrintAnswer(blueprintsShort, comparer);
+        }
+
+        public static void PrintAnswer(Dictionary<int, Blueprint> blueprints, Comparer<Gamestate> comparer)
+        {
+            int qualityNumberSum = 0;
+            long geodeMultiplication = 1;
+            foreach (KeyValuePair<int, Blueprint> entry in blueprints)
+            {
+                Gamestate starterGame = new(entry.Value, starterTime);
+                GameIterator iterator = new(starterGame, comparer);
+                iterator.StartDepthFirstSearch();
+                Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.score} geodes, quality number: {iterator.bestGame.score * entry.Key}");
+                qualityNumberSum += iterator.bestGame.score * entry.Key;
+                geodeMultiplication *= iterator.bestGame.score;
+            }
+            Console.WriteLine($"Sum of quality numbers: {qualityNumberSum}.");
+            Console.WriteLine($"Multiplication of highest geode count: {geodeMultiplication}.");
+        }
+
+        public static Dictionary<int, Blueprint> ParseInput(string input)
         {
             List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
             Dictionary<int, Blueprint> blueprints = new();
@@ -34,27 +76,10 @@ namespace Advent_of_Code_2022
 
                 blueprints.Add(blueprintId, new Blueprint(oreBotCost, clayBotcost, obsidianBotCost, geodeBotCost));
             }
-
-
-            //Test case for the example given for Part 2, with 32 minutes
-            /*Gamestate bestGame = new Gamestate(blueprints[1], starterTime);
-            GameIterator.PlaybackGame(bestGame, "ore,clay,clay,clay,clay,clay,clay,clay,obsidian,obsidian,obsidian,obsidian,geode,obsidian,geode,geode,geode,geode,geode,geode,geode,geode");
-            return;*/
-
-            int qualityNumberSum = 0;
-            foreach (KeyValuePair<int, Blueprint> entry in blueprints)
-            {
-                Gamestate starterGame = new(entry.Value, starterTime);
-                GameIterator iterator = new(new HashSet<Gamestate>() { starterGame });
-                iterator.StartDepthFirstSearch();
-                Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.score} geodes, quality number: {iterator.bestGame.score * entry.Key}");
-                qualityNumberSum += iterator.bestGame.score * entry.Key;
-            }
-            Console.WriteLine($"Sum of quality numbers: {qualityNumberSum}.");
-
+            return blueprints;
         }
 
-        class Gamestate
+        public class Gamestate
         {
             public Blueprint blueprint;
             public string sequence;
@@ -63,7 +88,7 @@ namespace Advent_of_Code_2022
             public int score; //This represents how many geodes we will have when our time runs out
             public int timeleft;
             public string choice;
-            public static string[] choices = new[] { "ore", "clay", "obsidian", "geode" };
+            public static List<string> choices = new(){ "ore", "clay", "obsidian", "geode" };
 
             public Gamestate(Blueprint blueprint, string sequence, Resources bots, Resources bank, int score, int timeleft)
             {
@@ -117,7 +142,7 @@ namespace Advent_of_Code_2022
                     PassTime(tta, verbose);
                 }
                 PassTime(1, verbose, true);
-                DeductBotCost(choice, verbose);                
+                DeductBotCost(choice, verbose);
                 AddBot(choice, verbose);
             }
 
@@ -209,51 +234,90 @@ namespace Advent_of_Code_2022
                 return UsableTimeRemaining() <= 0;
             }
 
-            public void Clone(HashSet<Gamestate> unfinishedGames)
+            public void Clone(SortedSet<Gamestate> unfinishedGames)
             {
-                string[] myChoices = GetChoices();
+                List<string> myChoices = GetChoices();
                 foreach (string newChoice in myChoices)
                 {
-                    Gamestate clone = new Gamestate(this, newChoice);
+                    Gamestate clone = new(this, newChoice);
                     unfinishedGames.Add(clone);
                 }
             }
 
-            public string[] GetChoices()
+            public bool IsDeadEnd(Gamestate bestGame)
             {
-                List<string> myChoices = choices.ToList();
+                //Assume that we were somehow able to build 1 geodebot per turn for the rest of the game, even if this is wildly unrealistic.
+                //If we STILL can't beat the best game, then we have literally no chance.
+                //Can probably add a more advanced heuristic here, but this works well enough.
+                int usableTime = UsableTimeRemaining();
+                int penalty = 0;
+                if (bots.clay == 0) penalty++;
+                if (bots.obsidian == 0) penalty++;
+                usableTime -= penalty;
+                int maxScorePossible = score + (usableTime * (usableTime + 1)) / 2;
+                if(maxScorePossible < bestGame.score)
+                {
+                    return true;
+                }
+                return false;
+            }
 
-                if (bots.ore >= blueprint.maxOreCost || bots.ore > blueprint.maxOreCost * 2 || TimeToAfford(blueprint.oreBotCost) > timeleft)
+            public List<string> GetChoices()
+            {
+                List<string> myChoices = new();
+
+                if (bots.ore < blueprint.maxOreCost && bots.ore <= blueprint.maxOreCost * 1.5 && TimeToAfford(blueprint.oreBotCost) <= timeleft)
                 {
-                    myChoices.Remove("ore");
+                    myChoices.Add("ore");
                 }
-                if (bots.clay >= blueprint.obsidianBotCost.clay || bank.clay > blueprint.obsidianBotCost.clay * 2 || TimeToAfford(blueprint.clayBotCost) > timeleft)
+                if (bots.clay < blueprint.obsidianBotCost.clay && bank.clay <= blueprint.obsidianBotCost.clay * 1.5 && TimeToAfford(blueprint.clayBotCost) <= timeleft)
                 {
-                    myChoices.Remove("clay");
+                    myChoices.Add("clay");
                 }
-                if (bots.obsidian >= blueprint.geodeBotCost.obsidian || bank.obsidian >= blueprint.geodeBotCost.obsidian * 2 || bots.clay == 0 || TimeToAfford(blueprint.obsidianBotCost) > timeleft)
+                if (bots.obsidian < blueprint.geodeBotCost.obsidian && bank.obsidian <= blueprint.geodeBotCost.obsidian * 1.5 && bots.clay != 0 && TimeToAfford(blueprint.obsidianBotCost) <= timeleft)
                 {
-                    myChoices.Remove("obsidian");
+                    myChoices.Add("obsidian");
                 }
-                if (bots.obsidian == 0 || TimeToAfford(blueprint.geodeBotCost) > timeleft)
+                if (bots.obsidian != 0 && TimeToAfford(blueprint.geodeBotCost) <= timeleft)
                 {
-                    myChoices.Remove("geode");
+                    myChoices.Add("geode");
                 }
 
-                return myChoices.ToArray();
+                return myChoices;
+            }
+
+            // 0: Games are functionally equal.
+            // 1: B is better than A.
+            //-1: A is better than B, or the games are different but equally good. This will result in a nondeterministic order, which is OK for our purposes,
+            //but would be improper for an IComparable, which is why we're doing it like this, so we can use a custom Comparer instead.
+            public static int CompareGames(Gamestate a, Gamestate b)
+            {
+                // Apparently removing an item from a sortedset makes it compare with itself? idk
+                if (Object.ReferenceEquals(a, b))
+                {
+                    return 0;
+                }
+
+                if (a.score > b.score) return -1; //Better score is better
+                if (a.score < b.score) return 1;
+
+                if (a.timeleft < b.timeleft) return -1; //Older games are better
+                if (a.timeleft > b.timeleft) return 1;
+
+                return -1; //Otherwise, they are different but equally good
             }
         }
 
-        class GameIterator
+        public class GameIterator
         {
-            public HashSet<Gamestate> unfinishedGames;
-            public HashSet<Gamestate> finishedGames;
+            public SortedSet<Gamestate> unfinishedGames;
             public Gamestate bestGame;
 
-            public GameIterator(HashSet<Gamestate> unfinishedGames)
+            public GameIterator(Gamestate starterGame, Comparer<Gamestate> comparer)
             {
-                this.unfinishedGames = unfinishedGames;
-                finishedGames = new();
+                unfinishedGames = new(comparer);
+                starterGame.Clone(unfinishedGames);
+                bestGame = starterGame;
             }
 
             public static void PlaybackGame(Gamestate game, string steps)
@@ -272,38 +336,36 @@ namespace Advent_of_Code_2022
 
             public void StartDepthFirstSearch()
             {
-                if (unfinishedGames.Count == 1)
-                {
-                    unfinishedGames.First().Clone(unfinishedGames);
-                    unfinishedGames.Remove(unfinishedGames.First());
-                }
                 while (unfinishedGames.Count > 0)
                 {
-                    Gamestate game = unfinishedGames.First();
-                    if (game.sequence == "")
+                    Gamestate? game = unfinishedGames.Min; //For some reason this is 50x faster than unfinishedGames.First() even though the result is basically the same?
+                    if(game == null) { break; }
+
+                    unfinishedGames.Remove(game);
+
+                    if (game.IsDeadEnd(bestGame))
                     {
-                        game.Clone(unfinishedGames);
+                        continue;
                     }
+
                     game.FastForward();
                     if (game.IsFinished())
                     {
                         if (bestGame == null || bestGame.score < game.score)
                         {
                             bestGame = game;
-                            Console.WriteLine(game.sequence);
+                            //Console.WriteLine(game.sequence);
                         }
                     }
                     else
                     {
                         game.Clone(unfinishedGames);
                     }
-                    unfinishedGames.Remove(game);
-
                 }
             }
         }
 
-        class Blueprint
+        public class Blueprint
         {
             public Resources oreBotCost;
             public Resources clayBotCost;
@@ -326,7 +388,7 @@ namespace Advent_of_Code_2022
             }
         }
 
-        struct Resources
+        public struct Resources
         {
             public int ore;
             public int clay;
