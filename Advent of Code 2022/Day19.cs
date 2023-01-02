@@ -29,7 +29,7 @@ namespace Advent_of_Code_2022
 
             Console.WriteLine($" == PART 1: {blueprints.Count} blueprints, {starterTime} minutes per ==");
             stopwatch.Start();
-            PrintAnswer(blueprints);
+            CalculateAnswer(blueprints);
             Console.WriteLine($"Calculated Part 1 in {stopwatch.ElapsedMilliseconds} ms.");
 
             Console.WriteLine($"\r\nPress any key for part 2...\r\n");
@@ -39,11 +39,15 @@ namespace Advent_of_Code_2022
             starterTime = starterTimePart2;
             Console.WriteLine($" == PART 2: {blueprintsShort.Count} blueprints, {starterTime} minutes per ==");
             stopwatch.Restart();
-            PrintAnswer(blueprintsShort);
+            CalculateAnswer(blueprintsShort);
             Console.WriteLine($"Calculated Part 2 in {stopwatch.ElapsedMilliseconds} ms.");
         }
 
-        public static void PrintAnswer(Dictionary<int, Blueprint> blueprints)
+        /// <summary>
+        /// Creates a starter game, creates a gamestateIterator, and searches through all possible sequences to find the optimal game for each blueprint in the given set.
+        /// </summary>
+        /// <param name="blueprints">Set of blueprints to test.</param>
+        public static void CalculateAnswer(Dictionary<int, Blueprint> blueprints)
         {
             int qualityNumberSum = 0;
             long geodeMultiplication = 1;
@@ -51,7 +55,7 @@ namespace Advent_of_Code_2022
             {
                 Gamestate starterGame = new(entry.Value, starterTime);
                 GameIterator iterator = new(starterGame, Gamestate.comparer);
-                iterator.StartDepthFirstSearch();
+                iterator.DepthFirstSearch();
                 Console.WriteLine($"Best game for blueprint {entry.Key} with {starterTime} minutes: {iterator.bestGame} with {iterator.bestGame.score} geodes, quality number: {iterator.bestGame.score * entry.Key}");
                 qualityNumberSum += iterator.bestGame.score * entry.Key;
                 geodeMultiplication *= iterator.bestGame.score;
@@ -83,15 +87,42 @@ namespace Advent_of_Code_2022
             return blueprints;
         }
 
+        /// <summary>
+        /// Represents a gamestate. We use this to simulate a game accordingly.
+        /// </summary>
         public class Gamestate
         {
+            /// <summary>
+            /// Which blueprint are we using?
+            /// </summary>
             public Blueprint blueprint;
-            public string sequence;
-            public Resources bank; //We don't need to keep track of geodes per-turn, since nothing uses them
-            public Resources bots; //We don't need to keep track of geodebots, since their lifetime gains are deterministic
-            public int score; //This represents how many geodes we will have when our time runs out
+            /// <summary>
+            /// How many of each resource we have banked. We don't keep track of geodes per-turn, since nothing uses them - the "score" var does that.
+            /// </summary>
+            public Resources bank;
+            /// <summary>
+            /// How many of each bot we own. We don't keep track of geodebots, since their gains are deterministic - we just calculate how many geodes they would give us
+            /// in their lifetime and add that to our "score".
+            /// </summary>
+            public Resources bots;
+            /// <summary>
+            /// Represents how many geodes we will have when our time runs out.
+            /// </summary>
+            public int score;
             public int timeleft;
+            /// <summary>
+            /// The robot that we want to build next.
+            /// We don't actually simulate all possibilities each turn, we pick 1 bot that we'd like to build and do nothing until we can build that bot.
+            /// Essentially, we don't simulate "what can we do each minute" but rather "what sequences of bots we could build"
+            /// </summary>
             public string choice;
+            /// <summary>
+            /// String to keep track of which sequence of bots we chose to build so far, not actually necessary to calculate the answer but nice to know. e.g. "ore,ore,clay,obsidian".
+            /// </summary>
+            public string sequence;
+            /// <summary>
+            /// Comparer that we use to determine whether a game is better than another game.
+            /// </summary>
             public static Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
 
             public Gamestate(Blueprint blueprint, string sequence, Resources bots, Resources bank, int score, int timeleft)
@@ -132,6 +163,10 @@ namespace Advent_of_Code_2022
                 return $"{score}${sequence}";
             }
 
+            /// <summary>
+            /// Skip time ahead until we can afford the bot we chose to build, or until the game is over.
+            /// </summary>
+            /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void FastForward(bool verbose = false)
             {
                 Resources botCost = blueprint.string2cost[choice];
@@ -150,6 +185,12 @@ namespace Advent_of_Code_2022
                 AddBot(choice, verbose);
             }
 
+            /// <summary>
+            /// Simulates the passage of time, decreasing our time left by this amount and increasing our resources correspondingly to our bot passive income.
+            /// </summary>
+            /// <param name="turns">How many minutes to simulate</param>
+            /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
+            /// <param name="suppressStats">Even if verbose is true, shut up about our stats.</param>
             public void PassTime(int turns, bool verbose = false, bool suppressStats = false)
             {
                 timeleft -= turns;
@@ -166,6 +207,11 @@ namespace Advent_of_Code_2022
                 }
             }
 
+            /// <summary>
+            /// Removes from our resources the cost that it would take to build this bot.
+            /// </summary>
+            /// <param name="newBot">String representing the bot desired. e.g. "ore", "clay", etc</param>
+            /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void DeductBotCost(string newBot, bool verbose = false)
             {
                 Resources cost = blueprint.string2cost[newBot];
@@ -178,6 +224,11 @@ namespace Advent_of_Code_2022
                 }
             }
 
+            /// <summary>
+            /// Add 1 of this bot to our bot count. If the bot is a geodebot, it instead increases our score by the amount that said geodebot would generate in its lifetime.
+            /// </summary>
+            /// <param name="newBot">String representing the bot we want. e.g. "ore", "clay", etc</param>
+            /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void AddBot(string newBot, bool verbose = false)
             {
                 if (newBot == "geode")
@@ -207,6 +258,11 @@ namespace Advent_of_Code_2022
                 }
             }
 
+            /// <summary>
+            /// How long would we have to wait to be able to afford this type of bot, according to our resources banked and our passive income?
+            /// </summary>
+            /// <param name="botCost">Resource cost of the bot we want to build.</param>
+            /// <returns>Turns we would have to wait. Can be 0, meaning we can afford it right now.</returns>
             public int TimeToAfford(Resources botCost)
             {
                 int tta = 0;
@@ -233,26 +289,43 @@ namespace Advent_of_Code_2022
                 return bank.ore >= botCost.ore && bank.clay >= botCost.clay && bank.obsidian >= botCost.obsidian;
             }
 
+            /// <summary>
+            /// Since we can't really do anything to affect our score in the last minute, it's not really "usable" and we don't simulate it.
+            /// </summary>
+            /// <returns>Amount of minutes we have left, excluding the last turn. So, timeleft - 1.</returns>
             public int UsableTimeRemaining()
             {
                 return timeleft - 1; //The last turn doesn't really matter, since nothing we can do will affect our total geode count.
             }
 
+            /// <summary>
+            /// Have we reached the end?
+            /// </summary>
+            /// <returns>False if we still have time to try other things, True if we're done here.</returns>
             public bool IsFinished()
             {
                 return UsableTimeRemaining() <= 0;
             }
 
-            public void Clone(SortedSet<Gamestate> unfinishedGames)
+            /// <summary>
+            /// We stand at a crossroads. For each choice that's viable for us, create a clone of ourselves that wants to follow that choice. Add them to the set.
+            /// </summary>
+            /// <param name="unfinishedGames">The set where our clones will end up.</param>
+            public void AddChildren(SortedSet<Gamestate> unfinishedGames)
             {
-                List<string> myChoices = GetChoices();
+                List<string> myChoices = GetViableChoices();
                 foreach (string newChoice in myChoices)
                 {
-                    Gamestate clone = new(this, newChoice);
-                    unfinishedGames.Add(clone);
+                    Gamestate child = new(this, newChoice);
+                    unfinishedGames.Add(child);
                 }
             }
 
+            /// <summary>
+            /// Compare this game to the best game discovered so far. Uses a couple different heuristics to determine whether this game has even a remote chance to beat the best game's score.
+            /// </summary>
+            /// <param name="bestGame">Game to compare ourselves against</param>
+            /// <returns>True if this game DEFINITELY has no chance to ever beat bestGame, False if there might be a possibility to beat it still, but we're not sure.</returns>
             public bool IsDeadEnd(Gamestate bestGame)
             {
                 //Assume that we were somehow able to build 1 geodebot per turn for the rest of the game, even if this is wildly unrealistic.
@@ -267,7 +340,7 @@ namespace Advent_of_Code_2022
                 //In this utopia, we'll try to build a geodebot every single turn. And if we can't, we get an obsidianbot and an orebot for FREE!
                 //We'll actually simulate this utopia to see if it beats the best game.
                 //Simulating this isn't cheap, but it rules out so many dead ends that it cuts down total run time by around 50%.
-                Gamestate utopia = new Gamestate(this, "");
+                Gamestate utopia = new Gamestate(this.blueprint, "", this.bots, this.bank, this.score, this.timeleft);
                 utopia.PassTime(1); //we check this as soon as our action finishes, so, hold that utopia for 1 turn
                 while (!utopia.IsFinished())
                 {
@@ -291,7 +364,13 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
-            public List<string> GetChoices()
+            /// <summary>
+            /// Choices of bots that are viable for this gamestate to want to build next, according to a few criteria.
+            /// Will ignore bots if we don't have their prequisites (e.g. no obsidianbots until we have clay), if we already have too much of that resource banked,
+            /// or if it would take too long for us to be able to afford that bot.
+            /// </summary>
+            /// <returns>A List of strings representing the choices that are viable for us. May return an empty list. Example: { "ore","clay","obsidian" }.</returns>
+            public List<string> GetViableChoices()
             {
                 List<string> myChoices = new();
 
@@ -315,10 +394,15 @@ namespace Advent_of_Code_2022
                 return myChoices;
             }
 
-            // 0: Games are functionally equal.
-            // 1: B is better than A.
-            //-1: A is better than B, or the games are different but equally good. This will result in a nondeterministic order, which is OK for our purposes,
-            //but would be improper for an IComparable, which is why we're doing it like this, so we can use a custom Comparer instead.
+
+            /// <summary>
+            /// Compares 2 games to find out which one is better.
+            /// If both games are equally viable, we'll just say A is better than B.
+            /// This will result in a nondeterministic order, which is OK for our purposes, but would be improper for an IComparable, which is why we're doing it like this, so we can use a custom Comparer instead.
+            /// </summary>
+            /// <param name="a"></param>
+            /// <param name="b"></param>
+            /// <returns>0 if the games are identical, 1 if B is better than A, -1 if A is better than B OR the games are different but equally viable.</returns>
             public static int CompareGames(Gamestate a, Gamestate b)
             {
                 // Apparently removing an item from a sortedset makes it compare with itself? idk
@@ -337,18 +421,32 @@ namespace Advent_of_Code_2022
             }
         }
 
+        /// <summary>
+        /// Class used to help in depth first search. Holds a list of games and then searches through them to find the best sequence to follow them on.
+        /// </summary>
         public class GameIterator
         {
+            /// <summary>
+            /// Set that holds the gamestates discovered so far. Makes use of a Comparer to sort it, the iterator will always continue searching the "best" game.
+            /// </summary>
             public SortedSet<Gamestate> unfinishedGames;
+            /// <summary>
+            /// Game with the highest score we've found so far.
+            /// </summary>
             public Gamestate bestGame;
 
             public GameIterator(Gamestate starterGame, Comparer<Gamestate> comparer)
             {
                 unfinishedGames = new(comparer);
-                starterGame.Clone(unfinishedGames);
+                starterGame.AddChildren(unfinishedGames);
                 bestGame = starterGame;
             }
 
+            /// <summary>
+            /// Plays back a given sequence of steps, providing a verbose step-by-step description of it. Used to verify the program works correctly by comparing it to the example given.
+            /// </summary>
+            /// <param name="game">A game to start from. Usually a "blank" game that's just started, but could be any other game.</param>
+            /// <param name="steps">Sequence of steps to take. Example: ore,ore,clay,obsidian,geode</param>
             public static void PlaybackGame(Gamestate game, string steps)
             {
                 List<string> stepList = steps.Split(',').ToList();
@@ -363,7 +461,12 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public void StartDepthFirstSearch()
+            /// <summary>
+            /// Searches through all possible gamestates to find the optimal one.
+            /// Requires you to have loaded a "starter" game (or games) in unfinishedGames.
+            /// Finishes when all viable possibilities have been explored. Uses some culling to rule out less-optimal sequences.
+            /// </summary>
+            public void DepthFirstSearch()
             {
                 while (unfinishedGames.Count > 0)
                 {
@@ -392,12 +495,15 @@ namespace Advent_of_Code_2022
                     }
                     else
                     {
-                        game.Clone(unfinishedGames);
+                        game.AddChildren(unfinishedGames);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Structure that represents a blueprint, as given in the input data. Holds info on how much each bot costs to make.
+        /// </summary>
         public class Blueprint
         {
             public Resources oreBotCost;
@@ -405,6 +511,9 @@ namespace Advent_of_Code_2022
             public Resources obsidianBotCost;
             public Resources geodeBotCost;
             public Dictionary<string, Resources> string2cost;
+            /// <summary>
+            /// Max ore cost from all bots in our blueprint. Since ore is the only resource that's required for all bots, knowing the max amount ever needed helps in a couple places.
+            /// </summary>
             public int maxOreCost;
 
             public Blueprint(Resources oreBotCost, Resources clayBotCost, Resources obsidianBotCost, Resources geodeBotCost)
@@ -421,6 +530,11 @@ namespace Advent_of_Code_2022
             }
         }
 
+        /// <summary>
+        /// Structure representing an amount of ore, clay, and obsidian.
+        /// Used for our bank (how many of each resource we hold), for blueprints (how many of each resource each bot costs) and for our bot count (how many bots of each resource we own).
+        /// Note that we don't track geodes. Since nothing costs geodes, this program abstracts them into "score" in the Gamestate class.
+        /// </summary>
         public struct Resources
         {
             public int ore;
