@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Advent_of_Code_2022
 {

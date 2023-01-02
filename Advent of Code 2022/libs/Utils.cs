@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Advent_of_Code_2022.libs
 {
@@ -44,7 +46,7 @@ namespace Advent_of_Code_2022.libs
                 Console.SetCursorPosition(x, 1);
                 Console.Write(s);
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
 
             }
@@ -54,7 +56,7 @@ namespace Advent_of_Code_2022.libs
                 {
                     Console.SetCursorPosition(origCol, origRow);
                 }
-                catch (ArgumentOutOfRangeException e)
+                catch (ArgumentOutOfRangeException)
                 {
                 }
             }
@@ -62,7 +64,7 @@ namespace Advent_of_Code_2022.libs
 
         public static void PrintList<T>(List<T> list)
         {
-            Console.WriteLine(String.Join(", ", list));
+            Console.WriteLine(string.Join(", ", list));
         }
     }
 }

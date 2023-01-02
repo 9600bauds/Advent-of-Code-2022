@@ -41,7 +41,7 @@ namespace Advent_of_Code_2022
             {
                 starterPlayer.TakeTurn(node, true);
             }*/
-            
+
             HashSet<Gamestate> unfinishedGamestates = new();
 
             Console.WriteLine($"=== GAME ONE ===");
@@ -106,7 +106,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            if(verbose) Console.WriteLine($"Loaded {valves.Count} valves with a total of {tunnels.Count} connections.");
+            if (verbose) Console.WriteLine($"Loaded {valves.Count} valves with a total of {tunnels.Count} connections.");
 
             int connectionsSimplified = 0;
             bool finished = false;
@@ -137,7 +137,7 @@ namespace Advent_of_Code_2022
 
             if (verbose)
             {
-                List<String> newLines = new();
+                List<string> newLines = new();
                 foreach (Node valve in valves.Values)
                 {
                     List<string> connectionStrings = new();
@@ -145,7 +145,7 @@ namespace Advent_of_Code_2022
                     {
                         connectionStrings.Add($"{entry.Key.id}{entry.Value}");
                     }
-                    newLines.Add($"Valve {valve.id} has flow rate={valve.flowRate}; tunnels lead to valves {String.Join(", ", connectionStrings)}");
+                    newLines.Add($"Valve {valve.id} has flow rate={valve.flowRate}; tunnels lead to valves {string.Join(", ", connectionStrings)}");
                 }
                 Console.WriteLine($"Optimized input:");
                 Console.WriteLine(String.Join("\r\n", newLines));
@@ -262,13 +262,14 @@ namespace Advent_of_Code_2022
             public List<Node> GetChoicesForPlayer(Player player)
             {
                 List<Node> choices = new();
-                foreach(Node node in nodesLeft)
+                foreach (Node node in nodesLeft)
                 {
-                    if (player.CanAfford(node)) {
+                    if (player.CanAfford(node))
+                    {
                         choices.Add(node);
                     }
                 }
-                if(players.Count > 1)
+                if (players.Count > 1)
                 {
                     choices.Add(stopNode); //When we have more than 1 player, we let the first players stop prematurely.
                 }
@@ -277,7 +278,7 @@ namespace Advent_of_Code_2022
 
             public override string ToString()
             {
-                return $"{String.Join(",", sequence)}";
+                return $"{string.Join(",", sequence)}";
             }
         }
 
@@ -328,7 +329,7 @@ namespace Advent_of_Code_2022
                             connectionsMade.Add(newConnection);
                         }
                     }
-                    //Console.WriteLine($"Simplifying {this} with {connectionsMade.Count} new connection{(connectionsMade.Count > 1 ? 's' : null)}: {String.Join(", ", connectionsMade)}");
+                    //Console.WriteLine($"Simplifying {this} with {connectionsMade.Count} new connection{(connectionsMade.Count > 1 ? 's' : null)}: {string.Join(", ", connectionsMade)}");
                     Delete();
                     /*foreach (Connection c in tunnels)
                     {
@@ -343,7 +344,7 @@ namespace Advent_of_Code_2022
             }
 
             //Recursive function used to find how far away the other nodes are.
-            public void DepthFirstSearch(Node requester, int depth) 
+            public void DepthFirstSearch(Node requester, int depth)
             {
                 List<Connection> newDiscoveries = new();
                 foreach (KeyValuePair<Node, Connection> entry in connections)
@@ -363,7 +364,7 @@ namespace Advent_of_Code_2022
             public void Delete()
             {
                 valves.Remove(id); //Goodbye cruel world!
-                foreach(Connection c in connections.Values)
+                foreach (Connection c in connections.Values)
                 {
                     c.Delete();
                 }
@@ -376,7 +377,7 @@ namespace Advent_of_Code_2022
                 {
                     connectionsString.Add($"{node.id}{connections[node].cost}");
                 }
-                return $"{id} {flowRate} [{String.Join(", ", connectionsString)}]";
+                return $"{id} {flowRate} [{string.Join(", ", connectionsString)}]";
             }
         }
 
@@ -403,7 +404,7 @@ namespace Advent_of_Code_2022
             }
             public Node GetPartner(Node node)
             {
-                if(node == nodeA)
+                if (node == nodeA)
                 {
                     return nodeB;
                 }

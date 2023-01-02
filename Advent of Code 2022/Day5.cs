@@ -31,7 +31,7 @@ namespace Advent_of_Code_2022
 
             for (int i = rowStrings.Count - 1; i >= 0; i--)
             {
-                String rowString = rowStrings[i];
+                string rowString = rowStrings[i];
                 //Console.WriteLine("Analyzing {0}...", rowString);
                 char[] rowArray = rowString.ToCharArray();
 
@@ -52,11 +52,11 @@ namespace Advent_of_Code_2022
 
         public static void PrintRacks(List<List<char>> racks)
         {
-            for(int i = maxStackHeight; i >= 0; i--)
+            for (int i = maxStackHeight; i >= 0; i--)
             {
                 //Console.WriteLine("Printing {0}...", i);
-                String rowVisualization = "";
-                for(int j = 0; j < racks.Count; j++)
+                string rowVisualization = "";
+                for (int j = 0; j < racks.Count; j++)
                 {
                     List<char> rack = racks[j];
                     //Console.WriteLine("Printing rack {0}, which has a count of {1}...", j, rack.Count);
@@ -71,10 +71,10 @@ namespace Advent_of_Code_2022
                 }
                 Console.WriteLine(rowVisualization);
             }
-            String numbers = "";
+            string numbers = "";
             for (int i = 0; i < racks.Count; i++)
             {
-                numbers += " " + (i+1).ToString() + "  ";
+                numbers += " " + (i + 1).ToString() + "  ";
             }
             Console.WriteLine(numbers);
         }
@@ -83,7 +83,7 @@ namespace Advent_of_Code_2022
         {
             List<char> fromRack = racks[fromRackIndex];
             List<char> toRack = racks[toRackIndex];
-            
+
             if (multipleAtATime)
             {
                 int index = fromRack.Count - amount;
@@ -104,9 +104,9 @@ namespace Advent_of_Code_2022
             }
         }
 
-        public static String GetSolution(List<List<char>> racks)
+        public static string GetSolution(List<List<char>> racks)
         {
-            String solution = "";
+            string solution = "";
             foreach (List<char> rack in racks)
             {
                 solution += rack.Last();
@@ -130,7 +130,7 @@ namespace Advent_of_Code_2022
             string pattern = @"(\d+)"; //Regex pattern for digits 0-9
             Regex myRegex = new Regex(pattern, RegexOptions.IgnoreCase);
             List<Instruction> finalInstructions = new List<Instruction>();
-            foreach (String instructionString in instructionStrings)
+            foreach (string instructionString in instructionStrings)
             {
                 MatchCollection matches = myRegex.Matches(instructionString);
                 Instruction instruction = new Instruction();
@@ -142,7 +142,7 @@ namespace Advent_of_Code_2022
 
             Console.WriteLine("Starting state:");
             PrintRacks(racks);
-            foreach(Instruction instruction in finalInstructions)
+            foreach (Instruction instruction in finalInstructions)
             {
                 MoveCrate(racks, instruction.fromRack - 1, instruction.toRack - 1, instruction.amount, false);
                 //Console.WriteLine("Moving {0} from {1} to {2} with the CrateMover9000...", instruction.amount, instruction.fromRack, instruction.toRack);

@@ -1,6 +1,11 @@
 ﻿using Advent_of_Code_2022.libs;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Advent_of_Code_2022
 {
@@ -117,7 +122,7 @@ namespace Advent_of_Code_2022
             /// </summary>
             public string choice;
             /// <summary>
-            /// String to keep track of which sequence of bots we chose to build so far, not actually necessary to calculate the answer but nice to know. e.g. "ore,ore,clay,obsidian".
+            /// string to keep track of which sequence of bots we chose to build so far, not actually necessary to calculate the answer but nice to know. e.g. "ore,ore,clay,obsidian".
             /// </summary>
             public string sequence;
             /// <summary>
@@ -210,7 +215,7 @@ namespace Advent_of_Code_2022
             /// <summary>
             /// Removes from our resources the cost that it would take to build this bot.
             /// </summary>
-            /// <param name="newBot">String representing the bot desired. e.g. "ore", "clay", etc</param>
+            /// <param name="newBot">string representing the bot desired. e.g. "ore", "clay", etc</param>
             /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void DeductBotCost(string newBot, bool verbose = false)
             {
@@ -227,7 +232,7 @@ namespace Advent_of_Code_2022
             /// <summary>
             /// Add 1 of this bot to our bot count. If the bot is a geodebot, it instead increases our score by the amount that said geodebot would generate in its lifetime.
             /// </summary>
-            /// <param name="newBot">String representing the bot we want. e.g. "ore", "clay", etc</param>
+            /// <param name="newBot">string representing the bot we want. e.g. "ore", "clay", etc</param>
             /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void AddBot(string newBot, bool verbose = false)
             {

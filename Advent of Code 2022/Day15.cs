@@ -1,6 +1,9 @@
 ﻿using Advent_of_Code_2022.libs;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Advent_of_Code_2022

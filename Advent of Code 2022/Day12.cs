@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,10 +25,10 @@ namespace Advent_of_Code_2022
             (int x, int y) ePos = (-1, -1);
             for (int y = gridHeight - 1; y >= 0; y--)
             {
-                for(int x = 0; x <= gridWidth - 1; x++)
+                for (int x = 0; x <= gridWidth - 1; x++)
                 {
-                    char c = charGrid[x,y];
-                    if(c == 'S')
+                    char c = charGrid[x, y];
+                    if (c == 'S')
                     {
                         sPos = (x, y);
                     }
@@ -41,7 +42,12 @@ namespace Advent_of_Code_2022
 
             RenderGrid(charGrid);
             Console.WriteLine($"Insert a delay for the simulation in miliseconds...");
-            int sleepTime = int.Parse(Console.ReadLine()); //validation is for suckers
+            string? userInput = Console.ReadLine();
+            if (userInput == null)
+            {
+                throw new ArgumentNullException();
+            }
+            int sleepTime = int.Parse(userInput); //validation is for suckers
             int stepsPart1 = RunSimulation(charGrid, sPos, 'E', false, sleepTime);
             Console.WriteLine($"\r\nWent from S to E in {stepsPart1} steps!");
             Thread.Sleep(1000);
@@ -52,7 +58,7 @@ namespace Advent_of_Code_2022
 
         public static char[,] String2Grid(string input)
         {
-            List<String> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            List<string> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
             int gridHeight = inputPerLine.Count;
             int gridWidth = inputPerLine[0].Length;
 
@@ -140,7 +146,7 @@ namespace Advent_of_Code_2022
             }
         }
 
-        public static void RenderGrid(char[,] charGrid, List<(int x, int y)> highlights = null, char highlightChar = '█')
+        public static void RenderGrid(char[,] charGrid, List<(int x, int y)>? highlights = null, char highlightChar = '█')
         {
             string temp = "";
             for (int y = charGrid.GetLength(1) - 1; y >= 0; y--)

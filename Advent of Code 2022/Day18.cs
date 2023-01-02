@@ -17,7 +17,7 @@ namespace Advent_of_Code_2022
         {
             List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
             List<(int, int, int)> coords = new();
-            foreach(string line in inputByLine)
+            foreach (string line in inputByLine)
             {
                 string[] splitLine = line.Split(',');
                 coords.Add((int.Parse(splitLine[0]), int.Parse(splitLine[1]), int.Parse(splitLine[2])));
@@ -37,7 +37,7 @@ namespace Advent_of_Code_2022
             bool[,,] drop = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
 
             int sides1 = 0;
-            foreach((int x, int y, int z) coord in coords)
+            foreach ((int x, int y, int z) coord in coords)
             {
                 drop[coord.x - minx, coord.y - miny, coord.z - minz] = true;
                 sides1 += 6;
@@ -73,7 +73,7 @@ namespace Advent_of_Code_2022
                     for (int z = 0; z <= zdelta; z++)
                     {
                         bool cube1 = drop[x, y, z];
-                        bool cube2 = drop[x, y+ 1, z];
+                        bool cube2 = drop[x, y + 1, z];
                         if (cube1 && cube2)
                         {
                             sides1 -= 2;
@@ -109,8 +109,8 @@ namespace Advent_of_Code_2022
             //At each tile searched: If we're air and our neighbor is rock, add 1 side. If we're rock and our neighbor is OOB, add 1 side.
             bool[,,] visited = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
             int sides2 = 0;
-            List<(int x, int y, int z)> toCheck = new() {};
-            for (int y = 0; y <= ydelta; y++) 
+            List<(int x, int y, int z)> toCheck = new() { };
+            for (int y = 0; y <= ydelta; y++)
             {
                 for (int z = 0; z <= zdelta; z++)
                 {
@@ -162,7 +162,7 @@ namespace Advent_of_Code_2022
             int xdelta = cube.GetLength(0) - 1;
             int ydelta = cube.GetLength(1) - 1;
             int zdelta = cube.GetLength(2) - 1;
-            List<(int x, int y, int z)> offsets = new(){ (1, 0, 0), (-1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, 1), (0, 0, -1) };
+            List<(int x, int y, int z)> offsets = new() { (1, 0, 0), (-1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, 1), (0, 0, -1) };
             foreach ((int x, int y, int z) offset in offsets)
             {
                 int newx = x + offset.x;

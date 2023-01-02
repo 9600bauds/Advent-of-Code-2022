@@ -1,6 +1,9 @@
 ﻿using Advent_of_Code_2022.libs;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 
 namespace Advent_of_Code_2022
 {

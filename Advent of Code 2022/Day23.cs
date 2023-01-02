@@ -81,11 +81,11 @@ namespace Advent_of_Code_2022
                         takenSpots.Add(dir);
                     }
                 }
-                if(takenSpots.Count == 0)
+                if (takenSpots.Count == 0)
                 {
                     return;
                 }
-               
+
                 for (int i = 0; i < propositionDirs.Length; i++)
                 {
                     //We know which direction to start from by keeping track of the turns elapsed and using modulo on the sequence of directions.
@@ -94,7 +94,7 @@ namespace Advent_of_Code_2022
                     List<string> dirsToCheck = new() { dir }; //We start with just the cardinal direction (e.g. North)
                     dirsToCheck.AddRange(AdjacentDirs[dir]); //We add the adjacent diagonal directions (e.g. NW, NE)
 
-                    if(takenSpots.Intersect(dirsToCheck).Count() == 0) //Get the intersection between the tiles to check and the taken tiles.
+                    if (takenSpots.Intersect(dirsToCheck).Count() == 0) //Get the intersection between the tiles to check and the taken tiles.
                     {
                         (short X, short Y) = Dir2Offset[dir];
                         Point myDestination = new(coords.X + X, coords.Y + Y);
@@ -118,7 +118,7 @@ namespace Advent_of_Code_2022
 
             public void ElfPropositionPhase()
             {
-                foreach(Elf elf in board.elves.Values)
+                foreach (Elf elf in board.elves.Values)
                 {
                     elf.ProposeMovement(this);
                 }
@@ -126,10 +126,11 @@ namespace Advent_of_Code_2022
 
             public void ElfMovingPhase()
             {
-                foreach(KeyValuePair<Point, List<Elf>> entry in elfPropositions){
+                foreach (KeyValuePair<Point, List<Elf>> entry in elfPropositions)
+                {
                     Point p = entry.Key;
                     List<Elf> list = entry.Value;
-                    if(list.Count > 1) //No move for you
+                    if (list.Count > 1) //No move for you
                     {
                         continue;
                     }
@@ -141,7 +142,7 @@ namespace Advent_of_Code_2022
             public bool TakeTurn()
             {
                 ElfPropositionPhase();
-                if(elfPropositions.Count == 0)
+                if (elfPropositions.Count == 0)
                 {
                     return false;
                 }
@@ -170,7 +171,7 @@ namespace Advent_of_Code_2022
             }
         }
 
-        public class Board 
+        public class Board
         {
             public Rectangle viewport;
             public Dictionary<Point, Elf> elves;
@@ -192,7 +193,7 @@ namespace Advent_of_Code_2022
                     for (int x = 0; x < width; x++)
                     {
                         char currChar = inputByLine[height - 1 - y][x];
-                        if(currChar == Elf.sprite)
+                        if (currChar == Elf.sprite)
                         {
                             Elf elf = new(new Point(x, y));
                             elves.Add(elf.coords, elf);
@@ -206,10 +207,10 @@ namespace Advent_of_Code_2022
             {
                 GridRenderer.Render(20 - viewport.Width / 2, 20 - viewport.Height / 2, ToCharGrid()); //needs some work
             }
-            
+
             public void AdjustSize(Point coords)
             {
-                if(coords.X < viewport.X)
+                if (coords.X < viewport.X)
                 {
                     int diff = Math.Abs(viewport.X - coords.X);
                     viewport.Width += diff;
@@ -248,7 +249,7 @@ namespace Advent_of_Code_2022
 
             public char GetPixel(int x, int y)
             {
-                if(elves.ContainsKey(new Point(x, y)))
+                if (elves.ContainsKey(new Point(x, y)))
                 {
                     return Elf.sprite;
                 }
@@ -259,7 +260,7 @@ namespace Advent_of_Code_2022
             {
                 int emptySpots = 0;
                 int minx = int.MaxValue; int miny = int.MaxValue, maxx = int.MinValue, maxy = int.MinValue;
-                foreach(Point p in elves.Keys)
+                foreach (Point p in elves.Keys)
                 {
                     minx = Math.Min(minx, p.X);
                     miny = Math.Min(miny, p.Y);

@@ -15,20 +15,30 @@ namespace Advent_of_Code_2022
         class Monkey //turns out
         {
             public List<long> items = new List<long>();
-            public List<String> itemHistory = new List<string>();
-            public String operation;
-            public String test;
+            public List<string> itemHistory = new List<string>();
+            public string operation;
+            public string test;
             public int preferredMonkey; //Monkey that they will chuck at if the test is successful
             public int secondaryMonkey; //Monkey that they will chuck at if the test is unsuccessful
             //public int boredomMultiplier = 3;
             public int boredomMultiplier = 1;
             public int activity; //Increased by 1 when we do something
 
+            public Monkey(List<long> items, List<string> itemHistory, string operation, string test, int preferredMonkey, int secondaryMonkey)
+            {
+                this.items = items;
+                this.itemHistory = itemHistory;
+                this.operation = operation;
+                this.test = test;
+                this.preferredMonkey = preferredMonkey;
+                this.secondaryMonkey = secondaryMonkey;
+            }
+
             public long PerformOperation(long item, bool verbose)
             {
-                String[] operationSplit = operation.Split(' ');
-                String sign = operationSplit[1];
-                String operandString = operationSplit[2];
+                string[] operationSplit = operation.Split(' ');
+                string sign = operationSplit[1];
+                string operandString = operationSplit[2];
                 long operand;
                 if (operandString == "old")
                 {
@@ -59,14 +69,15 @@ namespace Advent_of_Code_2022
                     Debug.Fail($"Operation not recognized! ({operation})");
                 }
 
-                if (boredomMultiplier != 1) {
+                if (boredomMultiplier != 1)
+                {
                     item /= boredomMultiplier;
                     if (verbose)
                     {
                         Console.WriteLine($"    Monkey gets bored with item. Worry level is divided by {boredomMultiplier} to {item}.");
                     }
                 }
-                else if(item > lowestCommonDenominator)
+                else if (item > lowestCommonDenominator)
                 {
                     item %= lowestCommonDenominator;
                     if (verbose)
@@ -79,8 +90,8 @@ namespace Advent_of_Code_2022
 
             public bool TestPassed(long item, bool verbose)
             {
-                String[] testSplit = test.Split(' ');
-                String operation = testSplit[0];
+                string[] testSplit = test.Split(' ');
+                string operation = testSplit[0];
                 int operand = int.Parse(testSplit[2]);
                 bool success = false;
                 if (operation == "divisible")
@@ -141,9 +152,9 @@ namespace Advent_of_Code_2022
 
                     itemHistory[i] += $"{operation.Split(' ')[1]}{operation.Split(' ')[2]}";
 
-                    
+
                     bool success = TestPassed(item, verbose);
-                    
+
                     int recipient;
                     if (success)
                     {
@@ -166,7 +177,6 @@ namespace Advent_of_Code_2022
         static int monkeysICanChase = 2;
         static int lowestCommonDenominator = 1;
 
-        static Regex newMonkeyRegex = new Regex(@"Monkey (?<newMonkey>\d+):");
         static Regex startingItemsRegex = new Regex(@"Starting items: (?<startingItems>[0-9 ,]+)");
         static Regex operationRegex = new Regex(@"Operation: new = (?<operation>.+)");
         static Regex testRegex = new Regex(@"Test: (?<test>.+)");
@@ -178,7 +188,7 @@ namespace Advent_of_Code_2022
             for (int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
             {
                 Monkey monkey = monkeys[monkeyIndex];
-                Console.WriteLine($"Monkey {monkeyIndex}: {String.Join(", ", monkey.items)}");
+                Console.WriteLine($"Monkey {monkeyIndex}: {string.Join(", ", monkey.items)}");
             }
         }
         public static void DisplayHistory()
@@ -186,73 +196,70 @@ namespace Advent_of_Code_2022
             for (int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
             {
                 Monkey monkey = monkeys[monkeyIndex];
-                Console.WriteLine($"Monkey {monkeyIndex}: {String.Join(", ", monkey.itemHistory)}");
+                Console.WriteLine($"Monkey {monkeyIndex}: {string.Join(", ", monkey.itemHistory)}");
             }
         }
 
         public static void Run()
         {
-            //String input = "Monkey 0:\r\n  Starting items: 79, 98\r\n  Operation: new = old * 19\r\n  Test: divisible by 23\r\n    If true: throw to monkey 2\r\n    If false: throw to monkey 3\r\n\r\nMonkey 1:\r\n  Starting items: 54, 65, 75, 74\r\n  Operation: new = old + 6\r\n  Test: divisible by 19\r\n    If true: throw to monkey 2\r\n    If false: throw to monkey 0\r\n\r\nMonkey 2:\r\n  Starting items: 79, 60, 97\r\n  Operation: new = old * old\r\n  Test: divisible by 13\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 3\r\n\r\nMonkey 3:\r\n  Starting items: 74\r\n  Operation: new = old + 3\r\n  Test: divisible by 17\r\n    If true: throw to monkey 0\r\n    If false: throw to monkey 1";
-            String input = "Monkey 0:\r\n  Starting items: 93, 98\r\n  Operation: new = old * 17\r\n  Test: divisible by 19\r\n    If true: throw to monkey 5\r\n    If false: throw to monkey 3\r\n\r\nMonkey 1:\r\n  Starting items: 95, 72, 98, 82, 86\r\n  Operation: new = old + 5\r\n  Test: divisible by 13\r\n    If true: throw to monkey 7\r\n    If false: throw to monkey 6\r\n\r\nMonkey 2:\r\n  Starting items: 85, 62, 82, 86, 70, 65, 83, 76\r\n  Operation: new = old + 8\r\n  Test: divisible by 5\r\n    If true: throw to monkey 3\r\n    If false: throw to monkey 0\r\n\r\nMonkey 3:\r\n  Starting items: 86, 70, 71, 56\r\n  Operation: new = old + 1\r\n  Test: divisible by 7\r\n    If true: throw to monkey 4\r\n    If false: throw to monkey 5\r\n\r\nMonkey 4:\r\n  Starting items: 77, 71, 86, 52, 81, 67\r\n  Operation: new = old + 4\r\n  Test: divisible by 17\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 6\r\n\r\nMonkey 5:\r\n  Starting items: 89, 87, 60, 78, 54, 77, 98\r\n  Operation: new = old * 7\r\n  Test: divisible by 2\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 4\r\n\r\nMonkey 6:\r\n  Starting items: 69, 65, 63\r\n  Operation: new = old + 6\r\n  Test: divisible by 3\r\n    If true: throw to monkey 7\r\n    If false: throw to monkey 2\r\n\r\nMonkey 7:\r\n  Starting items: 89\r\n  Operation: new = old * old\r\n  Test: divisible by 11\r\n    If true: throw to monkey 0\r\n    If false: throw to monkey 2";
-            List<String> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            //string input = "Monkey 0:\r\n  Starting items: 79, 98\r\n  Operation: new = old * 19\r\n  Test: divisible by 23\r\n    If true: throw to monkey 2\r\n    If false: throw to monkey 3\r\n\r\nMonkey 1:\r\n  Starting items: 54, 65, 75, 74\r\n  Operation: new = old + 6\r\n  Test: divisible by 19\r\n    If true: throw to monkey 2\r\n    If false: throw to monkey 0\r\n\r\nMonkey 2:\r\n  Starting items: 79, 60, 97\r\n  Operation: new = old * old\r\n  Test: divisible by 13\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 3\r\n\r\nMonkey 3:\r\n  Starting items: 74\r\n  Operation: new = old + 3\r\n  Test: divisible by 17\r\n    If true: throw to monkey 0\r\n    If false: throw to monkey 1";
+            string input = "Monkey 0:\r\n  Starting items: 93, 98\r\n  Operation: new = old * 17\r\n  Test: divisible by 19\r\n    If true: throw to monkey 5\r\n    If false: throw to monkey 3\r\n\r\nMonkey 1:\r\n  Starting items: 95, 72, 98, 82, 86\r\n  Operation: new = old + 5\r\n  Test: divisible by 13\r\n    If true: throw to monkey 7\r\n    If false: throw to monkey 6\r\n\r\nMonkey 2:\r\n  Starting items: 85, 62, 82, 86, 70, 65, 83, 76\r\n  Operation: new = old + 8\r\n  Test: divisible by 5\r\n    If true: throw to monkey 3\r\n    If false: throw to monkey 0\r\n\r\nMonkey 3:\r\n  Starting items: 86, 70, 71, 56\r\n  Operation: new = old + 1\r\n  Test: divisible by 7\r\n    If true: throw to monkey 4\r\n    If false: throw to monkey 5\r\n\r\nMonkey 4:\r\n  Starting items: 77, 71, 86, 52, 81, 67\r\n  Operation: new = old + 4\r\n  Test: divisible by 17\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 6\r\n\r\nMonkey 5:\r\n  Starting items: 89, 87, 60, 78, 54, 77, 98\r\n  Operation: new = old * 7\r\n  Test: divisible by 2\r\n    If true: throw to monkey 1\r\n    If false: throw to monkey 4\r\n\r\nMonkey 6:\r\n  Starting items: 69, 65, 63\r\n  Operation: new = old + 6\r\n  Test: divisible by 3\r\n    If true: throw to monkey 7\r\n    If false: throw to monkey 2\r\n\r\nMonkey 7:\r\n  Starting items: 89\r\n  Operation: new = old * old\r\n  Test: divisible by 11\r\n    If true: throw to monkey 0\r\n    If false: throw to monkey 2";
+            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
 
-            Monkey currentMonkey = null;
-            foreach (String line in inputByLine)
+            foreach (string line in inputByLine)
             {
                 Match match;
-                match = newMonkeyRegex.Match(line);
-                if (match.Success)
-                {
-                    if(currentMonkey != null)
-                    {
-                        monkeys.Add(currentMonkey);
-                    }
-                    currentMonkey = new Monkey();
-                    continue;
-                }
+                List<long> items = new List<long>();
+                List<string> itemHistory = new List<string>();
+                string? operation = null;
+                string? test = null;
+                int? preferredMonkey = null;
+                int? secondaryMonkey = null;
+
                 match = startingItemsRegex.Match(line);
                 if (match.Success)
                 {
-                    String startingItemsString = match.Groups["startingItems"].Value;
-                    String[] startingItemsArray = startingItemsString.Split(new[] { ", " }, StringSplitOptions.None);
-                    foreach(String startingItem in startingItemsArray)
+                    string startingItemsString = match.Groups["startingItems"].Value;
+                    string[] startingItemsArray = startingItemsString.Split(new[] { ", " }, StringSplitOptions.None);
+                    foreach (string startingItem in startingItemsArray)
                     {
-                        currentMonkey.items.Add(int.Parse(startingItem));
-                        currentMonkey.itemHistory.Add(startingItem);
+                        items.Add(int.Parse(startingItem));
+                        itemHistory.Add(startingItem);
                     }
                     continue;
                 }
                 match = operationRegex.Match(line);
                 if (match.Success)
                 {
-                    String operation = match.Groups["operation"].Value;
-                    currentMonkey.operation = operation;
+                    operation = match.Groups["operation"].Value;
                     continue;
                 }
                 match = testRegex.Match(line);
                 if (match.Success)
                 {
-                    String test = match.Groups["test"].Value;
-                    currentMonkey.test = test;
+                    test = match.Groups["test"].Value;
                     continue;
                 }
                 match = preferredMonkeyRegex.Match(line);
                 if (match.Success)
                 {
-                    int monkeyIndex = int.Parse(match.Groups["monkey"].Value);
-                    currentMonkey.preferredMonkey = monkeyIndex;
+                    preferredMonkey = int.Parse(match.Groups["monkey"].Value);
                     continue;
                 }
                 match = secondaryMonkeyRegex.Match(line);
                 if (match.Success)
                 {
-                    int monkeyIndex = int.Parse(match.Groups["monkey"].Value);
-                    currentMonkey.secondaryMonkey = monkeyIndex;
+                    secondaryMonkey = int.Parse(match.Groups["monkey"].Value);
                     continue;
                 }
+                if(operation == null || test == null || preferredMonkey == null || secondaryMonkey == null)
+                {
+                    throw new ArgumentNullException("Monkey was missing data!");
+                }
+                monkeys.Add(new(items, itemHistory, operation, test, preferredMonkey.Value, secondaryMonkey.Value));
             }
-            monkeys.Add(currentMonkey); //Finish loading the last monkey
-            foreach(Monkey monkey in monkeys)
+            
+            foreach (Monkey monkey in monkeys)
             {
                 lowestCommonDenominator *= int.Parse(monkey.test.Split(' ')[2]);
             }
@@ -266,7 +273,7 @@ namespace Advent_of_Code_2022
                 {
                     Console.WriteLine($" == ROUND {round} == ");
                 }
-                for(int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
+                for (int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
                 {
                     Monkey monkey = monkeys[monkeyIndex];
                     monkey.TakeTurn(monkeyIndex, verbosity > 1);
@@ -277,7 +284,7 @@ namespace Advent_of_Code_2022
                     DisplayMonkeys();
                     //DisplayHistory();
                 }
-                else if(verbosity == 0)
+                else if (verbosity == 0)
                 {
                     if (interestingRounds.Contains(round))
                     {
@@ -305,7 +312,7 @@ namespace Advent_of_Code_2022
             for (int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
             {
                 Monkey monkey = monkeys[monkeyIndex];
-                String blurb = monkeysSorted.IndexOf(monkey) > monkeysICanChase-1 ? "" : "Winner!";
+                string blurb = monkeysSorted.IndexOf(monkey) > monkeysICanChase - 1 ? "" : "Winner!";
                 Console.WriteLine($"Monkey {monkeyIndex} inspected items {monkey.activity} times. {blurb}");
             }
             Console.WriteLine($"Final monkey business: {monkeyBusiness}");

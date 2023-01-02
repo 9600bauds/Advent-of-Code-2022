@@ -12,8 +12,8 @@ namespace Advent_of_Code_2022
         class Display
         {
             public int screenWidth;
-            public List<String> screenLines = new List<string>();
-            public String currentScreenLine = "";
+            public List<string> screenLines = new List<string>();
+            public string currentScreenLine = "";
 
             public Display(int screenWidth)
             {
@@ -58,7 +58,7 @@ namespace Advent_of_Code_2022
             public int offset = 0; //By how much will the register be affected when we stop being busy?
             public int tick = 0;
 
-            public void Tick(List<String> instructions)
+            public void Tick(List<string> instructions)
             {
                 tick++;
                 if (busy > 0)
@@ -75,9 +75,9 @@ namespace Advent_of_Code_2022
                     return;
                 }
 
-                String line = instructions[0];
-                String[] lineSplit = line.Split(' ');
-                String command = lineSplit[0];
+                string line = instructions[0];
+                string[] lineSplit = line.Split(' ');
+                string command = lineSplit[0];
                 switch (command)
                 {
                     case "noop":
@@ -93,10 +93,10 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            //String input = "noop\r\naddx 3\r\naddx -5";
-            //String input = "addx 15\r\naddx -11\r\naddx 6\r\naddx -3\r\naddx 5\r\naddx -1\r\naddx -8\r\naddx 13\r\naddx 4\r\nnoop\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx -35\r\naddx 1\r\naddx 24\r\naddx -19\r\naddx 1\r\naddx 16\r\naddx -11\r\nnoop\r\nnoop\r\naddx 21\r\naddx -15\r\nnoop\r\nnoop\r\naddx -3\r\naddx 9\r\naddx 1\r\naddx -3\r\naddx 8\r\naddx 1\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx -36\r\nnoop\r\naddx 1\r\naddx 7\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\naddx 6\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\nnoop\r\naddx 7\r\naddx 1\r\nnoop\r\naddx -13\r\naddx 13\r\naddx 7\r\nnoop\r\naddx 1\r\naddx -33\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\naddx 8\r\nnoop\r\naddx -1\r\naddx 2\r\naddx 1\r\nnoop\r\naddx 17\r\naddx -9\r\naddx 1\r\naddx 1\r\naddx -3\r\naddx 11\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\naddx 1\r\nnoop\r\nnoop\r\naddx -13\r\naddx -19\r\naddx 1\r\naddx 3\r\naddx 26\r\naddx -30\r\naddx 12\r\naddx -1\r\naddx 3\r\naddx 1\r\nnoop\r\nnoop\r\nnoop\r\naddx -9\r\naddx 18\r\naddx 1\r\naddx 2\r\nnoop\r\nnoop\r\naddx 9\r\nnoop\r\nnoop\r\nnoop\r\naddx -1\r\naddx 2\r\naddx -37\r\naddx 1\r\naddx 3\r\nnoop\r\naddx 15\r\naddx -21\r\naddx 22\r\naddx -6\r\naddx 1\r\nnoop\r\naddx 2\r\naddx 1\r\nnoop\r\naddx -10\r\nnoop\r\nnoop\r\naddx 20\r\naddx 1\r\naddx 2\r\naddx 2\r\naddx -6\r\naddx -11\r\nnoop\r\nnoop\r\nnoop";
-            String input = "noop\r\nnoop\r\nnoop\r\naddx 6\r\naddx -1\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 11\r\naddx -10\r\naddx 4\r\nnoop\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\naddx 4\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx -35\r\naddx -2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -28\r\naddx 28\r\naddx 5\r\naddx 2\r\naddx -9\r\naddx 10\r\naddx -38\r\nnoop\r\naddx 3\r\naddx 2\r\naddx 7\r\nnoop\r\nnoop\r\naddx -9\r\naddx 10\r\naddx 4\r\naddx 2\r\naddx 3\r\nnoop\r\nnoop\r\naddx -2\r\naddx 7\r\nnoop\r\nnoop\r\nnoop\r\naddx 3\r\naddx 5\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\naddx -35\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 2\r\nnoop\r\naddx 3\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx -25\r\nnoop\r\naddx 30\r\nnoop\r\naddx 1\r\nnoop\r\naddx 2\r\nnoop\r\naddx 3\r\naddx -38\r\nnoop\r\naddx 7\r\naddx -2\r\naddx 5\r\naddx 2\r\naddx -8\r\naddx 13\r\naddx -2\r\nnoop\r\naddx 3\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx -15\r\nnoop\r\naddx 20\r\naddx 3\r\nnoop\r\naddx 2\r\naddx -4\r\naddx 5\r\naddx -38\r\naddx 8\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\naddx 17\r\naddx -10\r\naddx 3\r\nnoop\r\naddx 2\r\naddx 1\r\naddx -16\r\naddx 19\r\naddx 2\r\nnoop\r\naddx 2\r\naddx 5\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop";
-            List<String> instructions = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            //string input = "noop\r\naddx 3\r\naddx -5";
+            //string input = "addx 15\r\naddx -11\r\naddx 6\r\naddx -3\r\naddx 5\r\naddx -1\r\naddx -8\r\naddx 13\r\naddx 4\r\nnoop\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx 5\r\naddx -1\r\naddx -35\r\naddx 1\r\naddx 24\r\naddx -19\r\naddx 1\r\naddx 16\r\naddx -11\r\nnoop\r\nnoop\r\naddx 21\r\naddx -15\r\nnoop\r\nnoop\r\naddx -3\r\naddx 9\r\naddx 1\r\naddx -3\r\naddx 8\r\naddx 1\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx -36\r\nnoop\r\naddx 1\r\naddx 7\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\naddx 6\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\nnoop\r\naddx 7\r\naddx 1\r\nnoop\r\naddx -13\r\naddx 13\r\naddx 7\r\nnoop\r\naddx 1\r\naddx -33\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\naddx 8\r\nnoop\r\naddx -1\r\naddx 2\r\naddx 1\r\nnoop\r\naddx 17\r\naddx -9\r\naddx 1\r\naddx 1\r\naddx -3\r\naddx 11\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\naddx 1\r\nnoop\r\nnoop\r\naddx -13\r\naddx -19\r\naddx 1\r\naddx 3\r\naddx 26\r\naddx -30\r\naddx 12\r\naddx -1\r\naddx 3\r\naddx 1\r\nnoop\r\nnoop\r\nnoop\r\naddx -9\r\naddx 18\r\naddx 1\r\naddx 2\r\nnoop\r\nnoop\r\naddx 9\r\nnoop\r\nnoop\r\nnoop\r\naddx -1\r\naddx 2\r\naddx -37\r\naddx 1\r\naddx 3\r\nnoop\r\naddx 15\r\naddx -21\r\naddx 22\r\naddx -6\r\naddx 1\r\nnoop\r\naddx 2\r\naddx 1\r\nnoop\r\naddx -10\r\nnoop\r\nnoop\r\naddx 20\r\naddx 1\r\naddx 2\r\naddx 2\r\naddx -6\r\naddx -11\r\nnoop\r\nnoop\r\nnoop";
+            string input = "noop\r\nnoop\r\nnoop\r\naddx 6\r\naddx -1\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 11\r\naddx -10\r\naddx 4\r\nnoop\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx 1\r\nnoop\r\naddx 4\r\naddx 5\r\nnoop\r\nnoop\r\nnoop\r\naddx -35\r\naddx -2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx 3\r\naddx -28\r\naddx 28\r\naddx 5\r\naddx 2\r\naddx -9\r\naddx 10\r\naddx -38\r\nnoop\r\naddx 3\r\naddx 2\r\naddx 7\r\nnoop\r\nnoop\r\naddx -9\r\naddx 10\r\naddx 4\r\naddx 2\r\naddx 3\r\nnoop\r\nnoop\r\naddx -2\r\naddx 7\r\nnoop\r\nnoop\r\nnoop\r\naddx 3\r\naddx 5\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\naddx -35\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 2\r\nnoop\r\naddx 3\r\nnoop\r\nnoop\r\nnoop\r\naddx 5\r\naddx 3\r\naddx -2\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx -25\r\nnoop\r\naddx 30\r\nnoop\r\naddx 1\r\nnoop\r\naddx 2\r\nnoop\r\naddx 3\r\naddx -38\r\nnoop\r\naddx 7\r\naddx -2\r\naddx 5\r\naddx 2\r\naddx -8\r\naddx 13\r\naddx -2\r\nnoop\r\naddx 3\r\naddx 2\r\naddx 5\r\naddx 2\r\naddx -15\r\nnoop\r\naddx 20\r\naddx 3\r\nnoop\r\naddx 2\r\naddx -4\r\naddx 5\r\naddx -38\r\naddx 8\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\naddx 2\r\naddx 17\r\naddx -10\r\naddx 3\r\nnoop\r\naddx 2\r\naddx 1\r\naddx -16\r\naddx 19\r\naddx 2\r\nnoop\r\naddx 2\r\naddx 5\r\naddx 2\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop\r\nnoop";
+            List<string> instructions = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
 
             Processor processor = new Processor();
             Display display = new Display(40);
@@ -104,7 +104,7 @@ namespace Advent_of_Code_2022
             int sumOfSignalStrengths = 0;
             List<int> interestingTicks = new List<int> { 20, 60, 100, 140, 180, 220 };
 
-            while(true)
+            while (true)
             {
                 //Console.WriteLine($"At tick {tick}, our register is {register}, we're busy for {busy} ticks and our pending offset is {offset}.");
                 if (interestingTicks.Contains(processor.tick))

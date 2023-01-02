@@ -1,6 +1,9 @@
 ﻿using Advent_of_Code_2022.libs;
 using Microsoft.VisualBasic;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Advent_of_Code_2022
@@ -258,7 +261,7 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public List<Monkey>? RecursivelyFindMonkey(Monkey monkey, List<Monkey>? sequence)
+            public System.Collections.Generic.List<Monkey>? RecursivelyFindMonkey(Monkey monkey, List<Monkey>? sequence)
             {
                 if (parents.Count == 0)
                 {
