@@ -213,8 +213,8 @@ namespace Advent_of_Code_2022
             }
             else
             {
-                Console.WriteLine($"Smallest deletion candidate: {bestDeletionCandidate}, with a size of {bestDeletionCandidate.GetTotalSize()}. Directory listing as follows:");
-                Console.WriteLine(bestDeletionCandidate.GetListing());
+                Console.WriteLine($"Best deletion candidate: {bestDeletionCandidate}, with a size of {bestDeletionCandidate.GetTotalSize()}.");
+                //Console.WriteLine(bestDeletionCandidate.GetListing());
             }
         }
     }

@@ -127,18 +127,18 @@ namespace Advent_of_Code_2022
 
                     //Console.WriteLine($"Calculating scenic score...");
                     long scenicScore = 1;
-                    string scenicScoreCoords = "";
+                    List<int> scenicScoreCoords = new();
                     foreach (List<int> direction in new List<List<int>> { treesToCheckUp, treesToCheckDown, treesToCheckLeft, treesToCheckRight })
                     {
                         int thisScore = TreesVisible(tree, direction);
                         scenicScore *= thisScore;
-                        scenicScoreCoords += $"{thisScore},";
+                        scenicScoreCoords.Add(thisScore);
                     }
                     //Console.WriteLine($"Scenic score is: {scenicScore}");
                     if (scenicScore > highestScenicScore)
                     {
                         highestScenicScore = scenicScore;
-                        highestScenicScoreBlurb = $"Tree {row},{col}; of height {tree}, had a scenic score of {scenicScore}! ({scenicScoreCoords})";
+                        highestScenicScoreBlurb = $"Tree {row},{col}; of height {tree}, had a scenic score of {scenicScore}! ({string.Join(',', scenicScoreCoords)})";
                     }
 
 
