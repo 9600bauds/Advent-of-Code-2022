@@ -69,7 +69,6 @@ namespace Advent_of_Code_2022
                 {
                     Console.WriteLine($"After round {round}, the monkeys are holding items with these worry levels:");
                     DisplayMonkeys(monkeys);
-                    //DisplayHistory(monkeys);
                 }
                 else if (verbosity == 0)
                 {
@@ -88,8 +87,6 @@ namespace Advent_of_Code_2022
         }
         public static void PrintStats(List<Monkey> monkeys)
         {
-            //DisplayHistory(monkeys);
-
             List<Monkey> monkeysSorted = monkeys.OrderByDescending(o => o.activity).ToList(); //According to StackOverflow, this is how you sort a list of objects based on a property of those objects.
             long monkeyBusiness = 1;
             for (int i = 0; i < monkeysICanChase; i++)
@@ -117,7 +114,6 @@ namespace Advent_of_Code_2022
                 List<string> monkeyByLine = monkeyDesc.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
 
                 List<long> items = new List<long>();
-                List<string> itemHistory = new List<string>();
                 string? operation = null;
                 string? test = null;
                 int? preferredMonkey = null;
@@ -141,7 +137,6 @@ namespace Advent_of_Code_2022
                         foreach (string startingItem in startingItemsArray)
                         {
                             items.Add(int.Parse(startingItem));
-                            itemHistory.Add(startingItem);
                         }
                         continue;
                     }
@@ -175,7 +170,7 @@ namespace Advent_of_Code_2022
                 {
                     throw new ArgumentNullException("Monkey was missing data!");
                 }
-                output.Add(new(items, itemHistory, operation, test, preferredMonkey.Value, secondaryMonkey.Value));
+                output.Add(new(items, operation, test, preferredMonkey.Value, secondaryMonkey.Value));
             }
 
             int lowestCommonDenominator = 1;
@@ -196,19 +191,10 @@ namespace Advent_of_Code_2022
                 Console.WriteLine($"Monkey {monkeyIndex}: {string.Join(", ", monkey.items)}");
             }
         }
-        public static void DisplayHistory(List<Monkey> monkeys)
-        {
-            for (int monkeyIndex = 0; monkeyIndex < monkeys.Count; monkeyIndex++)
-            {
-                Monkey monkey = monkeys[monkeyIndex];
-                Console.WriteLine($"Monkey {monkeyIndex}: {string.Join(", ", monkey.itemHistory)}");
-            }
-        }
 
         public class Monkey //turns out
         {
             public List<long> items = new List<long>();
-            public List<string> itemHistory = new List<string>();
             public string operation;
             public string test;
             public int preferredMonkey; //Monkey that they will chuck at if the test is successful
@@ -216,10 +202,9 @@ namespace Advent_of_Code_2022
             public int boredomDivider = 3;
             public int activity; //Increased by 1 when we do something
 
-            public Monkey(List<long> items, List<string> itemHistory, string operation, string test, int preferredMonkey, int secondaryMonkey)
+            public Monkey(List<long> items, string operation, string test, int preferredMonkey, int secondaryMonkey)
             {
                 this.items = items;
-                this.itemHistory = itemHistory;
                 this.operation = operation;
                 this.test = test;
                 this.preferredMonkey = preferredMonkey;
@@ -316,9 +301,6 @@ namespace Advent_of_Code_2022
                 Monkey recipient = monkeys[monkeyIndex];
                 recipient.items.Add(item);
 
-                recipient.itemHistory.Add(itemHistory[itemIndex]);
-                itemHistory.RemoveAt(itemIndex);
-
                 if (verbose)
                 {
                     Console.WriteLine($"    Item with worry level {item} is thrown to monkey {monkeyIndex}.");
@@ -341,9 +323,6 @@ namespace Advent_of_Code_2022
                     }
                     item = PerformOperation(item, lowestCommonDenominator, verbose);
                     items[i] = item;
-
-                    itemHistory[i] += $"{operation.Split(' ')[1]}{operation.Split(' ')[2]}";
-
 
                     bool success = TestPassed(item, verbose);
 
