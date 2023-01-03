@@ -10,6 +10,8 @@ namespace Advent_of_Code_2022
 {
     internal class Day15
     {
+        //https://adventofcode.com/2022/day/14
+
         //public static int yToCheck = 10;
         public static int yToCheck = 2000000;
         public static int beaconCoordsMin = 0;
@@ -23,41 +25,9 @@ namespace Advent_of_Code_2022
         {
             //string input = "Sensor at x=2, y=18: closest beacon is at x=-2, y=15\r\nSensor at x=9, y=16: closest beacon is at x=10, y=16\r\nSensor at x=13, y=2: closest beacon is at x=15, y=3\r\nSensor at x=12, y=14: closest beacon is at x=10, y=16\r\nSensor at x=10, y=20: closest beacon is at x=10, y=16\r\nSensor at x=14, y=17: closest beacon is at x=10, y=16\r\nSensor at x=8, y=7: closest beacon is at x=2, y=10\r\nSensor at x=2, y=0: closest beacon is at x=2, y=10\r\nSensor at x=0, y=11: closest beacon is at x=2, y=10\r\nSensor at x=20, y=14: closest beacon is at x=25, y=17\r\nSensor at x=17, y=20: closest beacon is at x=21, y=22\r\nSensor at x=16, y=7: closest beacon is at x=15, y=3\r\nSensor at x=14, y=3: closest beacon is at x=15, y=3\r\nSensor at x=20, y=1: closest beacon is at x=15, y=3";
             string input = "Sensor at x=3890859, y=2762958: closest beacon is at x=4037927, y=2985317\r\nSensor at x=671793, y=1531646: closest beacon is at x=351996, y=1184837\r\nSensor at x=3699203, y=3052069: closest beacon is at x=4037927, y=2985317\r\nSensor at x=3969720, y=629205: closest beacon is at x=4285415, y=81270\r\nSensor at x=41343, y=57178: closest beacon is at x=351996, y=1184837\r\nSensor at x=2135702, y=1658955: closest beacon is at x=1295288, y=2000000\r\nSensor at x=24022, y=1500343: closest beacon is at x=351996, y=1184837\r\nSensor at x=3040604, y=3457552: closest beacon is at x=2994959, y=4070511\r\nSensor at x=357905, y=3997215: closest beacon is at x=-101509, y=3502675\r\nSensor at x=117943, y=3670308: closest beacon is at x=-101509, y=3502675\r\nSensor at x=841852, y=702520: closest beacon is at x=351996, y=1184837\r\nSensor at x=3425318, y=3984088: closest beacon is at x=2994959, y=4070511\r\nSensor at x=3825628, y=3589947: closest beacon is at x=4299658, y=3299020\r\nSensor at x=2745170, y=139176: closest beacon is at x=4285415, y=81270\r\nSensor at x=878421, y=2039332: closest beacon is at x=1295288, y=2000000\r\nSensor at x=1736736, y=811875: closest beacon is at x=1295288, y=2000000\r\nSensor at x=180028, y=2627284: closest beacon is at x=-101509, y=3502675\r\nSensor at x=3957016, y=2468479: closest beacon is at x=3640739, y=2511853\r\nSensor at x=3227780, y=2760865: closest beacon is at x=3640739, y=2511853\r\nSensor at x=1083678, y=2357766: closest beacon is at x=1295288, y=2000000\r\nSensor at x=1336681, y=2182469: closest beacon is at x=1295288, y=2000000\r\nSensor at x=3332913, y=1556848: closest beacon is at x=3640739, y=2511853\r\nSensor at x=3663725, y=2525708: closest beacon is at x=3640739, y=2511853\r\nSensor at x=2570900, y=2419316: closest beacon is at x=3640739, y=2511853\r\nSensor at x=1879148, y=3584980: closest beacon is at x=2994959, y=4070511\r\nSensor at x=3949871, y=2889309: closest beacon is at x=4037927, y=2985317";
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            
 
-            Dictionary<Point, Sensor> sensors = new Dictionary<Point, Sensor>();
-            Dictionary<Point, Beacon> beacons = new Dictionary<Point, Beacon>();
-
-            foreach (string line in inputByLine)
-            {
-                Match match = parsingRegex.Match(line);
-                if (match.Success)
-                {
-                    int beaconX = int.Parse(match.Groups["beaconX"].Value);
-                    int beaconY = int.Parse(match.Groups["beaconY"].Value);
-                    Point beaconLoc = new Point(beaconX, beaconY);
-                    Beacon currentBeacon;
-                    if (beacons.ContainsKey(beaconLoc))
-                    {
-                        currentBeacon = beacons[beaconLoc];
-                    }
-                    else
-                    {
-                        currentBeacon = new Beacon(beaconLoc);
-                        beacons.Add(beaconLoc, currentBeacon);
-                    }
-                    int sensorX = int.Parse(match.Groups["sensorX"].Value);
-                    int sensorY = int.Parse(match.Groups["sensorY"].Value);
-                    Point sensorLoc = new Point(sensorX, sensorY);
-                    Sensor currentSensor = new Sensor(sensorLoc, currentBeacon);
-                    sensors.Add(sensorLoc, currentSensor);
-
-                }
-                else
-                {
-                    Debug.Fail($"Could not parse {line}!");
-                }
-            }
+            (Dictionary<Point, Sensor> sensors, Dictionary<Point, Beacon> beacons) = processInput(input);
             Console.WriteLine($"Loaded {sensors.Count} sensors and {beacons.Count} beacons.");
 
             //Part 1: Calculating the squares in one slice of Y where a beacon cannot be.
@@ -86,7 +56,7 @@ namespace Advent_of_Code_2022
                         beaconsEncountered.Add(sensor.nearestBeacon); //Keep track of these, since tiles where there are beacons... count as tiles where a beacon can be, I guess? Even though we don't really care about those
                     }
 
-                    int xdiff = sensor.IntersectionWithYAxis(yToCheck);
+                    int xdiff = sensor.IntersectionWithY(yToCheck);
                     xdiff -= sensor.distanceToBeacon - Utils.ManhattanDistance(new(currentLoc.X, currentLoc.Y), new(sensor.loc.X, sensor.loc.Y)) + 1; //Because we might have skipped halfway into a sensor's range, we are not guaranteed to be at the border.
                     locationsWhereABeaconCannotBe += xdiff + 1;
                     x += xdiff;
@@ -137,6 +107,46 @@ namespace Advent_of_Code_2022
             }
         }
 
+        public static (Dictionary<Point, Sensor>, Dictionary<Point, Beacon>) processInput(string input)
+        {
+            Dictionary<Point, Sensor> sensors = new Dictionary<Point, Sensor>();
+            Dictionary<Point, Beacon> beacons = new Dictionary<Point, Beacon>();
+
+            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+
+            foreach (string line in inputByLine)
+            {
+                Match match = parsingRegex.Match(line);
+                if (match.Success)
+                {
+                    int beaconX = int.Parse(match.Groups["beaconX"].Value);
+                    int beaconY = int.Parse(match.Groups["beaconY"].Value);
+                    Point beaconLoc = new Point(beaconX, beaconY);
+                    Beacon currentBeacon;
+                    if (beacons.ContainsKey(beaconLoc))
+                    {
+                        currentBeacon = beacons[beaconLoc];
+                    }
+                    else
+                    {
+                        currentBeacon = new Beacon(beaconLoc);
+                        beacons.Add(beaconLoc, currentBeacon);
+                    }
+                    int sensorX = int.Parse(match.Groups["sensorX"].Value);
+                    int sensorY = int.Parse(match.Groups["sensorY"].Value);
+                    Point sensorLoc = new Point(sensorX, sensorY);
+                    Sensor currentSensor = new Sensor(sensorLoc, currentBeacon);
+                    sensors.Add(sensorLoc, currentSensor);
+
+                }
+                else
+                {
+                   throw new ArgumentException($"Could not parse {line}!");
+                }
+            }
+            return (sensors, beacons);
+        }
+
         //Returns a list of points that make up the outline of the rhombus.
         public static List<Point> GenerateRhombus(Point center, int radius)
         {
@@ -158,6 +168,13 @@ namespace Advent_of_Code_2022
             return (long)p.X * 4000000 + p.Y;
         }
 
+        /// <summary>
+        /// Finds the first sensor that's within scanning distance of this point. Meaning, the first sensor that considers this point its closest beacon.
+        /// If no beacons think we're their closest beacon, then an extraneous beacon could be here!
+        /// </summary>
+        /// <param name="p">Location to check.</param>
+        /// <param name="sensors">List of sensors to check from.</param>
+        /// <returns>The first sensor we find that can see us, or null if no sensors can see us.</returns>
         public static Sensor? FindSensorThatHasScannedThis(Point p, List<Sensor> sensors)
         {
             foreach (Sensor sensor in sensors)
@@ -183,7 +200,13 @@ namespace Advent_of_Code_2022
                 distanceToBeacon = Utils.ManhattanDistance(new(loc.X, loc.Y), new(nearestBeacon.loc.X, nearestBeacon.loc.Y));
             }
 
-            public int IntersectionWithYAxis(int y)
+            /// <summary>
+            /// Draw a straight line of slope 0 at the provided Y coordinate. How many tiles of this line can this beacon "see"?
+            /// Meaning, how many of these tiles are equal or closer to the distance to the sensor's closest beacon.
+            /// </summary>
+            /// <param name="y">Y coordinate to check</param>
+            /// <returns>An integer representing our scanning range's intersection with that Y line.</returns>
+            public int IntersectionWithY(int y)
             {
                 int ydiff = Math.Abs(loc.Y - y);
                 if (distanceToBeacon < ydiff)

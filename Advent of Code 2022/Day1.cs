@@ -48,7 +48,7 @@ namespace Advent_of_Code_2022
             {
                 currentElf = elvesSorted[i];
                 long ranking = elves.IndexOf(currentElf);
-                string listOfSnacks = String.Join(",", currentElf.snacks);
+                string listOfSnacks = string.Join(",", currentElf.snacks);
                 Console.WriteLine("Position #{0}: Elf {1} is carrying {2} calories! ({3})", i + 1, ranking, currentElf.caloriesCarried, listOfSnacks);
                 sumTopThreeCalories += currentElf.caloriesCarried;
             }

@@ -12,6 +12,7 @@ namespace Advent_of_Code_2022
 {
     internal class Day12
     {
+        //https://adventofcode.com/2022/day/12
         public static void Run()
         {
             //string input = "Sabqponm\r\nabcryxxl\r\naccszExk\r\nacctuvwj\r\nabdefghi";
@@ -47,7 +48,7 @@ namespace Advent_of_Code_2022
             {
                 throw new ArgumentNullException();
             }
-            int sleepTime = int.Parse(userInput); //validation is for suckers
+            int sleepTime = int.Parse(userInput);
             int stepsPart1 = RunSimulation(charGrid, sPos, 'E', false, sleepTime);
             Console.WriteLine($"\r\nWent from S to E in {stepsPart1} steps!");
             Thread.Sleep(1000);
@@ -84,7 +85,7 @@ namespace Advent_of_Code_2022
             {
                 return Char2Elevation('z'); //This worked for the example but not the input because the example goes S->a->b...y->z->E anyways.
             }
-            return c - 96;
+            return c - 96; //Chars are also ints, so I can just do this
         }
 
         public static List<(int x, int y)> GetClimbableNeighbors(char[,] charGrid, (int x, int y) square, bool descending = false, int maxHeightDiff = 1)
