@@ -1,11 +1,18 @@
 ﻿using Advent_of_Code_2022.libs;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Advent_of_Code_2022
 {
     internal class Day19
     {
+        //https://adventofcode.com/2022/day/19
+
         static Regex parsingRegex = new Regex(@"Blueprint (?<blueprintId>[0-9\-]+): Each ore robot costs (?<orebotCost>[0-9\-]+) ore\. Each clay robot costs (?<claybotCost>[0-9\-]+) ore. Each obsidian robot costs (?<obsidianBotCost1>[0-9\-]+) ore and (?<obsidianBotCost2>[0-9\-]+) clay\. Each geode robot costs (?<geodebotCost1>[0-9\-]+) ore and (?<geodebotCost2>[0-9\-]+) obsidian\.");
 
         //const string input = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.\r\nBlueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
@@ -117,7 +124,7 @@ namespace Advent_of_Code_2022
             /// </summary>
             public string choice;
             /// <summary>
-            /// String to keep track of which sequence of bots we chose to build so far, not actually necessary to calculate the answer but nice to know. e.g. "ore,ore,clay,obsidian".
+            /// string to keep track of which sequence of bots we chose to build so far, not actually necessary to calculate the answer but nice to know. e.g. "ore,ore,clay,obsidian".
             /// </summary>
             public string sequence;
             /// <summary>
@@ -210,7 +217,7 @@ namespace Advent_of_Code_2022
             /// <summary>
             /// Removes from our resources the cost that it would take to build this bot.
             /// </summary>
-            /// <param name="newBot">String representing the bot desired. e.g. "ore", "clay", etc</param>
+            /// <param name="newBot">string representing the bot desired. e.g. "ore", "clay", etc</param>
             /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void DeductBotCost(string newBot, bool verbose = false)
             {
@@ -227,7 +234,7 @@ namespace Advent_of_Code_2022
             /// <summary>
             /// Add 1 of this bot to our bot count. If the bot is a geodebot, it instead increases our score by the amount that said geodebot would generate in its lifetime.
             /// </summary>
-            /// <param name="newBot">String representing the bot we want. e.g. "ore", "clay", etc</param>
+            /// <param name="newBot">string representing the bot we want. e.g. "ore", "clay", etc</param>
             /// <param name="verbose">If true, writes a lot of info. If false, works silently.</param>
             public void AddBot(string newBot, bool verbose = false)
             {

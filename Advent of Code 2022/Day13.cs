@@ -1,10 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Advent_of_Code_2022
 {
     internal class Day13
     {
+        //https://adventofcode.com/2022/day/13
 
         public static string divider1 = "[[2]]";
         public static string divider2 = "[[6]]";
@@ -76,10 +80,23 @@ namespace Advent_of_Code_2022
             return output;
         }
 
-        //0: Packets are equal, -1: Left precedes right (inputs in the right order), 1: Right precedes left (inputs in the wrong order)
+        //
+        /// <summary>
+        /// Compares 2 inputs and sorts them based on the criteria for Day 13:
+        /// <list type="bullet">
+        /// <item>If both values are integers, the lower integer should come first. If both integers are equal, continue to the next criteria.</item>
+        /// <item>If both values are lists, compare the first value of each list, then the second value, and so on. If a list runs out of items, it should come first. If the lists are the same length and no comparison makes a decision about the order, continue to the next criteria.</item>
+        /// <item>If exactly one value is an integer, convert the integer to a list which contains that integer as its only value, then retry the comparison. For example, if comparing <c>[0,0,0]</c> and <c>2</c>, convert the right value to <c>[2]</c> (a list containing <c>2</c>); the result is then found by instead comparing <c>[0,0,0]</c> and <c>[2]</c>.</item>
+        /// </list>
+        /// </summary>
+        /// <param name="left">Left input for comparison</param>
+        /// <param name="right">Right input for comparison</param>
+        /// <param name="depth">Do not use - only used automatically to keep track of how deep we are recursing, so we can write verbose debugging info.</param>
+        /// <param name="verbose">If true, writes verbose debugging info. If false, works silently.</param>
+        /// <returns>0: Packets are equal (should not happen), -1: Left precedes right (inputs in the right order), 1: Right precedes left (inputs in the wrong order)</returns>
         public static int Compare(string left, string right, int depth = 0, bool verbose = false)
         {
-            string padding = String.Concat(Enumerable.Repeat("  ", depth)); //Only used for verbose mode logging
+            string padding = string.Concat(Enumerable.Repeat("  ", depth)); //Only used for verbose mode logging
             if (verbose)
                 Console.WriteLine($"{padding}- Compare {left} vs {right}");
 
@@ -136,7 +153,7 @@ namespace Advent_of_Code_2022
 
         public static int Compare(int left, int right, int depth = 0, bool verbose = false)
         {
-            string padding = String.Concat(Enumerable.Repeat("  ", depth));
+            string padding = string.Concat(Enumerable.Repeat("  ", depth));
             if (left == right)
             {
                 return COMPARISON_EQUAL;
@@ -157,7 +174,15 @@ namespace Advent_of_Code_2022
             return Regex.Replace(s, @"^\[|\]$", "");
         }
 
-        public static List<string> SplitTextList(string s) //"[1],[2,3,4]" -> { [1],[2,3,4] }
+        /// <summary>
+        /// Takes a string representing a list and splits it into a list of strings. Only splits the topmost level, does not split nested lists.
+        /// For example: <example><code>"[1],[2,3,4]" -> { "[1]","[2,3,4]" }</code></example>
+        /// </summary>
+
+        /// <param name="s">The string to split.</param>
+        /// <returns>A list of strings, separated by commas at the topmost level.</returns>
+
+        public static List<string> SplitTextList(string s)
         {
             s = RemoveOuterBracketsIfAny(s);
 
@@ -190,6 +215,7 @@ namespace Advent_of_Code_2022
             return split;
         }
 
+        //Homemade insertion sort, unused since I switched to a SortedSet later
         public static void InsertNSort(string s, List<string> arr)
         {
             for (int i = 0; i < arr.Count; i++)

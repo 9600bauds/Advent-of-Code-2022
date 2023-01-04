@@ -35,13 +35,14 @@ namespace Advent_of_Code_2022
             ElfMix(elfFile);
             PrintGroveCoords(elfFile);
             Console.WriteLine();
-            ElfMix(elfFileCopy, 10, decriptionKey, 1);
+            Console.WriteLine($"Applying decription key {811589153} and mixing 10 times...");
+            ElfMix(elfFileCopy, 10, decriptionKey, 0);
             PrintGroveCoords(elfFileCopy);
         }
 
-        public static List<long> ElfMix(List<long> elfFile, int times = 1, long? decriptionKey = null,  int verbose = 0)
+        public static List<long> ElfMix(List<long> elfFile, int times = 1, long? decriptionKey = null, int verbose = 0)
         {
-            if(verbose > 0)
+            if (verbose > 0)
             {
                 Console.WriteLine($"Initial arrangement:");
                 Utils.PrintList(elfFile);
@@ -83,7 +84,7 @@ namespace Advent_of_Code_2022
                     //HEY DID YOU KNOW C# % IS NOT ACTUALLY MODULO LIKE IN JUST ABOUT EVERYWHERE ELSE
                     //BUT RATHER REMAINDER SO IT WORKS DIFFERENTLY FOR NEGATIVE NUMBERS
                     //SUPER FUN!
-                    if (desiredIndex <= 0) 
+                    if (desiredIndex <= 0)
                     {
                         desiredIndex += maxIndex;
                     }
