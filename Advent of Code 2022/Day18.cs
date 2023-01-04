@@ -15,35 +15,18 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
-            List<(int, int, int)> coords = new();
-            foreach (string line in inputByLine)
-            {
-                string[] splitLine = line.Split(',');
-                coords.Add((int.Parse(splitLine[0]), int.Parse(splitLine[1]), int.Parse(splitLine[2])));
-            }
+            bool[,,] drop = ProcessInput(input);
+            
+            int xdelta = drop.GetLength(0) - 1;
+            int ydelta = drop.GetLength(1) - 1;
+            int zdelta = drop.GetLength(2) - 1;
+            Console.WriteLine($"Created a {xdelta}x{ydelta}x{zdelta} cube.");
 
-            int maxx = coords.Max(coord => coord.Item1);
-            int maxy = coords.Max(coord => coord.Item2);
-            int maxz = coords.Max(coord => coord.Item3);
-            int minx = coords.Min(coord => coord.Item1);
-            int miny = coords.Min(coord => coord.Item2);
-            int minz = coords.Min(coord => coord.Item3);
+            //Cast() flattens the 3x3 array into one superlong array. Then we do a Where() clause to check for solid blocks.
+            //However, that gives us an IEnumerator, and since it is lazy, it won't actually tell us how many solid blocks there are.
+            //So we convert it to an array first.
+            int sides1 = drop.Cast<bool>().Where(o => o == true).ToArray().Length * 6;
 
-            int xdelta = maxx - minx;
-            int ydelta = maxy - miny;
-            int zdelta = maxz - minz;
-
-            bool[,,] drop = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
-
-            int sides1 = 0;
-            foreach ((int x, int y, int z) coord in coords)
-            {
-                drop[coord.x - minx, coord.y - miny, coord.z - minz] = true;
-                sides1 += 6;
-            }
-
-            Console.WriteLine($"Processed {coords.Count} lines. Created a {xdelta}x{ydelta}x{zdelta} cube.");
             //We do 3 passes through the cube, once along the entire X axis, once along the entire Y axis, and once along the entire Z axis.
             //Basically blowing up a 3d cube into 3 MRI scans.
             //For every 2 cubes whose sides are touching in each pass, we substract 2 sides.
@@ -104,7 +87,7 @@ namespace Advent_of_Code_2022
             // 1) Every air tile that's NOT inside the rock itself,
             // 2) Every rock tile that's touching out-of-bounds. Remember, out-of-bounds counts as surface area.
             //So, we'll do a depth first search.
-            //The search starts with all the outermost tiles of the cube, which will satisfy 2 and also make sure we miss no valid air tiles.
+            //The search starts with all the outermost tiles of the cube, which will satisfy 2) and also make sure we miss no valid air tiles.
             //Then the search will spread from air tile to air tile, but will NOT spread to rock tiles.
             //At each tile searched: If we're air and our neighbor is rock, add 1 side. If we're rock and our neighbor is OOB, add 1 side.
             bool[,,] visited = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
@@ -146,6 +129,37 @@ namespace Advent_of_Code_2022
 
             Console.WriteLine($"Finished checking! Exterior surface area: {sides2}");
 
+        }
+        
+        public static bool[,,] ProcessInput(string input)
+        {
+            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            List<(int, int, int)> coords = new();
+            foreach (string line in inputByLine)
+            {
+                string[] splitLine = line.Split(',');
+                coords.Add((int.Parse(splitLine[0]), int.Parse(splitLine[1]), int.Parse(splitLine[2])));
+            }
+
+            int maxx = coords.Max(coord => coord.Item1);
+            int maxy = coords.Max(coord => coord.Item2);
+            int maxz = coords.Max(coord => coord.Item3);
+            int minx = coords.Min(coord => coord.Item1);
+            int miny = coords.Min(coord => coord.Item2);
+            int minz = coords.Min(coord => coord.Item3);
+
+            int xdelta = maxx - minx;
+            int ydelta = maxy - miny;
+            int zdelta = maxz - minz;
+
+            bool[,,] drop = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
+
+            foreach ((int x, int y, int z) coord in coords)
+            {
+                drop[coord.x - minx, coord.y - miny, coord.z - minz] = true;
+            }
+
+            return drop;
         }
 
         public static void DepthFirstSearch(int x, int y, int z, bool[,,] cube, bool[,,] visited, ref int sides, List<(int x, int y, int z)> toCheck)
