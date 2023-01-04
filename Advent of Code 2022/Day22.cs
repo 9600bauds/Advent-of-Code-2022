@@ -23,20 +23,20 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            (char[,] grid, List<string> instructions, List<Edge> cubeEdges) processedInput = ProcessInput(input);
-            char[,] gridBackup = (char[,])processedInput.grid.Clone();
+            (char[,] grid, List<string> instructions, List<Edge> cubeEdges) = ProcessInput(input);
+            char[,] gridBackup = (char[,])grid.Clone();
 
-            Board board = new Board(processedInput.grid);
-            Player player = new Player(board.GetStarterPoint(), DIR_RIGHT, processedInput.instructions, board, '@');
+            Board board = new Board(grid);
+            Player player = new Player(board.GetStarterPoint(), DIR_RIGHT, instructions, board, '@');
 
             player.StartWalking();
             GridRenderer.Render(0, 10, board.grid);
             Console.WriteLine($"Final password for Part 1: {player.GetFinalSum()}");
 
-            CubeBoard cube = new CubeBoard(gridBackup, processedInput.cubeEdges);
-            Player cubePlayer = new Player(cube.GetStarterPoint(), DIR_RIGHT, processedInput.instructions, cube, '@');
+            CubeBoard cube = new CubeBoard(gridBackup, cubeEdges);
+            Player cubePlayer = new Player(cube.GetStarterPoint(), DIR_RIGHT, instructions, cube, '@');
 
-            //cubePlayer.AssumeControl();
+            //cubePlayer.AssumeControl(); //Just for testing
 
             cubePlayer.StartWalking();
             GridRenderer.Render(0, 10, cube.grid);

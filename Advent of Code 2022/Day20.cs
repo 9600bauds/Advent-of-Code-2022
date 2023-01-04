@@ -35,7 +35,8 @@ namespace Advent_of_Code_2022
             ElfMix(elfFile);
             PrintGroveCoords(elfFile);
             Console.WriteLine();
-            ElfMix(elfFileCopy, 10, decriptionKey, 1);
+            Console.WriteLine($"Applying decription key {811589153} and mixing 10 times...");
+            ElfMix(elfFileCopy, 10, decriptionKey, 0);
             PrintGroveCoords(elfFileCopy);
         }
 
