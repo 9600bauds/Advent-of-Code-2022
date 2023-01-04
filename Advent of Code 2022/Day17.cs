@@ -9,6 +9,7 @@ namespace Advent_of_Code_2022
 {
     internal class Day17
     {
+        //https://adventofcode.com/2022/day/17
 
         //static string input = "<<>>>";
         static string input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>";

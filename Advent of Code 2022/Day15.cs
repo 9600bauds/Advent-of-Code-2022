@@ -10,7 +10,7 @@ namespace Advent_of_Code_2022
 {
     internal class Day15
     {
-        //https://adventofcode.com/2022/day/14
+        //https://adventofcode.com/2022/day/15
 
         //public static int yToCheck = 10;
         public static int yToCheck = 2000000;

@@ -10,7 +10,6 @@ namespace Advent_of_Code_2022
 {
     internal class Day22
     {
-
         //https://adventofcode.com/2022/day/22
 
         //const string input = "        ...#\r\n        .#..\r\n        #...\r\n        ....\r\n...#.......#\r\n........#...\r\n..#....#....\r\n..........#.\r\n        ...#....\r\n        .....#..\r\n        .#......\r\n        ......#.\r\n\r\n10R5L5R10L4R5L5";

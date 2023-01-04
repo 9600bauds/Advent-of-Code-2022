@@ -11,9 +11,9 @@ namespace Advent_of_Code_2022
 {
     internal class Day16
     {
+        //https://adventofcode.com/2022/day/16
+
         static Regex parsingRegex = new Regex(@"Valve (?<valveId>\w+) has flow rate=(?<flowRate>[0-9\-]+)\; \w+ \w+ to \w+ (?<tunnels>.+)");
-
-
 
         public static int startingTime = 30;
         public static int elephantTrainingDelay = 4;
