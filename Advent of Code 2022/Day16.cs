@@ -13,8 +13,7 @@ namespace Advent_of_Code_2022
     {
         static Regex parsingRegex = new Regex(@"Valve (?<valveId>\w+) has flow rate=(?<flowRate>[0-9\-]+)\; \w+ \w+ to \w+ (?<tunnels>.+)");
 
-        public static Dictionary<string, Node> valves = new();
-        public static List<Connection> tunnels = new();
+
 
         public static int startingTime = 30;
         public static int elephantTrainingDelay = 4;
@@ -27,7 +26,7 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            Initialize(input, true);
+            (Dictionary<string, Node> valves, List<Connection> tunnels) = ProcessInput(input, true);
 
             HashSet<Node> allChoices = valves.Values.ToHashSet();
             Node starterValve = valves[startingValve];
@@ -61,10 +60,10 @@ namespace Advent_of_Code_2022
             gameTwo.SearchAllPossibilities(unfinishedGamestates);
         }
 
-        public static void Initialize(string input, bool verbose = false)
+        public static (Dictionary<string, Node>, List<Connection>) ProcessInput(string input, bool verbose = false)
         {
-            valves = new();
-            tunnels = new();
+            Dictionary<string, Node> valves = new();
+            List<Connection> tunnels = new();
 
             List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
             Dictionary<string, string[]> tempConnections = new();
@@ -75,9 +74,9 @@ namespace Advent_of_Code_2022
                 {
                     string valveId = match.Groups["valveId"].Value;
                     int flowRate = int.Parse(match.Groups["flowRate"].Value);
-                    string[] tunnels = match.Groups["tunnels"].Value.Split(new[] { ", " }, StringSplitOptions.None);
+                    string[] tunnelsArray = match.Groups["tunnels"].Value.Split(new[] { ", " }, StringSplitOptions.None);
                     valves.Add(valveId, new Node(valveId, flowRate));
-                    tempConnections.Add(valveId, tunnels);
+                    tempConnections.Add(valveId, tunnelsArray);
                 }
                 else
                 {
@@ -120,7 +119,7 @@ namespace Advent_of_Code_2022
                     {
                         continue;
                     }
-                    if (valve.Simplify())
+                    if (valve.Simplify(valves, tunnels))
                     {
                         connectionsSimplified++;
                         finished = false;
@@ -148,9 +147,24 @@ namespace Advent_of_Code_2022
                     newLines.Add($"Valve {valve.id} has flow rate={valve.flowRate}; tunnels lead to valves {string.Join(", ", connectionStrings)}");
                 }
                 Console.WriteLine($"Optimized input:");
-                Console.WriteLine(String.Join("\r\n", newLines));
+                Console.WriteLine(string.Join("\r\n", newLines));
             }
+
+            return (valves, tunnels);
         }
+
+        /*public class GamestateIterator
+        {
+            public SortedSet<Gamestate> unfinishedGames;
+            public Gamestate bestGame;
+
+            public GamestateIterator(Gamestate starterGame, Comparer<Gamestate> comparer)
+            {
+                unfinishedGames = new(comparer);
+                starterGame.AddChildren(unfinishedGames);
+                bestGame = starterGame;
+            }
+        }*/
 
         public class Player
         {
@@ -226,7 +240,7 @@ namespace Advent_of_Code_2022
                 Gamestate bestGame = unfinishedGamestates.First();
                 while (unfinishedGamestates.Count > 0)
                 {
-                    Gamestate game = unfinishedGamestates.First();
+                    Gamestate? game = unfinishedGamestates.First();
                     Player player = game.players.First();
                     List<Node> choices = game.GetChoicesForPlayer(player);
                     if (choices.Count == 0)
@@ -305,11 +319,11 @@ namespace Advent_of_Code_2022
                 return distanceToNode[node] + 1; //+1 for the time it would take to open it!
             }
 
-            public bool Simplify()
+            public bool Simplify(Dictionary<string, Node> valves, List<Connection> tunnels)
             {
                 if (connections.Count < 2)
                 {
-                    Delete();
+                    Delete(valves, tunnels);
                     return true;
                 }
                 else if (connections.Count == 2)
@@ -330,7 +344,7 @@ namespace Advent_of_Code_2022
                         }
                     }
                     //Console.WriteLine($"Simplifying {this} with {connectionsMade.Count} new connection{(connectionsMade.Count > 1 ? 's' : null)}: {string.Join(", ", connectionsMade)}");
-                    Delete();
+                    Delete(valves, tunnels);
                     /*foreach (Connection c in tunnels)
                     {
                         Console.WriteLine($"{c.nodeA.id} {c.nodeB.id} {c.cost}");
@@ -361,12 +375,12 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public void Delete()
+            public void Delete(Dictionary<string, Node> valves, List<Connection> tunnels)
             {
                 valves.Remove(id); //Goodbye cruel world!
                 foreach (Connection c in connections.Values)
                 {
-                    c.Delete();
+                    c.Delete(tunnels);
                 }
             }
 
@@ -396,7 +410,7 @@ namespace Advent_of_Code_2022
                 nodeA.connections[nodeB] = this;
                 nodeB.connections[nodeA] = this;
             }
-            public void Delete()
+            public void Delete(List<Connection> tunnels)
             {
                 nodeA.connections.Remove(nodeB);
                 nodeB.connections.Remove(nodeA);
@@ -408,12 +422,15 @@ namespace Advent_of_Code_2022
                 {
                     return nodeB;
                 }
-                else
+                else if(node == nodeB)
                 {
                     return nodeA;
                 }
+                else
+                {
+                    throw new ArgumentException(node.ToString());
+                }
             }
-
             public override string ToString()
             {
                 return $"{nodeA.id} -> {nodeB.id} ({cost})";
