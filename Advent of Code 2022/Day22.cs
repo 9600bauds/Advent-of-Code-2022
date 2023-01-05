@@ -360,7 +360,7 @@ namespace Advent_of_Code_2022
 
         public static (char[,] grid, List<string> code, List<Edge> cubeEdges) ProcessInput(string input)
         {
-            string[] inputSplit = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None); 
+            string[] inputSplit = Utils.SplitBlankLines(input); 
 
             string[] inputByLine = Utils.SplitLines(inputSplit[0]);
             int width = inputByLine.Max(x => x.Length), height = inputByLine.Length;

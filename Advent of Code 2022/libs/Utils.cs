@@ -35,23 +35,33 @@ namespace Advent_of_Code_2022.libs
         }
 
         /// <summary>
-        /// Splits a multi-line string into an array of lines, using linebreaks. Effectively line.Split() with "\r\n".
+        /// Splits a multi-line string into an array of lines, delimited by linebreaks. Effectively line.Split() with "\r\n".
         /// </summary>
-        /// <param name="input">Multiline string</param>
-        /// <returns>Array of lines, divided by linebreaks</returns>
+        /// <param name="input">Multiline string.</param>
+        /// <returns>Array of lines, divided by linebreaks.</returns>
         public static string[] SplitLines(string input)
         {
             return input.Split(new[] { "\r\n" }, StringSplitOptions.None); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
         }
 
         /// <summary>
-        /// Splits a multi-line string into an array of lines, using blank lines. Effectively line.Split() with "\r\n\r\n".
+        /// Splits a multi-line string into an array of lines, delimited by blank lines. Effectively line.Split() with "\r\n\r\n".
         /// </summary>
-        /// <param name="input">Multiline string with blank lines</param>
-        /// <returns>Array of lines, divided by blank lines</returns>
+        /// <param name="input">Multiline string with blank lines.</param>
+        /// <returns>Array of lines, divided by blank lines.</returns>
         public static string[] SplitBlankLines(string input)
         {
             return input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+        }
+
+        /// <summary>
+        /// Splits a multi-line string into an array of lines, delimited by a comma followed by a space. Effectively line.Split() with ", ".
+        /// </summary>
+        /// <param name="input">Multiline string with blank lines.</param>
+        /// <returns>Array of lines, divided by commas followed by spaces.</returns>
+        public static string[] SplitCommaSpace(string input)
+        {
+            return input.Split(new[] { ", " }, StringSplitOptions.None); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
         }
 
         public static int ManhattanDistance(Point a, Point b)
