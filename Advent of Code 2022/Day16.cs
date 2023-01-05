@@ -41,23 +41,23 @@ namespace Advent_of_Code_2022
                 starterPlayer.TakeTurn(node, true);
             }*/
 
-            HashSet<Gamestate> unfinishedGamestates = new();
-
             Console.WriteLine($"=== GAME ONE ===");
             Console.WriteLine($"=== One player, no elephants ===");
-            Gamestate starterGame = new Gamestate(0, allChoices.ToHashSet(), "");
+            Gamestate starterGame = new Gamestate(0, allChoices.ToList(), "");
             starterGame.players.Add(new Player(starterValve, startingTime, starterGame));
-            unfinishedGamestates.Add(starterGame);
-            starterGame.SearchAllPossibilities(unfinishedGamestates);
+
+            GamestateIterator iterator = new(starterGame, Gamestate.comparer);
+            iterator.DepthFirstSearch();
 
             Console.WriteLine($"=== GAME TWO ===");
             Console.WriteLine($"=== One player, one elephant ===");
 
-            Gamestate gameTwo = new Gamestate(0, allChoices.ToHashSet(), "");
+            Gamestate gameTwo = new Gamestate(0, allChoices.ToList(), "");
             gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
             gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
-            unfinishedGamestates.Add(gameTwo);
-            gameTwo.SearchAllPossibilities(unfinishedGamestates);
+
+            GamestateIterator iteratorTwo = new(gameTwo, Gamestate.comparer);
+            iteratorTwo.DepthFirstSearch();
         }
 
         public static (Dictionary<string, Node>, List<Connection>) ProcessInput(string input, bool verbose = false)
@@ -131,7 +131,7 @@ namespace Advent_of_Code_2022
 
             foreach (Node valve in valves.Values)
             {
-                valve.DepthFirstSearch(valve, 0);
+                valve.BreadthFirstSearch(valve, 0);
             }
             if (verbose) Console.WriteLine($"Calculated depths.");
 
@@ -154,7 +154,7 @@ namespace Advent_of_Code_2022
             return (valves, tunnels);
         }
 
-        /*public class GamestateIterator
+        public class GamestateIterator
         {
             public SortedSet<Gamestate> unfinishedGames;
             public Gamestate bestGame;
@@ -165,7 +165,42 @@ namespace Advent_of_Code_2022
                 starterGame.AddChildren(unfinishedGames);
                 bestGame = starterGame;
             }
-        }*/
+
+            public void DepthFirstSearch()
+            {
+                while (unfinishedGames.Count > 0)
+                {
+                    Gamestate? game = unfinishedGames.Min; //For some reason this is 50x faster than unfinishedGames.First() even though the result is basically the same?
+                    if (game == null) { break; }
+
+                    unfinishedGames.Remove(game);
+
+                    game.TakeTurn();
+
+                    if (bestGame.score > 0)
+                    {
+                        if (!game.CanBeat(bestGame))
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (game.IsFinished())
+                    {
+                        if (bestGame == null || bestGame.score < game.score)
+                        {
+                            bestGame = game;
+                            Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
+                        }
+                    }
+                    else
+                    {
+                        game.AddChildren(unfinishedGames);
+                    }
+                }
+            }
+
+        }
 
         public class Player
         {
@@ -178,7 +213,13 @@ namespace Advent_of_Code_2022
                 this.currNode = currNode;
                 this.timeLeft = timeLeft;
                 this.game = game;
-                game.players.Add(this);
+            }
+
+            public Player(Player original)
+            {
+                this.currNode = original.currNode;
+                this.timeLeft = original.timeLeft;
+                this.game = original.game;
             }
 
             public void TakeTurn(Node node, bool verbose = false)
@@ -200,6 +241,11 @@ namespace Advent_of_Code_2022
 
                 if (verbose)
                     Console.WriteLine($"I am now at {node.id}. The minute is {startingTime - timeLeft}, just got {node.GetScore(timeLeft)} score ({node.flowRate}*{timeLeft})");
+
+                if(timeLeft == 0 || game.GetChoicesForPlayer(this).Count == 0)
+                {
+                    GameOver();
+                }
             }
 
             public void GameOver()
@@ -217,11 +263,13 @@ namespace Advent_of_Code_2022
         public class Gamestate
         {
             public int score = 0;
-            public HashSet<Node> nodesLeft = new();
-            public HashSet<Player> players = new();
+            public List<Node> nodesLeft = new();
+            public List<Player> players = new();
             public string sequence = "";
+            public Node? choice;
+            public static Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
 
-            public Gamestate(int score, HashSet<Node> nodesLeft, string sequence)
+            public Gamestate(int score, List<Node> nodesLeft, string sequence)
             {
                 this.score = score;
                 this.nodesLeft = nodesLeft;
@@ -231,47 +279,33 @@ namespace Advent_of_Code_2022
             public Gamestate(Gamestate original)
             {
                 this.score = original.score;
-                this.nodesLeft = original.nodesLeft.ToHashSet(); //make sure we are cloning it, not making a reference
+                this.players = original.players.ToList(); //make sure we are cloning it, not making a reference
+                this.nodesLeft = original.nodesLeft.ToList(); //make sure we are cloning it, not making a reference
                 this.sequence = original.sequence;
             }
 
-            public void SearchAllPossibilities(HashSet<Gamestate> unfinishedGamestates)
+            public void TakeTurn()
             {
-                int gamesTested = 0;
-                Gamestate bestGame = unfinishedGamestates.First();
-                while (unfinishedGamestates.Count > 0)
+                if(choice == null)
                 {
-                    Gamestate? game = unfinishedGamestates.First();
-                    Player player = game.players.First();
-                    List<Node> choices = game.GetChoicesForPlayer(player);
-                    if (choices.Count == 0)
-                    {
-                        if (game.players.Count > 1)
-                        {
-                            player.GameOver();
-                            continue; //Do not remove us from the list, we have more players still
-                        }
-                        if (game.score >= bestGame.score)
-                        {
-                            bestGame = game;
-                            Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
-                        }
-                    }
-                    foreach (Node choice in choices)
-                    {
-                        Gamestate newGame = new Gamestate(game);
-                        Player newPlayer = new Player(player.currNode, player.timeLeft, newGame);
-                        newPlayer.TakeTurn(choice);
-                        unfinishedGamestates.Add(newGame);
-                        foreach (Player otherPlayer in game.players.Skip(1))
-                        {
-                            newGame.players.Add(otherPlayer); //Since we took no action we don't need to clone it, just use a reference
-                        }
-                    }
-                    unfinishedGamestates.Remove(game);
-                    gamesTested++;
+                    throw new Exception("Tried to take our turn without a choice!");
                 }
-                Console.WriteLine($"{gamesTested} games tested! High score: {bestGame.score} - {bestGame}");
+                Player oldPlayer = players[0];
+                Player newPlayer = new(oldPlayer.currNode, oldPlayer.timeLeft, this); //cloning this player before we do any mutations to it, since other games might reference it
+                players[0] = newPlayer; 
+                newPlayer.TakeTurn(choice);
+            }
+
+            public void AddChildren(SortedSet<Gamestate> unfinishedGames)
+            {
+                Player player = players.First();
+                List<Node> choices = GetChoicesForPlayer(player);
+                foreach (Node choice in choices)
+                {
+                    Gamestate newGame = new Gamestate(this);
+                    newGame.choice = choice;
+                    unfinishedGames.Add(newGame);
+                }
             }
 
             public List<Node> GetChoicesForPlayer(Player player)
@@ -284,11 +318,61 @@ namespace Advent_of_Code_2022
                         choices.Add(node);
                     }
                 }
-                if (players.Count > 1)
+                if (players.Count > 1 && choices.Count > 0)
                 {
                     choices.Add(stopNode); //When we have more than 1 player, we let the first players stop prematurely.
                 }
                 return choices;
+            }
+
+            public bool IsFinished()
+            {
+                return players.Count == 0;
+            }
+
+            public bool CanBeat(Gamestate bestgame)
+            {
+                return true;
+            }
+
+            public int TimeRemaining()
+            {
+                int output = 0;
+                foreach(Player player in players)
+                {
+                    output += player.timeLeft;
+                }
+                return output;
+            }
+
+            public int NaiveMaxScore()
+            {
+                int time = TimeRemaining();
+                int output = 0;
+                foreach(Node node in nodesLeft)
+                {
+                    output += node.GetScore(time);
+                }
+                return output;
+            }
+
+            public static int CompareGames(Gamestate a, Gamestate b)
+            {
+                // Apparently removing an item from a sortedset makes it compare with itself? idk
+                if (Object.ReferenceEquals(a, b))
+                {
+                    return 0;
+                }
+
+                if (a.score > b.score) return -1; //Better score is better
+                if (a.score < b.score) return 1;
+
+                int timeA = a.TimeRemaining();
+                int timeB = b.TimeRemaining();
+                if (timeA < timeB) return -1; //Older games are better
+                if (timeB > timeA) return 1;
+
+                return -1; //Otherwise, they are different but equally good
             }
 
             public override string ToString()
@@ -359,7 +443,7 @@ namespace Advent_of_Code_2022
             }
 
             //Recursive function used to find how far away the other nodes are.
-            public void DepthFirstSearch(Node requester, int depth)
+            public void BreadthFirstSearch(Node requester, int depth)
             {
                 List<Connection> newDiscoveries = new();
                 foreach (KeyValuePair<Node, Connection> entry in connections)
@@ -372,7 +456,7 @@ namespace Advent_of_Code_2022
                 }
                 foreach (Connection c in newDiscoveries)
                 {
-                    c.GetPartner(this).DepthFirstSearch(requester, depth + c.cost);
+                    c.GetPartner(this).BreadthFirstSearch(requester, depth + c.cost);
                 }
             }
 

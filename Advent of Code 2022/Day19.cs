@@ -333,7 +333,7 @@ namespace Advent_of_Code_2022
             /// </summary>
             /// <param name="bestGame">Game to compare ourselves against</param>
             /// <returns>True if this game DEFINITELY has no chance to ever beat bestGame, False if there might be a possibility to beat it still, but we're not sure.</returns>
-            public bool IsDeadEnd(Gamestate bestGame)
+            public bool CanBeat(Gamestate bestGame)
             {
                 //Assume that we were somehow able to build 1 geodebot per turn for the rest of the game, even if this is wildly unrealistic.
                 //If we STILL can't beat the best game, then we have literally no chance.
@@ -341,7 +341,7 @@ namespace Advent_of_Code_2022
                 int maxScorePossible = score + Utils.GaussSummation(usableTime);
                 if(maxScorePossible <= bestGame.score)
                 {
-                    return true;
+                    return false;
                 }
                 //Round 2! Let's actually create a mirror gamestate, our slightly-less-unrealistic utopia.
                 //In this utopia, we'll try to build a geodebot every single turn. And if we can't, we get an obsidianbot and an orebot for FREE!
@@ -365,10 +365,10 @@ namespace Advent_of_Code_2022
                 }
                 if(utopia.score <= bestGame.score)
                 {
-                    return true;
+                    return false;
                 }
 
-                return false;
+                return true;
             }
 
             /// <summary>
@@ -418,7 +418,7 @@ namespace Advent_of_Code_2022
                     return 0;
                 }
 
-                if (a.score > b.score) return -1; //Better score is better
+                if (a.score > b.score) return -1; //Bigger score is better
                 if (a.score < b.score) return 1;
 
                 if (a.timeleft < b.timeleft) return -1; //Older games are better
@@ -486,7 +486,7 @@ namespace Advent_of_Code_2022
 
                     if (bestGame.score > 0)
                     {
-                        if (game.IsDeadEnd(bestGame))
+                        if (!game.CanBeat(bestGame))
                         {
                             continue;
                         }
