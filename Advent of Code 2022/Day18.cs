@@ -18,72 +18,31 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            bool[,,] drop = ProcessInput(input);
+            (HashSet<ImmutablePoint3D> coords, bool[,,] drop) = ProcessInput(input);
             
             int xdelta = drop.GetLength(0) - 1;
             int ydelta = drop.GetLength(1) - 1;
             int zdelta = drop.GetLength(2) - 1;
             Console.WriteLine($"Created a {xdelta}x{ydelta}x{zdelta} cube.");
 
-            //Cast() flattens the 3x3 array into one superlong array. Then we do a Where() clause to check for solid blocks.
-            //However, that gives us an IEnumerator, and since it is lazy, it won't actually tell us how many solid blocks there are.
-            //So we convert it to an array first.
-            int sides1 = drop.Cast<bool>().Where(o => o == true).ToArray().Length * 6;
+            //First, let's naively assume that all blocks are isolated and not touching anything, so their surface area is a full 6 sides each.
+            int sides1 = coords.Count * 6;
 
-            //We do 3 passes through the cube, once along the entire X axis, once along the entire Y axis, and once along the entire Z axis.
-            //Basically blowing up a 3d cube into 3 MRI scans.
-            //For every 2 cubes whose sides are touching in each pass, we substract 2 sides.
-            //Example: Checking a hollow 3x3 show along the X axis
-            // ### <- -4 sides | ### <- -4 sides | ### <- -4 sides 
-            // ### <- -4 sides | # # <- nothing  | ### <- -4 sides 
-            // ### <- -4 sides | ### <- -4 sides | ### <- -4 sides  
-            for (int x = 0; x <= xdelta - 1; x++)
+            //Now we find how many cubes are actually touching. For each 2 cubes that are touching, substract 2 sides.
+            //We check {X,Y,Z+1}, {X,Y+1,Z}, {X+1,Y,Z}. That way we're only checking in 1 direction and avoiding any duplicates.
+            foreach(ImmutablePoint3D coord in coords)
             {
-                for (int y = 0; y <= ydelta; y++)
+                ImmutablePoint3D[] neighbors = new ImmutablePoint3D[] { new(coord.X, coord.Y, coord.Z+1), new(coord.X, coord.Y+1, coord.Z), new(coord.X+1, coord.Y, coord.Z) };
+                foreach(ImmutablePoint3D neighbor in neighbors)
                 {
-                    for (int z = 0; z <= zdelta; z++)
+                    if (coords.Contains(neighbor))
                     {
-                        bool cube1 = drop[x, y, z];
-                        bool cube2 = drop[x + 1, y, z];
-                        if (cube1 && cube2)
-                        {
-                            sides1 -= 2;
-                        }
+                        sides1 -= 2;
                     }
                 }
             }
-            for (int y = 0; y <= ydelta - 1; y++)
-            {
-                for (int x = 0; x <= xdelta; x++)
-                {
-                    for (int z = 0; z <= zdelta; z++)
-                    {
-                        bool cube1 = drop[x, y, z];
-                        bool cube2 = drop[x, y + 1, z];
-                        if (cube1 && cube2)
-                        {
-                            sides1 -= 2;
-                        }
-                    }
-                }
-            }
-            for (int z = 0; z <= zdelta - 1; z++)
-            {
-                for (int x = 0; x <= xdelta; x++)
-                {
-                    for (int y = 0; y <= ydelta; y++)
-                    {
-                        bool cube1 = drop[x, y, z];
-                        bool cube2 = drop[x, y, z + 1];
-                        if (cube1 && cube2)
-                        {
-                            sides1 -= 2;
-                        }
-                    }
-                }
-            }
-            Console.WriteLine($"Number of sides accounting for interior surface area: {sides1}");
 
+            Console.WriteLine($"Number of sides, including interior surface area: {sides1}");
 
             //Part 2: Now we need to check only the outside surface.
             //To do this, we have to check:
@@ -95,61 +54,62 @@ namespace Advent_of_Code_2022
             //At each tile searched: If we're air and our neighbor is rock, add 1 side. If we're rock and our neighbor is OOB, add 1 side.
             bool[,,] visited = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
             int sides2 = 0;
-            List<(int x, int y, int z)> toCheck = new() { };
+            HashSet<ImmutablePoint3D> toCheck = new() { };
             for (int y = 0; y <= ydelta; y++)
             {
                 for (int z = 0; z <= zdelta; z++)
                 {
-                    toCheck.Add((0, y, z));
-                    toCheck.Add((xdelta, y, z));
+                    toCheck.Add(new(0, y, z));
+                    toCheck.Add(new(xdelta, y, z));
                 }
             }
             for (int x = 0; x <= xdelta; x++)
             {
                 for (int z = 0; z <= zdelta; z++)
                 {
-                    toCheck.Add((x, 0, z));
-                    toCheck.Add((x, ydelta, z));
+                    toCheck.Add(new(x, 0, z));
+                    toCheck.Add(new(x, ydelta, z));
                 }
             }
             for (int x = 0; x <= xdelta; x++)
             {
                 for (int y = 0; y <= ydelta; y++)
                 {
-                    toCheck.Add((x, y, 0));
-                    toCheck.Add((x, y, zdelta));
+                    toCheck.Add(new(x, y, 0));
+                    toCheck.Add(new(x, y, zdelta));
                 }
             }
             //Done adding all the outermost tiles.
 
-            (int x, int y, int z) nextCheck;
+            ImmutablePoint3D nextCheck;
             while (toCheck.Count > 0) //Each air tile checked will add its neighbor air tiles to this list, thus propagating the search. We're done when this list is empty.
             {
-                nextCheck = toCheck[0];
-                toCheck.RemoveAt(0);
-                DepthFirstSearch(nextCheck.x, nextCheck.y, nextCheck.z, drop, visited, ref sides2, toCheck);
+
+                nextCheck = toCheck.First();
+                toCheck.Remove(nextCheck);
+                DepthFirstSearch(nextCheck.X, nextCheck.Y, nextCheck.Z, drop, visited, ref sides2, toCheck);
             }
 
             Console.WriteLine($"Finished checking! Exterior surface area: {sides2}");
 
         }
         
-        public static bool[,,] ProcessInput(string input)
+        public static (HashSet<ImmutablePoint3D>, bool[,,]) ProcessInput(string input)
         {
             string[] inputByLine = Utils.SplitLines(input); 
-            List<(int, int, int)> coords = new();
+            HashSet<ImmutablePoint3D> coords = new();
             foreach (string line in inputByLine)
             {
                 string[] splitLine = line.Split(',');
-                coords.Add((int.Parse(splitLine[0]), int.Parse(splitLine[1]), int.Parse(splitLine[2])));
+                coords.Add(new ImmutablePoint3D(int.Parse(splitLine[0]), int.Parse(splitLine[1]), int.Parse(splitLine[2])));
             }
 
-            int maxx = coords.Max(coord => coord.Item1);
-            int maxy = coords.Max(coord => coord.Item2);
-            int maxz = coords.Max(coord => coord.Item3);
-            int minx = coords.Min(coord => coord.Item1);
-            int miny = coords.Min(coord => coord.Item2);
-            int minz = coords.Min(coord => coord.Item3);
+            int maxx = coords.Max(coord => coord.X);
+            int maxy = coords.Max(coord => coord.Y);
+            int maxz = coords.Max(coord => coord.Z);
+            int minx = coords.Min(coord => coord.X);
+            int miny = coords.Min(coord => coord.Y);
+            int minz = coords.Min(coord => coord.Z);
 
             int xdelta = maxx - minx;
             int ydelta = maxy - miny;
@@ -157,15 +117,15 @@ namespace Advent_of_Code_2022
 
             bool[,,] drop = new bool[xdelta + 1, ydelta + 1, zdelta + 1];
 
-            foreach ((int x, int y, int z) coord in coords)
+            foreach (ImmutablePoint3D coord in coords)
             {
-                drop[coord.x - minx, coord.y - miny, coord.z - minz] = true;
+                drop[coord.X - minx, coord.Y - miny, coord.Z - minz] = true;
             }
 
-            return drop;
+            return (coords, drop);
         }
 
-        public static void DepthFirstSearch(int x, int y, int z, bool[,,] cube, bool[,,] visited, ref int sides, List<(int x, int y, int z)> toCheck)
+        public static void DepthFirstSearch(int x, int y, int z, bool[,,] cube, bool[,,] visited, ref int sides, HashSet<ImmutablePoint3D> toCheck)
         {
             //Don't visit the same tiles twice!
             if (visited[x, y, z])
@@ -205,9 +165,36 @@ namespace Advent_of_Code_2022
                     }
                     if (!visited[newx, newy, newz])
                     {
-                        toCheck.Add((newx, newy, newz));
+                        toCheck.Add(new(newx, newy, newz));
                     }
                 }
+            }
+        }
+
+        public struct ImmutablePoint3D
+        {
+            public int X;
+            public int Y;
+            public int Z;
+
+            public ImmutablePoint3D(int x, int y, int z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return obj is ImmutablePoint3D d &&
+                       X == d.X &&
+                       Y == d.Y &&
+                       Z == d.Z;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(X, Y, Z);
             }
         }
     }
