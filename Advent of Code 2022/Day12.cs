@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,8 +60,8 @@ namespace Advent_of_Code_2022
 
         public static char[,] String2Grid(string input)
         {
-            List<string> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
-            int gridHeight = inputPerLine.Count;
+            string[] inputPerLine = Utils.SplitLines(input); 
+            int gridHeight = inputPerLine.Length;
             int gridWidth = inputPerLine[0].Length;
 
             char[,] grid = new char[gridWidth, gridHeight];

@@ -186,8 +186,8 @@ namespace Advent_of_Code_2022
                 this.background = background;
                 this.gamestate = new(this);
 
-                List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
-                int height = inputByLine.Count;
+                string[] inputByLine = Utils.SplitLines(input); 
+                int height = inputByLine.Length;
                 int width = inputByLine[0].Length;
                 viewport = new Rectangle(0, 0, width, height);
                 for (int y = height - 1; y >= 0; y--)

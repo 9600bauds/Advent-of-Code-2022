@@ -65,7 +65,7 @@ namespace Advent_of_Code_2022
             Dictionary<string, Node> valves = new();
             List<Connection> tunnels = new();
 
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputByLine = Utils.SplitLines(input); 
             Dictionary<string, string[]> tempConnections = new();
             foreach (string line in inputByLine)
             {
@@ -74,7 +74,8 @@ namespace Advent_of_Code_2022
                 {
                     string valveId = match.Groups["valveId"].Value;
                     int flowRate = int.Parse(match.Groups["flowRate"].Value);
-                    string[] tunnelsArray = match.Groups["tunnels"].Value.Split(new[] { ", " }, StringSplitOptions.None);
+                    
+                    string[] tunnelsArray = Utils.SplitCommaSpace(match.Groups["tunnels"].Value);
                     valves.Add(valveId, new Node(valveId, flowRate));
                     tempConnections.Add(valveId, tunnelsArray);
                 }

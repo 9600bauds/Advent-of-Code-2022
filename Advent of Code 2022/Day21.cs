@@ -152,7 +152,7 @@ namespace Advent_of_Code_2022
         {
             Dictionary<string, Monkey> monkeys = new Dictionary<string, Monkey>();
             List<Match> pendingMatches = new List<Match>();
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputByLine = Utils.SplitLines(input); 
             //Pass 1: We create all the monkeys so we can reference them later.
             foreach (string line in inputByLine)
             {

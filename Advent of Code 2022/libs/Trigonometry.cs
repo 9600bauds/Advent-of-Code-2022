@@ -9,7 +9,8 @@ namespace Advent_of_Code_2022.libs
 {
     internal class Trig
     {
-        //Also used to represent vectors sometimes because I'm lazy.
+        //Note how this is a class, not a struct, unlike Microsoft's Drawing.Point
+        //This is because this is mutable and mutable structs are awful
         public class Point3D
         {
             public double x;

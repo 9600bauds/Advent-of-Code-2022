@@ -57,17 +57,17 @@ namespace Advent_of_Code_2022
 
             public Board(string input)
             {
-                List<string> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+                string[] inputPerLine = Utils.SplitLines(input); 
                 width = inputPerLine[0].Length;
-                height = inputPerLine.Count;
+                height = inputPerLine.Length;
                 blizzardsLeft = new bool[width - 2, height - 2];
                 blizzardsRight = new bool[width - 2, height - 2];
                 blizzardsUp = new bool[width - 2, height - 2];
                 blizzardsDown = new bool[width - 2, height - 2];
-                for (int y = 0; y < inputPerLine.Count; y++)
+                for (int y = 0; y < inputPerLine.Length; y++)
                 {
-                    string line = inputPerLine[inputPerLine.Count - 1 - y];
-                    if (y == inputPerLine.Count - 1)
+                    string line = inputPerLine[inputPerLine.Length - 1 - y];
+                    if (y == inputPerLine.Length - 1)
                     {
                         start = new(line.IndexOf('.'), y);
                         continue;

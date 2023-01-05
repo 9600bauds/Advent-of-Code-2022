@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +17,7 @@ namespace Advent_of_Code_2022
         public static Dictionary<int, char> dec2Char = char2Dec.ToDictionary(x => x.Value, x => x.Key);
         public static void Run()
         {
-            List<string> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputPerLine = Utils.SplitLines(input); 
 
             long sum = 0;
             foreach (string line in inputPerLine)

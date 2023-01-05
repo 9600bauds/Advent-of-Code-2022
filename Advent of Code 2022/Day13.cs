@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -70,10 +71,10 @@ namespace Advent_of_Code_2022
         public static List<string> ProcessInput(string input)
         {
             List<string> output = new();
-            List<string> packetPairs = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
-            for (int i = 0; i <= packetPairs.Count - 1; i++)
+            string[] packetPairs = Utils.SplitBlankLines(input); 
+            for (int i = 0; i <= packetPairs.Length - 1; i++)
             {
-                List<string> packetPair = packetPairs[i].Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
+                string[] packetPair = Utils.SplitLines(packetPairs[i]);
                 output.Add(packetPair[0]); //left
                 output.Add(packetPair[1]); //right
             }

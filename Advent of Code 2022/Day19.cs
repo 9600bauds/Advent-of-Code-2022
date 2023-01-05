@@ -73,7 +73,7 @@ namespace Advent_of_Code_2022
 
         public static Dictionary<int, Blueprint> ParseInput(string input)
         {
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputByLine = Utils.SplitLines(input); 
             Dictionary<int, Blueprint> blueprints = new();
             foreach (string line in inputByLine)
             {

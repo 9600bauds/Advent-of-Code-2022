@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -107,11 +108,11 @@ namespace Advent_of_Code_2022
         {
             List<Monkey> output = new();
 
-            List<string> monkeyDescriptions = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] monkeyDescriptions = Utils.SplitBlankLines(input); 
 
             foreach(string monkeyDesc in monkeyDescriptions)
             {
-                List<string> monkeyByLine = monkeyDesc.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
+                string[] monkeyByLine = Utils.SplitLines(monkeyDesc);
 
                 List<long> items = new List<long>();
                 string? operation = null;
@@ -133,7 +134,7 @@ namespace Advent_of_Code_2022
                     if (match.Success)
                     {
                         string startingItemsString = match.Groups["startingItems"].Value;
-                        string[] startingItemsArray = startingItemsString.Split(new[] { ", " }, StringSplitOptions.None);
+                        string[] startingItemsArray = Utils.SplitCommaSpace(startingItemsString);
                         foreach (string startingItem in startingItemsArray)
                         {
                             items.Add(int.Parse(startingItem));

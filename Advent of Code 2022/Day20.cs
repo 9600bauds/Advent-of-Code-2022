@@ -27,7 +27,7 @@ namespace Advent_of_Code_2022
             List<long> after10 = new List<long>() { 0, -2434767459, 1623178306, 3246356612, -1623178306, 2434767459, 811589153 };
             Debug.Assert(ElfMix(before, 10, decriptionKey).SequenceEqual(after10));*/
 
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputByLine = Utils.SplitLines(input); 
 
             List<long> elfFile = inputByLine.Select(long.Parse).ToList(); //Convert list of strings to list of ints
             List<long> elfFileCopy = elfFile.ToList();

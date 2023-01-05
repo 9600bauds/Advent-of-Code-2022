@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,7 +65,7 @@ namespace Advent_of_Code_2022
 
             public void RunInput(string input, bool verbose = false)
             {
-                List<string> inputPerLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+                string[] inputPerLine = Utils.SplitLines(input); 
                 foreach (string line in inputPerLine)
                 {
                     string[] lineSplit = line.Split(' ');

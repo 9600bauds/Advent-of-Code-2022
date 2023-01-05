@@ -360,10 +360,10 @@ namespace Advent_of_Code_2022
 
         public static (char[,] grid, List<string> code, List<Edge> cubeEdges) ProcessInput(string input)
         {
-            string[] inputSplit = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputSplit = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.None); 
 
-            List<string> inputByLine = inputSplit[0].Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
-            int width = inputByLine.Max(x => x.Length), height = inputByLine.Count;
+            string[] inputByLine = Utils.SplitLines(inputSplit[0]);
+            int width = inputByLine.Max(x => x.Length), height = inputByLine.Length;
             char[,] grid = new char[width, height];
             //Initializing the grid with all spaces
             for (int y = 0; y < height; y++)
@@ -374,7 +374,7 @@ namespace Advent_of_Code_2022
                 }
             }
             //Loading the real contents in
-            for (int y = 0; y < inputByLine.Count; y++)
+            for (int y = 0; y < inputByLine.Length; y++)
             {
                 string line = inputByLine[height - 1 - y];
                 for (int x = 0; x < line.Length; x++)

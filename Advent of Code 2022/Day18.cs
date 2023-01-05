@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2022.libs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -135,7 +136,7 @@ namespace Advent_of_Code_2022
         
         public static bool[,,] ProcessInput(string input)
         {
-            List<string> inputByLine = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+            string[] inputByLine = Utils.SplitLines(input); 
             List<(int, int, int)> coords = new();
             foreach (string line in inputByLine)
             {

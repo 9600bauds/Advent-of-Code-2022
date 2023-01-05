@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Advent_of_Code_2022.libs;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +95,7 @@ namespace Advent_of_Code_2022
 
             public Processor(string input)
             {
-                instructions = input.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList(); //String.Split() only takes 1 char as delimiter. This is how you split by a string according to StackOverflow.
+                instructions = Utils.SplitLines(input).ToList();
             }
 
             public void Tick()
