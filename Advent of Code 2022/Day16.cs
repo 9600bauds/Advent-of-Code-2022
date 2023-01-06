@@ -154,6 +154,7 @@ namespace Advent_of_Code_2022
             return (valves, tunnels);
         }
 
+
         public class GamestateIterator
         {
             public SortedSet<Gamestate> unfinishedGames;
@@ -166,11 +167,17 @@ namespace Advent_of_Code_2022
                 bestGame = starterGame;
             }
 
+            //Start with a gamestate that we know has a valid choice
+            //Perform that choice
+            // - If it can't beat the top game: Abort
+            //Get all valid choices for this game (might require killing a player)
+            // - If no choices: GameOver()
+            //For all valid choices, make a new gamestate
             public void DepthFirstSearch()
             {
                 while (unfinishedGames.Count > 0)
                 {
-                    Gamestate? game = unfinishedGames.Min; //For some reason this is 50x faster than unfinishedGames.First() even though the result is basically the same?
+                    Gamestate? game = unfinishedGames.Min;
                     if (game == null) { break; }
 
                     unfinishedGames.Remove(game);
@@ -185,6 +192,8 @@ namespace Advent_of_Code_2022
                         }
                     }
 
+                    game.AddChildren(unfinishedGames);
+
                     if (game.IsFinished())
                     {
                         if (bestGame == null || bestGame.score < game.score)
@@ -192,10 +201,6 @@ namespace Advent_of_Code_2022
                             bestGame = game;
                             Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
                         }
-                    }
-                    else
-                    {
-                        game.AddChildren(unfinishedGames);
                     }
                 }
             }
@@ -213,13 +218,6 @@ namespace Advent_of_Code_2022
                 this.currNode = currNode;
                 this.timeLeft = timeLeft;
                 this.game = game;
-            }
-
-            public Player(Player original)
-            {
-                this.currNode = original.currNode;
-                this.timeLeft = original.timeLeft;
-                this.game = original.game;
             }
 
             public void TakeTurn(Node node, bool verbose = false)
@@ -241,11 +239,6 @@ namespace Advent_of_Code_2022
 
                 if (verbose)
                     Console.WriteLine($"I am now at {node.id}. The minute is {startingTime - timeLeft}, just got {node.GetScore(timeLeft)} score ({node.flowRate}*{timeLeft})");
-
-                if(timeLeft == 0 || game.GetChoicesForPlayer(this).Count == 0)
-                {
-                    GameOver();
-                }
             }
 
             public void GameOver()
@@ -298,8 +291,23 @@ namespace Advent_of_Code_2022
 
             public void AddChildren(SortedSet<Gamestate> unfinishedGames)
             {
-                Player player = players.First();
-                List<Node> choices = GetChoicesForPlayer(player);
+                List<Node>? choices = null;
+                while (choices == null)
+                {
+                    if(players.Count == 0)
+                    {
+                        return;
+                    }
+                    Player player = players.First();
+                    List<Node> playerChoices = GetChoicesForPlayer(player);
+                    if(playerChoices.Count == 0)
+                    {
+                        player.GameOver();
+                        continue;
+                    }
+                    choices = playerChoices;
+                }
+
                 foreach (Node choice in choices)
                 {
                     Gamestate newGame = new Gamestate(this);
@@ -308,6 +316,12 @@ namespace Advent_of_Code_2022
                 }
             }
 
+            /// <summary>
+            /// Get the valid choices for a player. This means all unvisited nodes, except the ones that are too far away for our player to be able to use.
+            /// Note that the cost for a node is the distance + 1, since it takes 1 turn to open a valve.
+            /// </summary>
+            /// <param name="player">The player to check.</param>
+            /// <returns>A List of Nodes representing the nodes that the player can make use of.</returns>
             public List<Node> GetChoicesForPlayer(Player player)
             {
                 List<Node> choices = new();
@@ -330,9 +344,14 @@ namespace Advent_of_Code_2022
                 return players.Count == 0;
             }
 
+            /// <summary>
+            /// Naive heuristic to rule out non-viable games.
+            /// Assume that each player could split themselves into an infinite number of copies and command them to open all valves.
+            /// If even this wildly unrealistic scenario can't beat the best game, then we have literally no chance.
+            /// </summary>
             public bool CanBeat(Gamestate bestgame)
             {
-                return true;
+                return NaiveMaxScore() > bestgame.score;
             }
 
             public int TimeRemaining()
@@ -347,11 +366,16 @@ namespace Advent_of_Code_2022
 
             public int NaiveMaxScore()
             {
-                int time = TimeRemaining();
-                int output = 0;
-                foreach(Node node in nodesLeft)
+                int output = score;
+                foreach(Player player in players)
                 {
-                    output += node.GetScore(time);
+                    foreach (Node node in nodesLeft)
+                    {
+                        int cost = node.GetCost(player.currNode);
+                        int time = player.timeLeft - cost;
+                        if (time <= 0) continue;
+                        output += node.GetScore(player.timeLeft - cost);
+                    }
                 }
                 return output;
             }
