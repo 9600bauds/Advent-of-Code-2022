@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ namespace Advent_of_Code_2022
 
         public static void Run()
         {
-            (Dictionary<string, Node> valves, List<Connection> tunnels) = ProcessInput(input, true);
+            Dictionary<string, Node> valves = ProcessInput(input, true);
 
             HashSet<Node> allChoices = valves.Values.ToHashSet();
             Node starterValve = valves[startingValve];
@@ -41,31 +40,47 @@ namespace Advent_of_Code_2022
                 starterPlayer.TakeTurn(node, true);
             }*/
 
-            Console.WriteLine($"=== GAME ONE ===");
-            Console.WriteLine($"=== One player, no elephants ===");
-            Gamestate starterGame = new Gamestate(0, allChoices.ToList(), "");
-            starterGame.players.Add(new Player(starterValve, startingTime, starterGame));
+            Stopwatch timer = Stopwatch.StartNew();
+            timer.Start();
 
-            GamestateIterator iterator = new(starterGame, Gamestate.comparer);
-            iterator.DepthFirstSearch();
+            int maxPlayersBeforeWeRunOutOfTime = startingTime / elephantTrainingDelay;
+            for (int playerCount = 1; playerCount < maxPlayersBeforeWeRunOutOfTime; playerCount++)
+            {
+                Gamestate freeform = new(0, allChoices.ToList(), "");
+                for (int i = 1; i <= playerCount - 1; i++)
+                {
+                    int elephantTime = startingTime - (elephantTrainingDelay * i);
+                    freeform.players.Add(new Player(starterValve, elephantTime, freeform));
+                }
+                int time = startingTime - (elephantTrainingDelay * (playerCount - 1));
+                freeform.players.Add(new Player(starterValve, time, freeform)); //The human!
 
-            Console.WriteLine($"=== GAME TWO ===");
-            Console.WriteLine($"=== One player, one elephant ===");
+                GamestateIterator iteratorFreeform = new(freeform, Gamestate.comparer);
+                iteratorFreeform.Start();
+                Task.WaitAll(iteratorFreeform.tasks);
+                Console.WriteLine($"\r\n1 player, {playerCount - 1} elephants: {iteratorFreeform.bestGame.score}! {iteratorFreeform.bestGame.sequence}");
 
-            Gamestate gameTwo = new Gamestate(0, allChoices.ToList(), "");
-            gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
-            gameTwo.players.Add(new Player(starterValve, startingTime - elephantTrainingDelay, gameTwo));
-
-            GamestateIterator iteratorTwo = new(gameTwo, Gamestate.comparer);
-            iteratorTwo.DepthFirstSearch();
+                if (playerCount > 1 && playerCount < maxPlayersBeforeWeRunOutOfTime - 1)
+                {
+                    timer.Stop();
+                    Console.WriteLine($"Would you like to calculate the score for {playerCount} elephants, just for fun? Assume that you have to teach each elephant sequentially.\r\nPress Y to accept, or anything else to abort.");
+                    if (Console.ReadKey(true).Key != ConsoleKey.Y)
+                    {
+                        break;
+                    }
+                    timer.Start();
+                    Console.WriteLine($"Calculating... (might take up to a couple minutes with the real input)");
+                }
+            }
+            Console.WriteLine($"\r\nFinished in {timer.ElapsedMilliseconds}ms!");
         }
 
-        public static (Dictionary<string, Node>, List<Connection>) ProcessInput(string input, bool verbose = false)
+        public static Dictionary<string, Node> ProcessInput(string input, bool verbose = false)
         {
             Dictionary<string, Node> valves = new();
             List<Connection> tunnels = new();
 
-            string[] inputByLine = Utils.SplitLines(input); 
+            string[] inputByLine = Utils.SplitLines(input);
             Dictionary<string, string[]> tempConnections = new();
             foreach (string line in inputByLine)
             {
@@ -74,7 +89,7 @@ namespace Advent_of_Code_2022
                 {
                     string valveId = match.Groups["valveId"].Value;
                     int flowRate = int.Parse(match.Groups["flowRate"].Value);
-                    
+
                     string[] tunnelsArray = Utils.SplitCommaSpace(match.Groups["tunnels"].Value);
                     valves.Add(valveId, new Node(valveId, flowRate));
                     tempConnections.Add(valveId, tunnelsArray);
@@ -149,73 +164,92 @@ namespace Advent_of_Code_2022
                 }
                 Console.WriteLine($"Optimized input:");
                 Console.WriteLine(string.Join("\r\n", newLines));
+                Console.WriteLine($" --- ");
             }
 
-            return (valves, tunnels);
+            return valves;
         }
 
 
         public class GamestateIterator
         {
-            public SortedSet<Gamestate> unfinishedGames;
+            public Task[] tasks;
+
             public Gamestate bestGame;
 
-            public GamestateIterator(Gamestate starterGame, Comparer<Gamestate> comparer)
+            public GamestateIterator(Gamestate starterGame, Comparer<Gamestate> comparer, bool verbose = false)
             {
-                unfinishedGames = new(comparer);
-                starterGame.AddChildren(unfinishedGames);
                 bestGame = starterGame;
+
+                List<Node> choices = starterGame.GetChoices();
+                tasks = new Task[choices.Count];
+                for (int i = 0; i < choices.Count; i++)
+                {
+                    Node choice = choices[i];
+                    Gamestate fork = new(starterGame, choice);
+                    SortedSet<Gamestate> pending = new(comparer) { fork };
+
+                    tasks[i] = new Task(() => GameTreeSearch(pending, this, verbose));
+                }
             }
 
-            //Start with a gamestate that we know has a valid choice
-            //Perform that choice
-            // - If it can't beat the top game: Abort
-            //Get all valid choices for this game (might require killing a player)
-            // - If no choices: GameOver()
-            //For all valid choices, make a new gamestate
-            public void DepthFirstSearch()
+            public void Start()
             {
-                while (unfinishedGames.Count > 0)
+                foreach (Task task in tasks)
                 {
-                    Gamestate? game = unfinishedGames.Min;
+                    task.Start();
+                }
+            }
+
+            public static void GameTreeSearch(SortedSet<Gamestate> pending, GamestateIterator parent, bool verbose = false)
+            {
+                while (pending.Count > 0)
+                {
+                    Gamestate? game = pending.Min;
                     if (game == null) { break; }
 
-                    unfinishedGames.Remove(game);
+                    pending.Remove(game);
 
                     game.TakeTurn();
 
-                    if (bestGame.score > 0)
+                    if (parent.bestGame.score > 0)
                     {
-                        if (!game.CanBeat(bestGame))
+                        if (!game.CanBeat(parent.bestGame))
                         {
                             continue;
                         }
                     }
 
-                    game.AddChildren(unfinishedGames);
+                    game.AddChildren(pending);
 
                     if (game.IsFinished())
                     {
-                        if (bestGame == null || bestGame.score < game.score)
+                        if (parent.bestGame == null || parent.bestGame.score < game.score)
                         {
-                            bestGame = game;
-                            Console.WriteLine($"New high score!! {bestGame.score} - {bestGame}");
+                            parent.bestGame = game;
+                            if (verbose) Console.WriteLine($"New high score!! {parent.bestGame.score} - {parent.bestGame}");
                         }
                     }
                 }
             }
 
+            public override string? ToString()
+            {
+                return $"{bestGame.score} - {bestGame}";
+            }
         }
 
         public class Player
         {
             public Node currNode;
+            public int initialTime;
             public int timeLeft;
             public Gamestate game;
 
             public Player(Node currNode, int timeLeft, Gamestate game)
             {
                 this.currNode = currNode;
+                this.initialTime = timeLeft;
                 this.timeLeft = timeLeft;
                 this.game = game;
             }
@@ -229,7 +263,8 @@ namespace Advent_of_Code_2022
                     {
                         Console.WriteLine($"I took the whammy. I am dead. Goodbye.");
                     }
-                    GameOver();
+                    game.sequence += " / ";
+                    game.players.Remove(this);
                     return;
                 }
                 timeLeft -= node.GetCost(currNode);
@@ -238,28 +273,27 @@ namespace Advent_of_Code_2022
                 game.nodesLeft.Remove(node);
 
                 if (verbose)
-                    Console.WriteLine($"I am now at {node.id}. The minute is {startingTime - timeLeft}, just got {node.GetScore(timeLeft)} score ({node.flowRate}*{timeLeft})");
-            }
-
-            public void GameOver()
-            {
-                game.players.Remove(this);
-                game.sequence += " / ";
+                    Console.WriteLine($"I am now at {node.id}. The minute is {startingTime - timeLeft}, just got {node.GetScore(timeLeft)} score ({node.flowRate}*{timeLeft})!");
             }
 
             public bool CanAfford(Node node)
             {
                 return node.GetCost(currNode) <= timeLeft;
             }
+            public override string? ToString()
+            {
+                return $"{timeLeft}m left - @{currNode.id}";
+            }
         }
 
         public class Gamestate
         {
             public int score = 0;
-            public List<Node> nodesLeft = new();
-            public List<Player> players = new();
-            public string sequence = "";
+            public List<Node> nodesLeft;
+            public List<Player> players;
+            public string sequence;
             public Node? choice;
+
             public static Comparer<Gamestate> comparer = Comparer<Gamestate>.Create((a, b) => { return Gamestate.CompareGames(a, b); });
 
             public Gamestate(int score, List<Node> nodesLeft, string sequence)
@@ -267,48 +301,56 @@ namespace Advent_of_Code_2022
                 this.score = score;
                 this.nodesLeft = nodesLeft;
                 this.sequence = sequence;
+                players = new();
             }
 
-            public Gamestate(Gamestate original)
+            public Gamestate(Gamestate original, Node? choice = null)
             {
                 this.score = original.score;
                 this.players = original.players.ToList(); //make sure we are cloning it, not making a reference
                 this.nodesLeft = original.nodesLeft.ToList(); //make sure we are cloning it, not making a reference
                 this.sequence = original.sequence;
+                if (choice != null)
+                {
+                    this.choice = choice;
+                }
+                else
+                {
+                    this.choice = original.choice;
+                }
             }
 
             public void TakeTurn()
             {
-                if(choice == null)
+                if (choice == null)
                 {
                     throw new Exception("Tried to take our turn without a choice!");
                 }
                 Player oldPlayer = players[0];
                 Player newPlayer = new(oldPlayer.currNode, oldPlayer.timeLeft, this); //cloning this player before we do any mutations to it, since other games might reference it
-                players[0] = newPlayer; 
+                players[0] = newPlayer;
                 newPlayer.TakeTurn(choice);
+            }
+
+            public List<Node> GetChoices()
+            {
+                while (players.Count > 0)
+                {
+                    Player player = players.First();
+                    List<Node> playerChoices = GetChoicesForPlayer(player);
+                    if (playerChoices.Count == 0)
+                    {
+                        players.Remove(player);
+                        continue;
+                    }
+                    return playerChoices;
+                }
+                return new();
             }
 
             public void AddChildren(SortedSet<Gamestate> unfinishedGames)
             {
-                List<Node>? choices = null;
-                while (choices == null)
-                {
-                    if(players.Count == 0)
-                    {
-                        return;
-                    }
-                    Player player = players.First();
-                    List<Node> playerChoices = GetChoicesForPlayer(player);
-                    if(playerChoices.Count == 0)
-                    {
-                        player.GameOver();
-                        continue;
-                    }
-                    choices = playerChoices;
-                }
-
-                foreach (Node choice in choices)
+                foreach (Node choice in GetChoices())
                 {
                     Gamestate newGame = new Gamestate(this);
                     newGame.choice = choice;
@@ -332,7 +374,7 @@ namespace Advent_of_Code_2022
                         choices.Add(node);
                     }
                 }
-                if (players.Count > 1 && choices.Count > 0)
+                if (players.Count > 1 && player.timeLeft < player.initialTime)
                 {
                     choices.Add(stopNode); //When we have more than 1 player, we let the first players stop prematurely.
                 }
@@ -346,38 +388,30 @@ namespace Advent_of_Code_2022
 
             /// <summary>
             /// Naive heuristic to rule out non-viable games.
-            /// Assume that each player could split themselves into an infinite number of copies and command them to open all valves.
+            /// Assume that each player could split themselves into an infinite number of copies, and all remaining valves were immediately opened by their nearest copy.
             /// If even this wildly unrealistic scenario can't beat the best game, then we have literally no chance.
+            /// This is, of course, overly optimistic. But it's also (relatively) cheap to compute, requiring no recursion, and it helps us filter out tens of thousands of dead ends.
             /// </summary>
             public bool CanBeat(Gamestate bestgame)
             {
-                return NaiveMaxScore() > bestgame.score;
-            }
-
-            public int TimeRemaining()
-            {
-                int output = 0;
-                foreach(Player player in players)
+                int utopicScore = score;
+                foreach (Node node in nodesLeft)
                 {
-                    output += player.timeLeft;
-                }
-                return output;
-            }
-
-            public int NaiveMaxScore()
-            {
-                int output = score;
-                foreach(Player player in players)
-                {
-                    foreach (Node node in nodesLeft)
+                    int maxScore = 0;
+                    foreach (Player player in players)
                     {
                         int cost = node.GetCost(player.currNode);
                         int time = player.timeLeft - cost;
-                        if (time <= 0) continue;
-                        output += node.GetScore(player.timeLeft - cost);
+                        int currPlayerScore = node.GetScore(time);
+                        maxScore = Math.Max(maxScore, currPlayerScore);
+                    }
+                    utopicScore += maxScore;
+                    if (utopicScore > bestgame.score)
+                    {
+                        return true;
                     }
                 }
-                return output;
+                return utopicScore > bestgame.score;
             }
 
             public static int CompareGames(Gamestate a, Gamestate b)
@@ -399,9 +433,24 @@ namespace Advent_of_Code_2022
                 return -1; //Otherwise, they are different but equally good
             }
 
+            public int TimeRemaining()
+            {
+                int output = 0;
+                foreach (Player player in players)
+                {
+                    output += player.timeLeft;
+                }
+                return output;
+            }
+
             public override string ToString()
             {
-                return $"{string.Join(",", sequence)}";
+                string output = string.Join(",", sequence);
+                if (!IsFinished() && choice != null)
+                {
+                    output += $" -> {choice.id}";
+                }
+                return output;
             }
         }
 
@@ -531,7 +580,7 @@ namespace Advent_of_Code_2022
                 {
                     return nodeB;
                 }
-                else if(node == nodeB)
+                else if (node == nodeB)
                 {
                     return nodeA;
                 }
