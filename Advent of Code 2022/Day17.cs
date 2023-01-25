@@ -21,36 +21,28 @@ namespace Advent_of_Code_2022
         {
             Board board = new(0, 0, 6, 3, '.', '#');
 
-            int pieceIndex = 0;
             long piecesAtRest = 0;
-            int rockPushIndex = 0;
+            long rockPushes = 0;
 
             while (true)
             {
-                pieceIndex = pieceIndex % pieceOrder.Count;
-                Type pieceType = pieceOrder[pieceIndex];
-                Point loc = new(2, board.highestRockY + 3);
-                Piece? piece = (Piece?)Activator.CreateInstance(pieceType, loc, board);
-                if (piece == null)
-                {
-                    Debug.Fail("Piece is somehow null!");
-                    return;
-                }
-                board.AddPiece(piece);
-                pieceIndex++;
+                Piece piece = SpawnPiece(board, pieceOrder, piecesAtRest);
 
                 bool pieceIsActive = true;
                 while (pieceIsActive)
                 {
-                    RockPush(piece, ref rockPushIndex);
+                    RockPush(piece, input, rockPushes);
+                    rockPushes++;
 
                     if (!FallPiece(piece))
                     {
                         pieceIsActive = false;
-                        board.UpdateMaxes(piece);
+                        
                     }
                 }
+
                 piecesAtRest++;
+                board.UpdateMaxY(piece);
 
                 if (piecesAtRest % 50 == 0)
                 {
@@ -66,17 +58,26 @@ namespace Advent_of_Code_2022
             }
         }
 
-        public static bool RockPush(Piece piece, ref int rockPushTurn)
+        /// <summary>
+        /// Attempts to push a rock piece according to the jet pattern of the cave.
+        /// </summary>
+        /// <param name="piece">The piece to push.</param>
+        /// <param name="pattern">Pattern of rock pushes e.g. "<>><>>>><<".</param>
+        /// <param name="rockPushes">How many times has a push happened so far?</param>
+        /// <returns>true if the piece was successfully moved, false if the piece was not moved (due to colliding with the walls or another piece).</returns>
+        public static bool RockPush(Piece piece, string pattern, long rockPushes)
         {
-            rockPushTurn = rockPushTurn % input.Length;
-            char direction = input[rockPushTurn];
-            rockPushTurn++;
+            int index = (int)rockPushes % pattern.Length;
+            char direction = pattern[index];
+
             int xOffset = direction == '>' ? 1 : -1;
 
             if (piece.loc.X + xOffset < 0 || piece.loc.X + piece.width + xOffset > piece.board.maxx + 1)
             {
                 return false;
             }
+            // To check if pushing us would make us collide with another piece, we actually get pushed,
+            // then we check if we're colliding, and if so, we undo the push.
             piece.Shift(xOffset, 0);
             if (piece.board.IsPieceColliding(piece))
             {
@@ -86,12 +87,19 @@ namespace Advent_of_Code_2022
             return true;
         }
 
+        /// <summary>
+        /// Attempts to apply gravity on a piece to make it fall.
+        /// </summary>
+        /// <param name="piece">The piece to make fall.</param>
+        /// <returns>True if the piece was successfully moved, false if the piece is firmly at rest (due to landing on the floor or on another piece).</returns>
         public static bool FallPiece(Piece piece)
         {
             if (piece.loc.Y - 1 < 0)
             {
                 return false;
             }
+            // To check if falling would make us collide with another piece, we actually fall 1 tile,
+            // then we check if we're colliding, and if so, we undo the fall.
             piece.Shift(0, -1);
             if (piece.board.IsPieceColliding(piece))
             {
@@ -99,6 +107,27 @@ namespace Advent_of_Code_2022
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Spawns a piece on the board. The type of piece to spawn is determined from the piece order and how many pieces are already at rest.
+        /// </summary>
+        /// <param name="board">The board to spawn in.</param>
+        /// <param name="pieceOrder">A list of Types of piece, specifying the order of pieces to cycle through.</param>
+        /// <param name="piecesAtRest">How many pieces have been spawned so far?</param>
+        /// <returns></returns>
+        public static Piece SpawnPiece(Board board, List<Type> pieceOrder, long piecesAtRest)
+        {
+            int index = (int)piecesAtRest % pieceOrder.Count;
+            Type pieceType = pieceOrder[index];
+            Point loc = new(2, board.highestRockY + 3);
+            Piece? piece = (Piece?)Activator.CreateInstance(pieceType, loc, board);
+            if (piece == null)
+            {
+                throw new Exception("Piece is somehow null!");
+            }
+            board.AddPiece(piece);
+            return piece;
         }
 
         public class Board
@@ -121,6 +150,11 @@ namespace Advent_of_Code_2022
                 this.pieceChar = pieceChar;
             }
 
+            /// <summary>
+            /// Tries to clean up the board by removing pieces that no longer matter.
+            /// It does this by finding a row of solid blocks (or 2 rows that, when combined, make a solid row) and defining that as the new bottom,
+            /// deleting all pieces under that row.
+            /// </summary>
             public void TrimTheFat()
             {
                 for (int y = highestRockY; y > miny; y--)
@@ -160,12 +194,15 @@ namespace Advent_of_Code_2022
                 //UpdateMaxes(piece);
             }
 
-            public void UpdateMaxes(Piece piece)
+            public void UpdateMaxY(Piece piece)
             {
                 highestRockY = Math.Max(highestRockY, piece.loc.Y + piece.height);
                 maxy = highestRockY + 2;
             }
 
+            /// <summary>
+            /// Returns true if this piece is colliding with the other pieces on the board.
+            /// </summary>
             public bool IsPieceColliding(Piece piece)
             {
                 foreach (Piece otherPiece in pieces)
@@ -182,6 +219,9 @@ namespace Advent_of_Code_2022
                 return false;
             }
 
+            /// <summary>
+            /// Returns true if any piece in this board is colliding with this point.
+            /// </summary>
             public bool IsPointColliding(Point point)
             {
                 foreach (Piece piece in pieces)
@@ -285,7 +325,6 @@ namespace Advent_of_Code_2022
                 }
                 width = pointCoords.Max(coord => coord.Item1) + 1;
                 height = pointCoords.Max(coord => coord.Item2) + 1;
-
             }
         }
         public class Cross : Piece
