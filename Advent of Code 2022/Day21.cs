@@ -17,7 +17,7 @@ namespace Advent_of_Code_2022
 
         static readonly bool verbose = false;
 
-        static Regex parsingRegex = new Regex(@"(?<monkeyName>[a-z]+): ((?<leftParent>[a-z]+) (?<operation>.) (?<rightParent>[a-z]+)|(?<number>\d+))");
+        static readonly Regex parsingRegex = new(@"(?<monkeyName>[a-z]+): ((?<leftParent>[a-z]+) (?<operation>.) (?<rightParent>[a-z]+)|(?<number>\d+))");
 
         public static void Run()
         {
@@ -47,7 +47,7 @@ namespace Advent_of_Code_2022
             Monkey humn = monkeys["humn"];
             root.operation = '=';
             humn.number = null;
-            //We remove humn's number and recalculate the tree. This will result in almost everything being solved,
+            //We remove humn's number and recalculate the tree. This will result in most of the tree being solved,
             //except a chain of monkeys forming a path inbetween humn and root. Which is what we want, really.
             foreach (Monkey monkey in monkeys.Values)
             {
@@ -75,7 +75,7 @@ namespace Advent_of_Code_2022
             //The way we'll calculate Part 2 is by tracing a path from root to humn.
             //We know what root's 2nd value should be, so we'll use that as a base and sequentially undo each operation in the chain.
             //At the end of the chain is humn, so we'll know what humn should say.
-            List<Monkey>? chainToRoot = root.RecursivelyFindMonkey(humn, null);
+            List<Monkey>? chainToRoot = root.RecursivelyFindMonkey(humn);
             if(chainToRoot is null)
             {
                 throw new Exception("Could not trace a path from root to humn!");
@@ -85,7 +85,7 @@ namespace Advent_of_Code_2022
             if(verbose) Console.WriteLine($"Need to reverse-compute {root}!");
             for (int i = chainToRoot.Count - 2; i >= 0; i--) //-2 because the last entry is already a known number
             {
-                Monkey link = (Monkey)chainToRoot[i];
+                Monkey link = chainToRoot[i];
                 char? operation = link.operation;
                 if (!operation.HasValue)
                 {
@@ -151,7 +151,7 @@ namespace Advent_of_Code_2022
         public static Dictionary<string, Monkey> Input2Monkeys(string input)
         {
             Dictionary<string, Monkey> monkeys = new Dictionary<string, Monkey>();
-            List<Match> pendingMatches = new List<Match>();
+            List<Match> pendingMatches = new();
             string[] inputByLine = Utils.SplitLines(input); 
             //Pass 1: We create all the monkeys so we can reference them later.
             foreach (string line in inputByLine)
@@ -205,8 +205,8 @@ namespace Advent_of_Code_2022
             }
         }
 
-        static List<char> operations = new() { '+', '-', '*', '/', '=' };
-        static List<char> inverseOperations = new() { '-', '+', '/', '*', '=' };
+        static readonly List<char> operations = new() { '+', '-', '*', '/', '=' };
+        static readonly List<char> inverseOperations = new() { '-', '+', '/', '*', '=' };
         public static char InverseOperation(char operation)
         {
             return inverseOperations[operations.IndexOf(operation)];
@@ -245,6 +245,9 @@ namespace Advent_of_Code_2022
                 }
             }
 
+            /// <summary>
+            /// Try to calculate our value, recursively calculating the value of our parents of necessary.
+            /// </summary>
             public void RecursivelyCalculate()
             {
                 //Console.WriteLine($"Calculating {name}...");
@@ -263,7 +266,12 @@ namespace Advent_of_Code_2022
                 }
             }
 
-            public System.Collections.Generic.List<Monkey>? RecursivelyFindMonkey(Monkey monkey, List<Monkey>? sequence)
+            /// <summary>
+            /// Try to find a chain of monkeys that leads from this to the desired monkey.
+            /// </summary>
+            /// <param name="monkey">The monkey we're trying to find.</param>
+            /// <returns>A List of Monkeys, of which each successive monkey is a parent of the previous one, ultimately leading to our target monkey. Or null, if no path exists.</returns>
+            public List<Monkey>? RecursivelyFindMonkey(Monkey monkey)
             {
                 if (parents.Count == 0)
                 {
@@ -275,7 +283,7 @@ namespace Advent_of_Code_2022
                 }
                 foreach (Monkey parent in parents)
                 {
-                    List<Monkey>? newSeq = parent.RecursivelyFindMonkey(monkey, null);
+                    List<Monkey>? newSeq = parent.RecursivelyFindMonkey(monkey);
                     if (newSeq != null)
                     {
                         newSeq.Add(this);
@@ -285,6 +293,11 @@ namespace Advent_of_Code_2022
                 return null;
             }
 
+            /// <summary>
+            /// Attempt to perform our operation and calculate our value based on both of our parents' values.
+            /// Example: If our operation is "+", then check if both our parents already know their values, and if so add them together.
+            /// </summary>
+            /// <returns>True if our number was successfully calculated, False if not.</returns>
             public bool TryCalculateNumber()
             {
                 long? leftVal = parents[0].number;
