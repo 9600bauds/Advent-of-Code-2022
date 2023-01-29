@@ -106,5 +106,22 @@ namespace Advent_of_Code_2022.libs
         {
             Console.WriteLine(string.Join(", ", list));
         }
+
+        /// <summary>
+        /// Implementation of the Euclidean algorithm to find the greatest common divisor of 2 integers. 
+        /// Credit to Drew Noakes: https://stackoverflow.com/questions/18541832/c-sharp-find-the-greatest-common-divisor
+        /// </summary>
+        public static int GCD(int a, int b)
+        {
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+
+            return a | b;
+        }
     }
 }
